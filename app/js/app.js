@@ -6,6 +6,9 @@ App.Router.map(function () {
 
 App.IndexRoute = Ember.Route.extend({
 	model: function () {
-		return ['red', 'yellow', 'blue'];
+		return Ember.$.getJSON('http://localhost:3000').then(function(data) {
+			console.log(data);
+			return data;
+		});
 	}
 });

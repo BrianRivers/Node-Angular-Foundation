@@ -1,4 +1,5 @@
 var http = require('http'),
+	cors = require('cors'),
 	uuid = require('node-uuid'),
 	express = require('express'),
 	passport = require('passport'),
@@ -39,8 +40,9 @@ app.configure(function () {
 	app.use(express.methodOverride());
 	app.use(express.bodyParser());
 	app.use(passport.initialize());
+	app.use(cors());
 	app.use(app.router);
-	app.use(function (req, res, next){
+	app.use(function (req, res, next) {
 		res.status(404).send('404', {
 			url: req.originalUrl,
 			error: 'Not found'
@@ -49,7 +51,13 @@ app.configure(function () {
 });
 
 app.get('/', function (req, res) {
-    res.json({"Hello": "World"});
+	res.json({
+		"status": [
+			{ "success": "success message" },
+			{ "error": "error message" }
+		],
+		"data": "Hello World"
+	});
 });
 
 app.get('/unauthorized', function (req, res) {
