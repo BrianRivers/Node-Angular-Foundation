@@ -1,12 +1,13 @@
 {
-  "name": "test",
-  "description": "test app",
-  "version": "0.0.1",
-  "private": true,
-  "dependencies": {
-    "express": "3.4.4",
-    "passport": "0.1.17",
-    "passport-local": "0.1.6",
-    "passport-http": "0.2.2"
-  }
+	"name": "test",
+	"description": "test app",
+	"version": "0.0.1",
+	"private": true,
+	"dependencies": {
+		"express": "3.4.4",
+		"passport": "0.1.17",
+		"passport-local": "0.1.6",
+		"passport-localapikey": "0.0.3",
+		"node-uuid": "1.4.1"
+	}
 }

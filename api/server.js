@@ -1,12 +1,25 @@
 var http = require('http'),
+	uuid = require('node-uuid'),
 	express = require('express'),
 	passport = require('passport'),
-	LocalStrategy = require('passport-local').Strategy;
+	LocalStrategy = require('passport-local').Strategy,
+	LocalAPIKeyStrategy = require('passport-localapikey').Strategy;
 
 passport.use(new LocalStrategy(
 	function (username, password, done) {
 		if (username == 'test' && password == 'password')
 			return done(null, username);
+		else
+			return done(null, false);
+	})
+);
+
+passport.use(new LocalAPIKeyStrategy({
+		apiKeyField: 'X-API-KEY'
+	},
+	function (apikey, done) {
+		if (apikey == '9c1c7725-b92b-41f2-b3fa-78dc845a3192')
+			return done(null, apikey);
 		else
 			return done(null, false);
 	})
@@ -23,14 +36,11 @@ passport.deserializeUser(function (obj, done) {
 var app = express();
 
 app.configure(function () {
-    app.use(express.cookieParser('secret'));
-    app.use(express.bodyParser());
-    app.use(express.methodOverride());
-    app.use(express.cookieSession());
-    app.use(passport.initialize());
-    app.use(passport.session());
-    app.use(app.router);
-    app.use(function (req, res, next){
+	app.use(express.methodOverride());
+	app.use(express.bodyParser());
+	app.use(passport.initialize());
+	app.use(app.router);
+	app.use(function (req, res, next){
 		res.status(404).send('404', {
 			url: req.originalUrl,
 			error: 'Not found'
@@ -39,20 +49,32 @@ app.configure(function () {
 });
 
 app.get('/', function (req, res) {
-    res.send('Hello World');
+    res.json({"Hello": "World"});
 });
 
-app.get('/invalid', function (req, res) {
+app.get('/unauthorized', function (req, res) {
 	res.json('Not Authorized');
 });
 
-app.post('/local',
+app.post('/authenticate',
 	passport.authenticate('local', {
 		session: false,
-		failureRedirect: '/invalid'
+		failureRedirect: 'unauthorized'
+		//must add api/ to url redirects on server
 	}),
 	function (req, res) {
 		res.json('Valid Credentials');
+	}
+);
+
+app.post('/keytest',
+	passport.authenticate('localapikey', {
+		session: false,
+		failureRedirect: 'unauthorized'
+		//must add api/ to url redirects on server
+	}),
+	function (req, res) {
+		res.json('Valid API Key');
 	}
 );
 
