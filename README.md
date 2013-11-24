@@ -1,2 +1,2 @@
-node-ember-test
+express-ember-test
 ===============
