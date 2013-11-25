@@ -10,6 +10,7 @@
 		"passport-localapikey": "0.0.3",
 		"node-uuid": "1.4.1",
 		"cors": "2.1.0",
-		"mysql": "~2.0.0-alpha9"
+		"mysql": "~2.0.0-alpha9",
+		"mysql-activerecord": "~0.8.3"
 	}
 }

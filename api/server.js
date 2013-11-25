@@ -16,21 +16,14 @@ var connection = mysql.createConnection({
 
 passport.use(new LocalStrategy(
 	function (username, password, done) {
-		console.log(username);
-		// // query binding and escaping for sql query
-		// var sql = 'SELECT * FROM default_famaster WHERE fama_asset = ??';
-		// var inserts = [username];
-		// sql = mysql.format(sql, inserts);
-		// connection.query(sql, function (err, rows, fields) {
-		// 	if (err)
-		// 		return done(null, false);
-		// 	else
-		// 		return done(null, rows[0]);
-		// });
-		if (username == 'test' && password == 'password')
-			return done(null, username);
-		else
-			return done(null, false);
+		// query binding and escaping for sql query
+		connection.query('SELECT * FROM default_users WHERE username = ?', [username], function (err, rows, fields) {
+			if (err)
+				return done(err);
+			else {
+				return done(null, rows[0]);
+			}
+		});
 	})
 );
 
@@ -80,16 +73,12 @@ app.get('/', function (req, res) {
 	});
 });
 
-app.post('/post', function (req, res) {
-	res.json(req.body);
-});
-
 app.get('/unauthorized', function (req, res) {
 	res.json({
-		"status": [
-			{ "success": null },
-			{ "error": "Not Authorized" }
-		],
+		"status": {
+			"success": null,
+			"error": "Not Authorized"
+		},
 		"data": null
 	});
 });
@@ -97,11 +86,17 @@ app.get('/unauthorized', function (req, res) {
 app.post('/authenticate',
 	passport.authenticate('local', {
 		session: false,
-		failureRedirect: 'unauthorized'
+		failureRedirect: 'api/unauthorized'
 		//must add api/ to url redirects on server
 	}),
 	function (req, res) {
-		res.json('Valid Credentials');
+		res.json({
+			"status": {
+				"success": "User found",
+				"error": "Authorized"
+			},
+			"data": req.user
+		});
 	}
 );
 
@@ -123,6 +118,12 @@ app.get('/dbtest', function (req, res) {
 		else
 			res.json(rows);
 	});
+});
+
+app.post('/search', function (req, res) {
+	var table = req.body.resource;
+	delete req.body.resource;
+	res.json(req.body);
 });
 
 app.listen(3000, '127.0.0.1');
