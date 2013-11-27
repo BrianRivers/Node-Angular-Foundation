@@ -1,23 +1,31 @@
+// require libs
 var http = require('http'),
 	cors = require('cors'),
-	mysql = require('mysql'),
+	mysql = require('mysql-activerecord'),
 	uuid = require('node-uuid'),
 	express = require('express'),
 	passport = require('passport'),
 	LocalStrategy = require('passport-local').Strategy,
 	LocalAPIKeyStrategy = require('passport-localapikey').Strategy;
 
-var connection = mysql.createConnection({
-	host		: 'localhost',
-	database	: 'pyrocms',
-	user		: 'pyrocms',
-	password	: '5cJzQDGqeKE8rdxb'
+// create connection to db
+var db = mysql.Adapter({
+	host: 'localhost',
+	database: 'pyrocms',
+	user: 'pyrocms',
+	password: '5cJzQDGqeKE8rdxb'
 });
 
+// setup Passport strategies and serialization methods
 passport.use(new LocalStrategy(
 	function (username, password, done) {
-		// query binding and escaping for sql query
-		connection.query('SELECT * FROM default_users WHERE username = ?', [username], function (err, rows, fields) {
+		// search for user with password
+		db
+		.where({
+			username: username,
+			// password: password
+		})
+		.get('default_users', function (err, rows, fields) {
 			if (err)
 				return done(err);
 			else {
@@ -31,21 +39,29 @@ passport.use(new LocalAPIKeyStrategy({
 		apiKeyField: 'X-API-KEY'
 	},
 	function (apikey, done) {
-		if (apikey == '9c1c7725-b92b-41f2-b3fa-78dc845a3192')
-			return done(null, apikey);
-		else
-			return done(null, false);
+		db
+		.where({
+			key: apikey
+		})
+		.get('default_api_keys', function (err, rows, fields) {
+			if (err)
+				return done(err);
+			else {
+				return done(null, rows[0]);
+			}
+		});
 	})
 );
 
 passport.serializeUser(function (user, done) {
-    done(null, user);
+	done(null, user);
 });
 
 passport.deserializeUser(function (obj, done) {
-    done(null, obj);
+	done(null, obj);
 });
 
+// create and configure application
 var app = express();
 
 app.configure(function () {
@@ -62,17 +78,22 @@ app.configure(function () {
 	});
 });
 
+/* API methods
+------------*/
+
+// index
 app.get('/', function (req, res) {
 	console.log('index');
 	res.json({
-		"status": [
-			{ "success": "success message" },
-			{ "error": "error message" }
-		],
+		"status": {
+			"success": "success message",
+			"error": null
+		},
 		"data": "Hello World"
 	});
 });
 
+// response for unauthorized users
 app.get('/unauthorized', function (req, res) {
 	res.json({
 		"status": {
@@ -83,42 +104,63 @@ app.get('/unauthorized', function (req, res) {
 	});
 });
 
+// verify username and password
 app.post('/authenticate',
 	passport.authenticate('local', {
 		session: false,
-		failureRedirect: 'api/unauthorized'
 		//must add api/ to url redirects on server
+		failureRedirect: 'api/unauthorized'
 	}),
 	function (req, res) {
-		res.json({
-			"status": {
-				"success": "User found",
-				"error": "Authorized"
-			},
-			"data": req.user
+		db
+		.where({
+			user_id: req.user.id
+		})
+		.get('default_api_keys', function (err, rows, fields) {
+			if (!err) {
+				res.json({
+					"status": {
+						"success": "Authorized",
+						"error": null
+					},
+					"data":{
+						"user": req.user,
+						"key": rows[0].key
+					}
+				});
+			}
+			else {
+				res.json({
+					"status": {
+						"success": null,
+						"error": err
+					},
+					"data": null
+				});
+			}
 		});
 	}
 );
 
+// verify api key
 app.post('/keytest',
 	passport.authenticate('localapikey', {
 		session: false,
-		failureRedirect: 'unauthorized'
 		//must add api/ to url redirects on server
+		failureRedirect: 'api/unauthorized'
 	}),
 	function (req, res) {
-		res.json('Valid API Key');
+		res.json({
+			"status": {
+				"success": "Authorized",
+				"error": null
+			},
+			"data": null
+			// sends back api key info
+			// "data": req.user 
+		});
 	}
 );
-
-app.get('/dbtest', function (req, res) {
-	connection.query('SELECT * FROM default_fadeptmt', function(err, rows, fields) {
-		if (err)
-			res.json(err);
-		else
-			res.json(rows);
-	});
-});
 
 app.post('/search', function (req, res) {
 	var table = req.body.resource;

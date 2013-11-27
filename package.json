@@ -12,5 +12,8 @@
 		"cors": "2.1.0",
 		"mysql": "~2.0.0-alpha9",
 		"mysql-activerecord": "~0.8.3"
+	},
+	"devDependencies": {
+		"grunt": "~0.4.2"
 	}
 }

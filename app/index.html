@@ -13,6 +13,11 @@
 
 	<script type="text/x-handlebars" data-template-name="index">
 	<h3>API Response Data</h3>
+	<ul>
+	{{#each item in model}}
+		<li><a {{bindAttr href="item.html_url"}}>{{item.name}}</a></li>
+	{{/each}}
+	</ul>
 	{{model.status.[0].success}}<br>
 	{{model.status.[1].error}}<br>
 	{{model.data}}
