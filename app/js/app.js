@@ -11,13 +11,6 @@ App.Router.map(function () {
 	this.route("login");
 });
 
-App.IndexRoute = Ember.Route.extend({
-	model: function () {
-		return Ember.$.getJSON('https://api.github.com/users/intothev01d/repos').then(function(data) {
-			console.log(data);
-			return data;
-		});
-	}
-});
+App.IndexRoute = Ember.Route.extend({});
 
 App.LoginRoute = Ember.Route.extend({});
