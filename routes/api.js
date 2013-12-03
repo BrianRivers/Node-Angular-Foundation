@@ -68,8 +68,8 @@ module.exports = function(app) {
 	app.get('/unauthorized', function (req, res) {
 		res.json({
 			"status": {
-				"success": null,
-				"error": "Not Authorized"
+				"success": false,
+				"message": "Not Authorized"
 			},
 			"data": null
 		});
@@ -91,8 +91,8 @@ module.exports = function(app) {
 				if (!err) {
 					res.json({
 						"status": {
-							"success": "Authorized",
-							"error": null
+							"success": true,
+							"message": "Authorized"
 						},
 						"data":{
 							"user": req.user,
@@ -103,8 +103,8 @@ module.exports = function(app) {
 				else {
 					res.json({
 						"status": {
-							"success": null,
-							"error": err
+							"success": false,
+							"message": err
 						},
 						"data": null
 					});
@@ -123,8 +123,8 @@ module.exports = function(app) {
 		function (req, res) {
 			res.json({
 				"status": {
-					"success": "Authorized",
-					"error": null
+					"success": true,
+					"message": "Authorized"
 				},
 				"data": null
 				// sends back api key info

@@ -8,9 +8,39 @@ App = Ember.Application.create({
 });
 
 App.Router.map(function () {
-	this.route("login");
+	this.route('test');
 });
 
 App.IndexRoute = Ember.Route.extend({});
 
-App.LoginRoute = Ember.Route.extend({});
+App.LoginView = Ember.View.extend({
+	didInsertElement : function(){
+		this._super();
+		var self = this;
+		$('#login-dropdown').on('hidden.bs.dropdown', function () {
+			self.get('controller').send('reset');
+		});
+	}
+});
+
+App.LoginController = Ember.Controller.extend({
+	username: null,
+	password: null,
+	actions: {
+		login: function() {
+			var self = this, data = this.getProperties('username', 'password');
+			self.set('error', null);
+			Ember.$.post('authenticate', data).then( function (res) {
+				if (res.status.success) {
+					self.set('key', res.data.key);
+				} else {
+					self.set('error', res.status.message);
+					self.send('reset');
+				}
+			});
+		},
+		reset: function() {
+			this.setProperties({username: null, password: null});
+		}
+	}
+});

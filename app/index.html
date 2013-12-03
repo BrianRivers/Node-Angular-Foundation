@@ -8,6 +8,19 @@
 </head>
 <body>
 	<script type="text/x-handlebars">
+		<div class="container">
+			{{render 'login' login}}
+			{{outlet}}
+		</div>
+	</script>
+
+	<script type="text/x-handlebars" data-template-name="index">
+		<div class="jumbotron">
+			<h2>Welcome to Ember.js</h2>
+		</div>
+	</script>
+
+	<script type="text/x-handlebars" data-template-name="login">
 		<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
 			<div class="container">
 				<div class="navbar-header">
@@ -21,18 +34,18 @@
 				</div>
 				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 					<ul class="nav navbar-nav">
-						<li><a href="#">Test</a></li>
+						<li>{{#link-to 'test'}}Test{{/link-to}}</li>
 					</ul>
 					<ul class="nav navbar-nav navbar-right">
-						<li class="dropdown">
+						<li class="dropdown" id="login-dropdown">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown">Sign-In</a>
 							<div class="dropdown-menu">
-								<form class="navbar-form navbar-right" role="login">
+								<form class="navbar-form navbar-right" role="login" {{ action login on="submit" }}>
 									<div class="form-group">
-										<input type="text" class="form-control" placeholder="Username">
-										<input type="text" class="form-control" placeholder="Password">
+										{{ input type="text" class="form-control" placeholder="Username" value=username}}
+										{{ input type="text" class="form-control" placeholder="Password" value=password}}
 									</div>
-									<button type="submit" class="btn btn-default">Submit</button>
+									{{ input type="submit" class="btn btn-default" value="Sign-In"}}
 								</form>
 							</div>
 						</li>
@@ -40,16 +53,16 @@
 				</div>
 			</div>
 		</div>	
-		<div class="container">
-			{{outlet}}
-		</div>
+		{{#if error}}
+			<div class="alert alert-danger alert-dismissable">
+				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+				{{ error }}
+			</div>
+		{{/if}}
 	</script>
 
-	<script type="text/x-handlebars" data-template-name="index">
-		<div class="jumbotron">
-			<h2>Welcome to Ember.js</h2>
-			{{#link-to 'login'}}Log In{{/link-to}}
-		</div>
+	<script type="text/x-handlebars" data-template-name="test">
+		<div>Test</div>
 	</script>
 
 	<script src="js/libs/jquery-1.9.1.js"></script>
