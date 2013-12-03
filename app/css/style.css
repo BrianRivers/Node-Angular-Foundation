@@ -2,3 +2,6 @@
 body{
 	padding-top: 70px;
 }
+.dropdown-menu input{
+	margin-bottom: 10px;
+}
