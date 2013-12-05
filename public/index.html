@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<head>
+	<meta charset="utf-8">
+	<title>Test</title>
+	<link rel="stylesheet" href="css/normalize.css">
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+	<script type="text/x-handlebars">
+		<div class="container">
+			<h1>Test</h1>
+			{{render 'login' login}}
+			{{outlet}}
+		</div>
+	</script>
+
+	<script src="js/libs/jquery-1.9.1.js"></script>
+	<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
+	<script src="js/libs/handlebars-1.0.0.js"></script>
+	<script src="js/libs/ember-1.1.2.js"></script>
+	<script src="js/app/app.js"></script>
+</body>
+</html>

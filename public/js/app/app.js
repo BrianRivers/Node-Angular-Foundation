@@ -13,6 +13,16 @@ App.Router.map(function () {
 
 App.IndexRoute = Ember.Route.extend({});
 
+App.TestRoute = Ember.Route.extend({
+	model: function() {
+		return {
+			id: '1',
+			name: 'test',
+			key: this.controllerFor('login').get('key')
+		};
+	}
+});
+
 App.LoginView = Ember.View.extend({
 	didInsertElement : function(){
 		this._super();
@@ -33,6 +43,7 @@ App.LoginController = Ember.Controller.extend({
 			Ember.$.post('authenticate', data).then( function (res) {
 				if (res.status.success) {
 					self.set('key', res.data.key);
+					console.log(self.key);
 				} else {
 					self.set('error', res.status.message);
 					self.send('reset');
@@ -40,7 +51,10 @@ App.LoginController = Ember.Controller.extend({
 			});
 		},
 		reset: function() {
-			this.setProperties({username: null, password: null});
+			this.setProperties({
+				username: null,
+				password: null
+			});
 		}
 	}
 });
