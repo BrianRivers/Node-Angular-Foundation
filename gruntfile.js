@@ -4,7 +4,7 @@ module.exports = function(grunt) {
 		emberTemplates: {
 			compile: {
 				options: {
-					templateBasePath: /app\/js\/templates\//
+					templateBasePath: /public\/js\/app\/templates\//
 				},
 				files: {
 					'public/js/app/templates.js': 'public/js/app/templates/**/*.hbs'
@@ -23,5 +23,5 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-ember-templates');
 
 	// Default task(s)
-	grunt.registerTask('default', ['emberTemplates']);
+	grunt.registerTask('default', ['emberTemplates', 'watch']);
 };

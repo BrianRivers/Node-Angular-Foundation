@@ -14,6 +14,8 @@
 		"mysql-activerecord": "~0.8.3"
 	},
 	"devDependencies": {
-		"grunt": "~0.4.2"
+		"grunt": "~0.4.2",
+		"grunt-contrib-watch": "~0.4.4",
+		"grunt-ember-templates": "*"
 	}
 }
