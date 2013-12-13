@@ -1,0 +1,22 @@
+{
+	"apache": {
+		"default_site_enabled": true,
+		"docroot_dir": "/srv/site/public",
+		"default_modules": [
+			"proxy",
+			"proxy_http"
+		]
+	},
+	"mysql": {
+		"server_root_password": "giscenter",
+		"server_repl_password": "giscenter",
+		"server_debian_password": "giscenter"
+	},
+	"run_list": [
+		"recipe[apt]",
+		"recipe[build-essential]",
+		"recipe[apache2]",
+		"recipe[mysql::server]",
+		"recipe[nodejs]"
+	]
+}

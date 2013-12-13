@@ -26,5 +26,5 @@ app.configure(function () {
 require('./routes/api')(app);
 
 // start server
-app.listen(3000, '127.0.0.1');
-console.log('Listening on port 3000');
+app.listen(8000, '127.0.0.1');
+console.log('Listening on port 8000');

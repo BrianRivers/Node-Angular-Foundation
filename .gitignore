@@ -16,3 +16,6 @@ node_modules
 
 sftp-config*
 .vagrant/
+
+Cheffile.lock
+chef/tmp/*

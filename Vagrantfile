@@ -19,7 +19,13 @@ config.vm.box_url = "http://files.vagrantup.com/precise64.box"
 # Create a forwarded port mapping which allows access to a specific port
 # within the machine from a port on the host machine. In the example below,
 # accessing "localhost:8080" will access port 80 on the guest machine.
-config.vm.network :forwarded_port, guest: 80, host: 3000
+
+# Default site
+config.vm.network :forwarded_port, guest: 80, host: 8000
+# Node.js server
+config.vm.network :forwarded_port, guest: 3000, host: 3000
+# MySQL server
+config.vm.network :forwarded_port, guest: 3306, host: 3306
 
 # Create a private network, which allows host-only access to the machine
 # using a specific IP.
@@ -38,7 +44,7 @@ config.vm.network :forwarded_port, guest: 80, host: 3000
 # the path on the host to the actual folder. The second argument is
 # the path on the guest to mount the folder. And the optional third
 # argument is a set of non-required options.
-config.vm.synced_folder "/Users/Lance/Dropbox/Work/Projects/express-ember-test/public", "/srv/site"
+config.vm.synced_folder "/Users/Lance/Dropbox/Work/Projects/express-ember-test/", "/srv/site"
 
 # Provider-specific configuration so you can fine-tune various
 # backing providers for Vagrant. These expose provider-specific options.
@@ -85,21 +91,32 @@ config.vm.provision "docker"
 # path, and data_bags path (all relative to this Vagrantfile), and adding
 # some recipes and/or roles.
 #
+VAGRANT_JSON = JSON.parse(Pathname(__FILE__).dirname.join('chef/nodes', 'vagrant.json').read)
+
 config.vm.provision :chef_solo do |chef|
-	# Specify cookbooks paths relative to Vagrant file
+	# Set log level to debug
+	# chef.log_level = :debug
+
+	# Specify paths relative to Vagrant file
 	chef.cookbooks_path = "chef/cookbooks"
-	# Add recipes to be used
-	chef.add_recipe "apt"
-	chef.add_recipe "build-essential"
-	chef.add_recipe "apache2"
+	chef.roles_path = "chef/roles"
+	chef.data_bags_path = "chef/data_bags"
+
 	# You may also specify custom JSON attributes:
-	chef.json = {
-		"apache" => {
-			"default_site_enabled" => true,
-			"docroot_dir" => "/srv/site"
-		}
-	}
+	chef.run_list = VAGRANT_JSON.delete('run_list')
+	chef.json = VAGRANT_JSON
 end
+
+# Setup MySQL db and user
+$server_root_password = VAGRANT_JSON['mysql']['server_root_password']
+config.vm.provision :shell, :inline => 
+"mysql -u root -p#{$server_root_password} -e \"create database if not exists dev_db\""
+config.vm.provision :shell, :inline => 
+"mysql -u root -p#{$server_root_password} -e \"GRANT ALL ON dev_db.* TO 'dev_db'@'%' IDENTIFIED BY 'giscenter'; FLUSH PRIVILEGES;\""
+
+# Install npm packages and start server
+config.vm.provision :shell, :inline =>
+"sudo npm install -g nodemon"
 
 # Enable provisioning with chef server, specifying the chef server URL,
 # and the path to the validation key (relative to this Vagrantfile).
