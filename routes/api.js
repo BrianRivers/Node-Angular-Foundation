@@ -8,15 +8,16 @@ module.exports = function(app) {
 
 	// create connection to db
 	var db = mysql.Adapter({
-		host: 'localhost',
-		database: 'pyrocms',
-		user: 'pyrocms',
-		password: '5cJzQDGqeKE8rdxb'
+		host: '10.0.2.15',
+		database: 'dev_db',
+		user: 'dev_db',
+		password: 'giscenter'
 	});
 
 	/* Passport strategies and methods
 	------------*/
 	
+	// verify user
 	passport.use(new LocalStrategy(
 		function (username, password, done) {
 			// search for user with password
@@ -25,7 +26,8 @@ module.exports = function(app) {
 				username: username,
 				// password: password
 			})
-			.get('default_users', function (err, rows, fields) {
+			.get('users', function (err, rows, fields) {
+				// return result
 				if (err)
 					return done(err);
 				else {
@@ -35,15 +37,18 @@ module.exports = function(app) {
 		})
 	);
 
+	// verify api key
 	passport.use(new LocalAPIKeyStrategy({
 			apiKeyField: 'X-API-KEY'
 		},
 		function (apikey, done) {
+			// search for api key
 			db
 			.where({
 				key: apikey
 			})
-			.get('default_api_keys', function (err, rows, fields) {
+			.get('api_keys', function (err, rows, fields) {
+				// return result
 				if (err)
 					return done(err);
 				else {
@@ -61,77 +66,76 @@ module.exports = function(app) {
 		done(null, obj);
 	});
 
+	// creates and sends api response
+	function response(res, success, message, data) {
+		res.json({
+			"status": {
+				"success": success,
+				"message": message
+			},
+			"data": data
+		});
+	}
+
 	/* API methods
 	------------*/
 
 	// response for unauthorized users
+	// returns status with no data
 	app.get('/unauthorized', function (req, res) {
-		res.json({
-			"status": {
-				"success": false,
-				"message": "Not Authorized"
-			},
-			"data": null
-		});
+		response(res, false, "Not Authorized", null);
 	});
 
 	// verify username and password
+	// returns status and object with user info and key
 	app.post('/authenticate',
 		passport.authenticate('local', {
 			session: false,
-			//must add api/ to url redirects on server
-			failureRedirect: 'api/unauthorized'
+			failureRedirect: 'unauthorized'
 		}),
 		function (req, res) {
 			db
 			.where({
-				user_id: req.user.id
+				user_id: req.user.user_id
 			})
-			.get('default_api_keys', function (err, rows, fields) {
+			.get('api_keys', function (err, rows, fields) {
 				if (!err) {
-					res.json({
-						"status": {
-							"success": true,
-							"message": "Authorized"
-						},
-						"data":{
-							"user": req.user,
-							"key": rows[0].key
-						}
+					response(res, true, "Authorized", {
+						"user": req.user,
+						"key": rows[0].key
 					});
-				}
-				else {
-					res.json({
-						"status": {
-							"success": false,
-							"message": err
-						},
-						"data": null
-					});
+				} else {
+					response(res, false, err.message, null);
 				}
 			});
 		}
 	);
 
 	// verify api key
+	// returns status with no data
 	app.post('/keytest',
 		passport.authenticate('localapikey', {
 			session: false,
-			//must add api/ to url redirects on server
-			failureRedirect: 'api/unauthorized'
+			failureRedirect: 'unauthorized'
 		}),
 		function (req, res) {
-			res.json({
-				"status": {
-					"success": true,
-					"message": "Authorized"
-				},
-				"data": null
-				// sends back api key info
-				// "data": req.user 
-			});
+			response(res, true, "Authorized", null);
+			// sends back api key info
+			// "data": req.user
 		}
 	);
+
+	// check for db tables
+	// returns status and object with db tables info
+	app.get('/dbtest', function (req, res) {
+		db.query('SHOW TABLES FROM dev_db', function (err, results) {
+			if (!err) {
+				response(res, true, "Found tables", results[0]);
+			} else {
+				response(res, false, err.message, null);
+			}
+		});
+	});
 
 	app.post('/search', function (req, res) {
 		var table = req.body.resource;

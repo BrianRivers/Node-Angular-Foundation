@@ -21,9 +21,9 @@ config.vm.box_url = "http://files.vagrantup.com/precise64.box"
 # accessing "localhost:8080" will access port 80 on the guest machine.
 
 # Default site
-config.vm.network :forwarded_port, guest: 80, host: 8000
+config.vm.network :forwarded_port, guest: 80, host: 3000
 # Node.js server
-config.vm.network :forwarded_port, guest: 3000, host: 3000
+config.vm.network :forwarded_port, guest: 8000, host: 3001
 # MySQL server
 config.vm.network :forwarded_port, guest: 3306, host: 3306
 
@@ -44,7 +44,7 @@ config.vm.network :forwarded_port, guest: 3306, host: 3306
 # the path on the host to the actual folder. The second argument is
 # the path on the guest to mount the folder. And the optional third
 # argument is a set of non-required options.
-config.vm.synced_folder "/Users/Lance/Dropbox/Work/Projects/express-ember-test/", "/srv/site"
+config.vm.synced_folder "/Users/Lance/Dropbox/Dev/Projects/express-ember-test/", "/srv/site"
 
 # Provider-specific configuration so you can fine-tune various
 # backing providers for Vagrant. These expose provider-specific options.
@@ -87,10 +87,12 @@ config.vm.provision "docker"
 #   puppet.manifest_file  = "site.pp"
 # end
 
+# Run updates
+# config.vm.provision :shell, :inline => "sudo apt-get update && sudo apt-get upgrade -y"
+
 # Enable provisioning with chef solo, specifying a cookbooks path, roles
 # path, and data_bags path (all relative to this Vagrantfile), and adding
 # some recipes and/or roles.
-#
 VAGRANT_JSON = JSON.parse(Pathname(__FILE__).dirname.join('chef/nodes', 'vagrant.json').read)
 
 config.vm.provision :chef_solo do |chef|
@@ -114,9 +116,8 @@ config.vm.provision :shell, :inline =>
 config.vm.provision :shell, :inline => 
 "mysql -u root -p#{$server_root_password} -e \"GRANT ALL ON dev_db.* TO 'dev_db'@'%' IDENTIFIED BY 'giscenter'; FLUSH PRIVILEGES;\""
 
-# Install npm packages and start server
-config.vm.provision :shell, :inline =>
-"sudo npm install -g nodemon"
+# Install nodemon to run node server
+config.vm.provision :shell, :inline => "sudo npm install -g nodemon"
 
 # Enable provisioning with chef server, specifying the chef server URL,
 # and the path to the validation key (relative to this Vagrantfile).
