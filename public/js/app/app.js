@@ -7,6 +7,8 @@ App = Ember.Application.create({
 	LOG_ACTIVE_GENERATION: true
 });
 
+var BASE_URL = 'http://localhost:3001';
+
 App.Router.map(function () {
 	this.route('test');
 });
@@ -40,7 +42,7 @@ App.LoginController = Ember.Controller.extend({
 		login: function() {
 			var self = this, data = this.getProperties('username', 'password');
 			self.set('error', null);
-			Ember.$.post('authenticate', data).then( function (res) {
+			Ember.$.post(BASE_URL+'/authenticate', data).then( function (res) {
 				if (res.status.success) {
 					self.set('key', res.data.key);
 					console.log(self.key);

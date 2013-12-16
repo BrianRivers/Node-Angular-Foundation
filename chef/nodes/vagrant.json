@@ -5,7 +5,8 @@
 		"default_modules": [
 			"proxy",
 			"proxy_http"
-		]
+		],
+		"bind_address": "10.0.2.15"
 	},
 	"mysql": {
 		"server_root_password": "giscenter",

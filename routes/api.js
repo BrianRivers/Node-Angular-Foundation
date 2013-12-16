@@ -22,10 +22,7 @@ module.exports = function(app) {
 		function (username, password, done) {
 			// search for user with password
 			db
-			.where({
-				username: username,
-				// password: password
-			})
+			.where({ username: username, password: password })
 			.get('users', function (err, rows, fields) {
 				// return result
 				if (err)
@@ -38,15 +35,11 @@ module.exports = function(app) {
 	);
 
 	// verify api key
-	passport.use(new LocalAPIKeyStrategy({
-			apiKeyField: 'X-API-KEY'
-		},
+	passport.use(new LocalAPIKeyStrategy({ apiKeyField: 'X-API-KEY' },
 		function (apikey, done) {
 			// search for api key
 			db
-			.where({
-				key: apikey
-			})
+			.where({ key: apikey })
 			.get('api_keys', function (err, rows, fields) {
 				// return result
 				if (err)
@@ -95,15 +88,18 @@ module.exports = function(app) {
 		}),
 		function (req, res) {
 			db
-			.where({
-				user_id: req.user.user_id
-			})
+			.where({ user_id: req.user.id })
 			.get('api_keys', function (err, rows, fields) {
+				// search for api key for user
 				if (!err) {
-					response(res, true, "Authorized", {
-						"user": req.user,
-						"key": rows[0].key
-					});
+					if (rows[0]) {
+						response(res, true, "Authorized", {
+							"user": req.user,
+							"key": rows[0].key
+						});
+					} else {
+						res.redirect('unauthorized');
+					}
 				} else {
 					response(res, false, err.message, null);
 				}
@@ -130,7 +126,7 @@ module.exports = function(app) {
 	app.get('/dbtest', function (req, res) {
 		db.query('SHOW TABLES FROM dev_db', function (err, results) {
 			if (!err) {
-				response(res, true, "Found tables", results[0]);
+				response(res, true, "Tables", results);
 			} else {
 				response(res, false, err.message, null);
 			}
