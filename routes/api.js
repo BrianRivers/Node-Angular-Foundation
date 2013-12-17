@@ -133,7 +133,7 @@ module.exports = function(app) {
 		});
 	});
 
-	app.post('/search', function (req, res) {
+	app.get('/search', function (req, res) {
 		var table = req.body.resource;
 		delete req.body.resource;
 		res.json(req.body);
