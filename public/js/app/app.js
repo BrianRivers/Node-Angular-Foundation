@@ -29,6 +29,7 @@ App.LoginView = Ember.View.extend({
 	didInsertElement : function(){
 		this._super();
 		var self = this;
+		// when clicked away reset login properties
 		$('#login-dropdown').on('hidden.bs.dropdown', function () {
 			self.get('controller').send('reset');
 		});
@@ -39,24 +40,31 @@ App.LoginController = Ember.Controller.extend({
 	username: null,
 	password: null,
 	actions: {
+		// log user in
 		login: function() {
-			var self = this, data = this.getProperties('username', 'password');
+			var self = this;
+			var data = this.getProperties('username', 'password');
+
+			// make sure no error appears
 			self.set('error', null);
+
+			// authenticate username and password against API
 			Ember.$.post(BASE_URL+'/authenticate', data).then( function (res) {
+				// remove entry from login input
+				self.send('reset');
+
+				// check for successful login
 				if (res.status.success) {
+					$('#login-dropdown').removeClass('open');
 					self.set('key', res.data.key);
-					console.log(self.key);
 				} else {
 					self.set('error', res.status.message);
-					self.send('reset');
 				}
 			});
 		},
+		// reset login form properties
 		reset: function() {
-			this.setProperties({
-				username: null,
-				password: null
-			});
+			this.setProperties({ username: null, password: null });
 		}
 	}
 });
