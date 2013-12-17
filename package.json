@@ -7,8 +7,9 @@
 		"express": "3.4.4",
 		"passport": "0.1.17",
 		"passport-local": "0.1.6",
-		"passport-localapikey": "0.0.3",
+		"passport-localapikey": "cholalabs/passport-localapikey",
 		"node-uuid": "1.4.1",
+		"bcrypt": "*",
 		"cors": "2.1.0",
 		"mysql": "~2.0.0-alpha9",
 		"mysql-activerecord": "~0.8.3"
@@ -19,6 +20,7 @@
 		"chai": "*",
 		"grunt": "~0.4.2",
 		"grunt-contrib-watch": "~0.4.4",
-		"grunt-ember-templates": "*"
+		"grunt-ember-templates": "*",
+		"grunt-mocha-test": "*"
 	}
 }

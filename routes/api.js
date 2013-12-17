@@ -2,6 +2,7 @@ module.exports = function(app) {
 	
 	var mysql = require('mysql-activerecord'),
 		uuid = require('node-uuid'),
+		bcrypt = require('bcrypt'),
 		passport = require('passport'),
 		LocalStrategy = require('passport-local').Strategy,
 		LocalAPIKeyStrategy = require('passport-localapikey').Strategy;
@@ -35,7 +36,7 @@ module.exports = function(app) {
 	);
 
 	// verify api key
-	passport.use(new LocalAPIKeyStrategy({ apiKeyField: 'X-API-KEY' },
+	passport.use(new LocalAPIKeyStrategy({ apiKeyField: 'x-api-key' },
 		function (apikey, done) {
 			// search for api key
 			db
@@ -133,10 +134,27 @@ module.exports = function(app) {
 		});
 	});
 
-	app.get('/search', function (req, res) {
+	app.post('/search', function (req, res) {
 		var table = req.body.resource;
 		delete req.body.resource;
 		res.json(req.body);
 	});
 
+	app.post('/user/create', function (req, res) {
+		var salt = bcrypt.genSaltSync(10);
+		var hash = bcrypt.hashSync(req.body.password, salt);
+		db.insert('users', {
+			username: req.body.username,
+			password: hash,
+			first_name: req.body.first_name,
+			last_name: req.body.last_name
+		},
+		function (err, results) {
+			if (!err) {
+				response(res, true, "created new user ", results);
+			} else {
+				response(res, false, err.message, null);
+			}
+		});
+	});
 };

@@ -3,7 +3,7 @@ var should = require('chai').should(),
 	api = supertest('http://localhost:3001');
 
 describe('/authenticate:', function() {
-	it('errors if user and password does not exist', function (done) {
+	it('user and password match and exist', function (done) {
 		api.post('/authenticate')
 		.send({ username: 'tester', password: 'tester' })
 		.expect('Content-Type', /json/)
@@ -19,9 +19,9 @@ describe('/authenticate:', function() {
 });
 
 describe('/keytest:', function() {
-	it('errors if x-api-key header does not exist or not found in db', function (done) {
+	it('x-api-key header with valid api key found in db', function (done) {
 		api.post('/keytest')
-		.set('X-API-KEY', 'ABCDEFG')
+		.set('x-api-key', 'ABCDEFG')
 		.expect('Content-Type', /json/)
 		.expect(200)
 		.end(function (err, res) {
@@ -34,7 +34,7 @@ describe('/keytest:', function() {
 });
 
 describe('/dbtest:', function() {
-	it('errors if no db tables are found', function (done) {
+	it('lists all db tables', function (done) {
 		api.get('/dbtest')
 		.expect('Content-Type', /json/)
 		.expect(200)
@@ -47,8 +47,7 @@ describe('/dbtest:', function() {
 });
 
 describe('/search:', function() {
-
-	it('returns data as JSON', function (done) {
+	it('returns data matching search fields', function (done) {
 		api.post('/search')
 		.send({ test: 'test' })
 		.expect(200)
@@ -59,5 +58,25 @@ describe('/search:', function() {
 			done();
 		});
 	});
+});
 
+describe('/user/create:', function() {
+	it('creates user with salt+hash password in db', function (done) {
+		api.post('/user/create')
+		.send({
+			username: 'test_user1',
+			password: 'test',
+			first_name: 'test',
+			last_name: 'test'
+		})
+		.expect(200)
+		.expect('Content-Type', /json/)
+		.end(function (err, res) {
+			if (err) return done(err);
+			res.body.should.not.be.empty;
+			console.log(res.body.status.message);
+			console.log(res.body.data);
+			done();
+		});
+	});
 });
