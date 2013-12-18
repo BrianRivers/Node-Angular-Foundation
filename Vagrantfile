@@ -87,8 +87,8 @@ config.vm.provision "docker"
 #   puppet.manifest_file  = "site.pp"
 # end
 
-# Run updates
-# config.vm.provision :shell, :inline => "sudo apt-get update && sudo apt-get upgrade -y"
+config.vm.provision :shell, :inline => "sudo apt-get install -y build-essential"
+config.vm.provision :shell, :inline => "sudo apt-get install -y git"
 
 # Enable provisioning with chef solo, specifying a cookbooks path, roles
 # path, and data_bags path (all relative to this Vagrantfile), and adding

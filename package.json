@@ -7,7 +7,7 @@
 		"express": "3.4.4",
 		"passport": "0.1.17",
 		"passport-local": "0.1.6",
-		"passport-localapikey": "cholalabs/passport-localapikey",
+		"passport-localapikey": "git+https://github.com/cholalabs/passport-localapikey.git",
 		"node-uuid": "1.4.1",
 		"bcrypt": "*",
 		"cors": "2.1.0",
