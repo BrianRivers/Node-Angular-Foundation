@@ -21,15 +21,20 @@ module.exports = function(app) {
 	// verify user
 	passport.use(new LocalStrategy(
 		function (username, password, done) {
-			// search for user with password
+			// search for user
 			db
-			.where({ username: username, password: password })
+			.where({ username: username })
 			.get('users', function (err, rows, fields) {
-				// return result
-				if (err)
-					return done(err);
-				else {
-					return done(null, rows[0]);
+				// return error
+				if (err) return done(err);
+				if (rows[0] !== undefined) {
+					// check if password matches
+					if (bcrypt.compareSync(password, rows[0].password))
+						return done(null, rows[0]);
+					else
+						return done(null, null);
+				} else {
+					return done(null, null);
 				}
 			});
 		})
@@ -61,8 +66,8 @@ module.exports = function(app) {
 	});
 
 	// creates and sends api response
-	function response(res, success, message, data) {
-		res.json({
+	function response(res, code, success, message, data) {
+		res.json(code, {
 			"status": {
 				"success": success,
 				"message": message
@@ -77,7 +82,7 @@ module.exports = function(app) {
 	// response for unauthorized users
 	// returns status with no data
 	app.get('/unauthorized', function (req, res) {
-		response(res, false, "Not Authorized", null);
+		response(res, 403, false, "Not Authorized", null);
 	});
 
 	// verify username and password
@@ -93,16 +98,18 @@ module.exports = function(app) {
 			.get('api_keys', function (err, rows, fields) {
 				// search for api key for user
 				if (!err) {
-					if (rows[0]) {
-						response(res, true, "Authorized", {
+					if (rows[0] !== undefined) {
+						response(res, 200, true, "Authorized", {
 							"user": req.user,
 							"key": rows[0].key
 						});
 					} else {
-						res.redirect('unauthorized');
+						response(res, 200, true, "Authorized", {
+							"user": req.user
+						});
 					}
 				} else {
-					response(res, false, err.message, null);
+					response(res, 500, false, err.message, null);
 				}
 			});
 		}
@@ -116,7 +123,7 @@ module.exports = function(app) {
 			failureRedirect: 'unauthorized'
 		}),
 		function (req, res) {
-			response(res, true, "Authorized", null);
+			response(res, 200, true, "Authorized", null);
 			// sends back api key info
 			// "data": req.user
 		}
@@ -127,22 +134,16 @@ module.exports = function(app) {
 	app.get('/dbtest', function (req, res) {
 		db.query('SHOW TABLES FROM dev_db', function (err, results) {
 			if (!err) {
-				response(res, true, "Tables", results);
+				response(res, 200, true, "Tables", results);
 			} else {
-				response(res, false, err.message, null);
+				response(res, 500, false, err.message, null);
 			}
 		});
 	});
 
-	app.post('/search', function (req, res) {
-		var table = req.body.resource;
-		delete req.body.resource;
-		res.json(req.body);
-	});
-
 	app.post('/user/create', function (req, res) {
-		var salt = bcrypt.genSaltSync(10);
-		var hash = bcrypt.hashSync(req.body.password, salt);
+		//generate hash and salt for password
+		var hash = bcrypt.hashSync(req.body.password, 10);
 		db.insert('users', {
 			username: req.body.username,
 			password: hash,
@@ -151,9 +152,9 @@ module.exports = function(app) {
 		},
 		function (err, results) {
 			if (!err) {
-				response(res, true, "created new user ", results);
+				response(res, 200, true, "created new user ", results);
 			} else {
-				response(res, false, err.message, null);
+				response(res, 500, false, err.message, null);
 			}
 		});
 	});

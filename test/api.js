@@ -11,10 +11,22 @@ describe('/authenticate:', function() {
 		.end(function (err, res) {
 			if (err) return done(err);
 			res.body.should.have.deep.property('status.success').and.equal(true);
+			res.body.should.have.deep.property('status.message').and.equal('Authorized');
 			res.body.should.have.deep.property('data.user');
-			res.body.should.have.deep.property('data.key');
 			done();
 		});
+	});
+
+	it('error when username and password do not match', function (done) {
+		api.post('/authenticate')
+		.send({ username: 'tester', password: 'badpassword' })
+		.expect(302, done);
+	});
+
+	it('error when username and password do not exist', function (done) {
+		api.post('/authenticate')
+		.send({ username: 'none', password: 'none' })
+		.expect(302, done);
 	});
 });
 
@@ -34,7 +46,7 @@ describe('/keytest:', function() {
 });
 
 describe('/dbtest:', function() {
-	it('lists all db tables', function (done) {
+	it('listing all db tables', function (done) {
 		api.get('/dbtest')
 		.expect('Content-Type', /json/)
 		.expect(200)
@@ -46,10 +58,18 @@ describe('/dbtest:', function() {
 	});
 });
 
-describe('/search:', function() {
-	it('returns data matching search fields', function (done) {
-		api.post('/search')
-		.send({ test: 'test' })
+describe('/user/create:', function() {
+	var user = {
+		username: 'tester',
+		password: 'tester',
+		first_name: 'tester',
+		last_name: 'tester',
+		email: 'tester@no-reply.com'
+	};
+
+	it('created user with salt+hash password in db', function (done) {
+		api.post('/user/create')
+		.send(user)
 		.expect(200)
 		.expect('Content-Type', /json/)
 		.end(function (err, res) {
@@ -58,24 +78,15 @@ describe('/search:', function() {
 			done();
 		});
 	});
-});
 
-describe('/user/create:', function() {
-	it('creates user with salt+hash password in db', function (done) {
+	it('error when username or email already exists', function (done) {
 		api.post('/user/create')
-		.send({
-			username: 'test_user1',
-			password: 'test',
-			first_name: 'test',
-			last_name: 'test'
-		})
-		.expect(200)
+		.send(user)
+		.expect(500)
 		.expect('Content-Type', /json/)
 		.end(function (err, res) {
 			if (err) return done(err);
 			res.body.should.not.be.empty;
-			console.log(res.body.status.message);
-			console.log(res.body.data);
 			done();
 		});
 	});
