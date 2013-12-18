@@ -2,6 +2,19 @@ var should = require('chai').should(),
 	supertest = require('supertest'),
 	api = supertest('http://localhost:3001');
 
+describe('/dbtest:', function() {
+	it('listing all db tables', function (done) {
+		api.get('/dbtest')
+		.expect('Content-Type', /json/)
+		.expect(200)
+		.end(function (err, res) {
+			if (err) return done(err);
+			res.body.should.have.property('data').and.be.an.instanceof(Array).and.not.be.empty;
+			done();
+		});
+	});
+});
+
 describe('/authenticate:', function() {
 	it('user and password match and exist', function (done) {
 		api.post('/authenticate')
@@ -10,6 +23,7 @@ describe('/authenticate:', function() {
 		.expect(200)
 		.end(function (err, res) {
 			if (err) return done(err);
+			console.log(res.body);
 			res.body.should.have.deep.property('status.success').and.equal(true);
 			res.body.should.have.deep.property('status.message').and.equal('Authorized');
 			res.body.should.have.deep.property('data.user');
@@ -45,26 +59,13 @@ describe('/keytest:', function() {
 	});
 });
 
-describe('/dbtest:', function() {
-	it('listing all db tables', function (done) {
-		api.get('/dbtest')
-		.expect('Content-Type', /json/)
-		.expect(200)
-		.end(function (err, res) {
-			if (err) return done(err);
-			res.body.should.have.property('data').and.be.an.instanceof(Array).and.not.be.empty;
-			done();
-		});
-	});
-});
-
 describe('/user/create:', function() {
 	var user = {
-		username: 'tester',
+		username: 'tester5',
 		password: 'tester',
 		first_name: 'tester',
 		last_name: 'tester',
-		email: 'tester@no-reply.com'
+		email: 'tester5@no-reply.com'
 	};
 
 	it('created user with salt+hash password in db', function (done) {
@@ -75,6 +76,7 @@ describe('/user/create:', function() {
 		.end(function (err, res) {
 			if (err) return done(err);
 			res.body.should.not.be.empty;
+			console.log(res.body);
 			done();
 		});
 	});
@@ -87,6 +89,7 @@ describe('/user/create:', function() {
 		.end(function (err, res) {
 			if (err) return done(err);
 			res.body.should.not.be.empty;
+			console.log(res.body);
 			done();
 		});
 	});

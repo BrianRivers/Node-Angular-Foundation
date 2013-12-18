@@ -29,12 +29,14 @@ module.exports = function(app) {
 				if (err) return done(err);
 				if (rows[0] !== undefined) {
 					// check if password matches
-					if (bcrypt.compareSync(password, rows[0].password))
+					if (bcrypt.compareSync(password, rows[0].password)) {
+						delete rows[0].password;
 						return done(null, rows[0]);
-					else
-						return done(null, null);
+					} else {
+						return done(null, false);
+					}
 				} else {
-					return done(null, null);
+					return done(null, false);
 				}
 			});
 		})
@@ -79,10 +81,22 @@ module.exports = function(app) {
 	/* API methods
 	------------*/
 
+	// check for db tables
+	// returns status and object with db tables info
+	app.get('/dbtest', function (req, res) {
+		db.query('SHOW TABLES FROM dev_db', function (err, results) {
+			if (!err) {
+				response(res, 200, true, "Tables", results);
+			} else {
+				response(res, 500, false, err.message, null);
+			}
+		});
+	});
+
 	// response for unauthorized users
 	// returns status with no data
 	app.get('/unauthorized', function (req, res) {
-		response(res, 403, false, "Not Authorized", null);
+		response(res, 401, false, "Not Authorized", null);
 	});
 
 	// verify username and password
@@ -105,7 +119,7 @@ module.exports = function(app) {
 						});
 					} else {
 						response(res, 200, true, "Authorized", {
-							"user": req.user
+							"user": req.user,
 						});
 					}
 				} else {
@@ -129,18 +143,8 @@ module.exports = function(app) {
 		}
 	);
 
-	// check for db tables
-	// returns status and object with db tables info
-	app.get('/dbtest', function (req, res) {
-		db.query('SHOW TABLES FROM dev_db', function (err, results) {
-			if (!err) {
-				response(res, 200, true, "Tables", results);
-			} else {
-				response(res, 500, false, err.message, null);
-			}
-		});
-	});
-
+	// create user
+	// returns status with db data for successful insert
 	app.post('/user/create', function (req, res) {
 		//generate hash and salt for password
 		var hash = bcrypt.hashSync(req.body.password, 10);
@@ -148,13 +152,28 @@ module.exports = function(app) {
 			username: req.body.username,
 			password: hash,
 			first_name: req.body.first_name,
-			last_name: req.body.last_name
+			last_name: req.body.last_name,
+			email: req.body.email
 		},
-		function (err, results) {
-			if (!err) {
-				response(res, 200, true, "created new user ", results);
+		function (err1, result1) {
+			if (!err1) {
+				var new_key = uuid.v1();
+				db.insert('api_keys', {
+					key: new_key,
+					user_id: result1.insertId
+				},
+				function (err2, result2) {
+					if (!err2) {
+						response(res, 200, true, "created new user ", {
+							user: result1,
+							key: result2
+						});
+					} else {
+						response(res, 500, false, err2.message, null);
+					}
+				});
 			} else {
-				response(res, 500, false, err.message, null);
+				response(res, 500, false, err1.message, null);
 			}
 		});
 	});
