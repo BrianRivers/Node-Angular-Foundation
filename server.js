@@ -1,3 +1,4 @@
+// require modules
 var http = require('http'),
 	cors = require('cors'),
 	express = require('express'),
@@ -14,7 +15,9 @@ app.configure(function () {
 	.use(passport.initialize())
 	.use(cors())
 	.use(app.router)
+	// serve static website in public folder
 	.use(express.static( __dirname + '/public'))
+	// handle 404 not found
 	.use(function (req, res, next) {
 		res.status(404).send('404', {
 			url: req.originalUrl,
@@ -23,8 +26,14 @@ app.configure(function () {
 	});
 });
 
-// set up api routes
-require('./routes/api')(app);
+// run initial setup
+var helpers = require('./modules/helpers');
+helpers.intialSetup();
+
+// require api routes and functions
+var api = require('./modules/api');
+// send app to api to handle incoming requests
+api(app);
 
 // start server
 app.listen(8001, '127.0.0.1');

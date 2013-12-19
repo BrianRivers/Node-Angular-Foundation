@@ -44,32 +44,18 @@ describe('/authenticate:', function() {
 	});
 });
 
-describe('/keytest:', function() {
-	it('x-api-key header with valid api key found in db', function (done) {
-		api.post('/keytest')
-		.set('x-api-key', 'ABCDEFG')
-		.expect('Content-Type', /json/)
-		.expect(200)
-		.end(function (err, res) {
-			if (err) return done(err);
-			res.body.should.have.deep.property('status.success').and.equal(true);
-			res.body.should.have.deep.property('status.message').and.equal('Authorized');
-			done();
-		});
-	});
-});
-
 describe('/user/create:', function() {
 	var user = {
-		username: 'tester5',
-		password: 'tester',
-		first_name: 'tester',
-		last_name: 'tester',
-		email: 'tester5@no-reply.com'
+		username: 'admin',
+		password: 'giscenter',
+		first_name: '',
+		last_name: '',
+		email: 'apgiscenter@gmail.com'
 	};
 
 	it('created user with salt+hash password in db', function (done) {
 		api.post('/user/create')
+		.set('x-api-key', '356cc090-68f6-11e3-be46-a9bd7be89f21')
 		.send(user)
 		.expect(200)
 		.expect('Content-Type', /json/)
@@ -83,6 +69,7 @@ describe('/user/create:', function() {
 
 	it('error when username or email already exists', function (done) {
 		api.post('/user/create')
+		.set('x-api-key', 'b837e7a0-68f3-11e3-96b7-9f6032743f50')
 		.send(user)
 		.expect(500)
 		.expect('Content-Type', /json/)

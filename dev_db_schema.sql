@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.5.34-0ubuntu0.12.04.1-log)
 # Database: dev_db
-# Generation Time: 2013-12-18 16:37:21 +0000
+# Generation Time: 2013-12-19 18:07:43 +0000
 # ************************************************************
 
 
@@ -28,12 +28,22 @@ DROP TABLE IF EXISTS `api_keys`;
 CREATE TABLE `api_keys` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `key` varchar(40) NOT NULL DEFAULT '',
+  `timestamp` datetime NOT NULL,
   `user_id` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `api_keys_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+LOCK TABLES `api_keys` WRITE;
+/*!40000 ALTER TABLE `api_keys` DISABLE KEYS */;
+
+INSERT INTO `api_keys` (`id`, `key`, `timestamp`, `user_id`)
+VALUES
+	(1,'6d5f5840-6834-11e3-ad0b-1954c2452065','0000-00-00 00:00:00',16);
+
+/*!40000 ALTER TABLE `api_keys` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table clients
@@ -179,6 +189,20 @@ CREATE TABLE `users` (
   UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+LOCK TABLES `users` WRITE;
+/*!40000 ALTER TABLE `users` DISABLE KEYS */;
+
+INSERT INTO `users` (`id`, `username`, `password`, `first_name`, `last_name`, `email`)
+VALUES
+	(1,'tester','$2a$10$3fKmYhZA6Bg5U6i02ooWzu69sdVNuPKGEOc.wtkO5kNk.pV4CnENe','tester','tester',''),
+	(8,'tester1','$2a$10$bCqqnt2nqdIBxG20BdxSr.FIJ6GCitv0N1cF2fi99tDg3ErWyoa16','tester','tester','tester1@no-reply.com'),
+	(10,'tester2','$2a$10$xU6qygL76gyaw9WjhDdpju5kWUrjYpDT6tAgdr9G8ygCEB9hjc/Sy','tester','tester','tester2@no-reply.com'),
+	(12,'tester3','$2a$10$tnKAtcZJ9M/MOep6YJ5HYOTMnd3v37XJvh7J6Y1iPxRMNnSJu2kmW','tester','tester','tester3@no-reply.com'),
+	(15,'tester4','$2a$10$yjl0UpJKLGsgZXkp3ugaDeUOvOGXmAVNhbymW10IbEM5Zd4Zjdppa','tester','tester','tester4@no-reply.com'),
+	(16,'tester5','$2a$10$yxxA3DPDm5Kgar.vKA140Ofs1.4Ic/eVNw89XVtFjo0Uxf0qsb6xm','tester','tester','tester5@no-reply.com');
+
+/*!40000 ALTER TABLE `users` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table visits
@@ -198,8 +222,8 @@ CREATE TABLE `visits` (
   PRIMARY KEY (`id`),
   KEY `client_id` (`client_id`),
   KEY `personnel_id` (`personnel_id`),
-  CONSTRAINT `visits_ibfk_2` FOREIGN KEY (`personnel_id`) REFERENCES `personnel` (`id`),
-  CONSTRAINT `visits_ibfk_1` FOREIGN KEY (`client_id`) REFERENCES `clients` (`id`)
+  CONSTRAINT `visits_ibfk_1` FOREIGN KEY (`client_id`) REFERENCES `clients` (`id`),
+  CONSTRAINT `visits_ibfk_2` FOREIGN KEY (`personnel_id`) REFERENCES `personnel` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
