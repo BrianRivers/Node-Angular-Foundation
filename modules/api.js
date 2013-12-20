@@ -1,57 +1,28 @@
+/* API methods
+------------*/
+var db = require('./db'),
+	auth = require('./auth'),
+	passport = require('passport'),
+	LocalStrategy = require('passport-local').Strategy,
+	LocalAPIKeyStrategy = require('passport-localapikey').Strategy;
+
 module.exports = function(app) {
-	
-	var db = require('./db'),
-		auth = require('./auth'),
-		uuid = require('node-uuid'),
-		bcrypt = require('bcrypt'),
-		moment = require('moment'),
-		passport = require('passport'),
-		LocalStrategy = require('passport-local').Strategy,
-		LocalAPIKeyStrategy = require('passport-localapikey').Strategy;
-
 	/* Passport strategies and methods
-	------------*/
-
-	function createUser() {
-		console.log('create user test');
-	}
-
-	function updateTimestamp(user_id) {
-		var time = moment();
-		db
-		.where({ user_id: user_id })
-		.update('api_keys', {
-			timestamp: time
-		},
-		function (err) {
-			return (!err) ? true : false;
-		});
-	}
-	
+	----------------------------------*/
 	// verify user
 	passport.use(new LocalStrategy(
 		function (username, password, done) {
-			// search for user
-			db
-			.where({ username: username })
-			.get('users', function (err, rows, fields) {
-				// return error
-				if (err) return done(err);
-				if (rows[0] !== undefined) {
-					// check if password matches
-					if (bcrypt.compareSync(password, rows[0].password)) {
-						delete rows[0].password;
-						var result = updateTimestamp(rows[0].id);
-						if (result)
-							return done(null, rows[0]);
-						else
-							return done(null, false);
-					} else {
-						return done(null, false);
-					}
-				} else {
-					return done(null, false);
-				}
+			// check if valid user
+			auth.authenticateUser({
+				username: username,
+				password: password
+			},
+			// return user or error
+			function (err, results) {
+				if (!err)
+					return done(null, results);
+				else
+					return done(err);
 			});
 		})
 	);
@@ -59,26 +30,8 @@ module.exports = function(app) {
 	// verify api key
 	passport.use(new LocalAPIKeyStrategy({ apiKeyField: 'x-api-key' },
 		function (apikey, done) {
-			// search for api key
-			db
-			.where({ key: apikey })
-			.get('api_keys', function (err, rows, fields) {
-				// return error
-				if (err) return done(err);
-				else {
-					// determine difference in time since last access
-					var now = moment();
-					var timestamp = moment(rows[0].timestamp);
-					var diff = now.diff(timestamp);
-					console.log(diff);
-					// check if user should sign in again or master key
-					if (diff < 60000 || rows[0].id == 1) {
-						return done(null, rows[0]);
-					} else {
-						return done(null, false);
-					}
-				}
-			});
+			// check if valid api key
+			return done(null, false);
 		})
 	);
 
@@ -89,9 +42,6 @@ module.exports = function(app) {
 	passport.deserializeUser(function (obj, done) {
 		done(null, obj);
 	});
-
-	/* API methods
-	------------*/
 
 	// creates and sends api response
 	function response(res, code, success, message, data) {
@@ -113,6 +63,7 @@ module.exports = function(app) {
 	// check for db tables
 	// returns status and object with db tables info
 	app.get('/dbtest', function (req, res) {
+		// sql query using sequelize
 		db.sequelize.query('SHOW TABLES FROM dev_db')
 		.success(function (rows) {
 			response(res, 200, true, "Tables", rows);
@@ -122,19 +73,22 @@ module.exports = function(app) {
 		});
 	});
 
-	// // verify username and password
-	// // returns status and object with user info and key
-	// app.post('/authenticate',
-	// 	passport.authenticate('local', {
-	// 		session: false,
-	// 		failureRedirect: 'unauthorized'
-	// 	}),
-	// 	function (req, res) {
-	// 	}
-	// );
+	// verify username and password
+	// returns status and object with user info and key
+	app.post('/authenticate',
+		passport.authenticate('local', {
+			session: false,
+			failureRedirect: 'unauthorized'
+		}),
+		function (req, res) {
+			response(res, 200, true, 'Authorized', {
+				"user": req.user
+			});
+		}
+	);
 
-	// // create user
-	// // returns status with db data for successful insert
+	// create user
+	// returns status with user data for successful insert
 	app.post('/user/create',
 		// passport.authenticate('localapikey', {
 		// 	session: false,

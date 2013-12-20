@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.5.34-0ubuntu0.12.04.1-log)
 # Database: dev_db
-# Generation Time: 2013-12-19 23:11:56 +0000
+# Generation Time: 2013-12-20 20:35:06 +0000
 # ************************************************************
 
 
@@ -20,29 +20,12 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 
-# Dump of table api_keys
+# Dump of table Clients
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `api_keys`;
+DROP TABLE IF EXISTS `Clients`;
 
-CREATE TABLE `api_keys` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `key` varchar(40) NOT NULL DEFAULT '',
-  `timestamp` datetime NOT NULL,
-  `user_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  CONSTRAINT `api_keys_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
-
-
-# Dump of table clients
-# ------------------------------------------------------------
-
-DROP TABLE IF EXISTS `clients`;
-
-CREATE TABLE `clients` (
+CREATE TABLE `Clients` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `first_name` varchar(50) NOT NULL DEFAULT '',
   `middle_name` varchar(50) DEFAULT NULL,
@@ -53,12 +36,29 @@ CREATE TABLE `clients` (
 
 
 
-# Dump of table monetary_claims
+# Dump of table Keys
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `monetary_claims`;
+DROP TABLE IF EXISTS `Keys`;
 
-CREATE TABLE `monetary_claims` (
+CREATE TABLE `Keys` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `key` varchar(40) NOT NULL DEFAULT '',
+  `timestamp` datetime NOT NULL,
+  `user_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `Keys_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `Users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+
+# Dump of table MonetaryClaims
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `MonetaryClaims`;
+
+CREATE TABLE `MonetaryClaims` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `education` tinyint(1) DEFAULT NULL,
   `vrap_vre` tinyint(1) DEFAULT NULL,
@@ -80,17 +80,17 @@ CREATE TABLE `monetary_claims` (
   `visit_id` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `visit_id` (`visit_id`),
-  CONSTRAINT `monetary_claims_ibfk_1` FOREIGN KEY (`visit_id`) REFERENCES `visits` (`id`)
+  CONSTRAINT `MonetaryClaims_ibfk_1` FOREIGN KEY (`visit_id`) REFERENCES `Visits` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 
-# Dump of table non_monetary_claims
+# Dump of table NonMonetaryClaims
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `non_monetary_claims`;
+DROP TABLE IF EXISTS `NonMonetaryClaims`;
 
-CREATE TABLE `non_monetary_claims` (
+CREATE TABLE `NonMonetaryClaims` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `dd214_personnel_file` tinyint(1) DEFAULT NULL,
   `military_discharge_review` tinyint(1) DEFAULT NULL,
@@ -115,17 +115,17 @@ CREATE TABLE `non_monetary_claims` (
   `visit_id` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `visit_id` (`visit_id`),
-  CONSTRAINT `non_monetary_claims_ibfk_1` FOREIGN KEY (`visit_id`) REFERENCES `visits` (`id`)
+  CONSTRAINT `NonMonetaryClaims_ibfk_1` FOREIGN KEY (`visit_id`) REFERENCES `Visits` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 
-# Dump of table other
+# Dump of table OtherClaims
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `other`;
+DROP TABLE IF EXISTS `OtherClaims`;
 
-CREATE TABLE `other` (
+CREATE TABLE `OtherClaims` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `status_of_claim` tinyint(1) DEFAULT NULL,
   `referral` tinyint(1) DEFAULT NULL,
@@ -144,17 +144,17 @@ CREATE TABLE `other` (
   `visit_id` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `visit_id` (`visit_id`),
-  CONSTRAINT `other_ibfk_1` FOREIGN KEY (`visit_id`) REFERENCES `visits` (`id`)
+  CONSTRAINT `OtherClaims_ibfk_1` FOREIGN KEY (`visit_id`) REFERENCES `Visits` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 
-# Dump of table personnel
+# Dump of table Personnel
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `personnel`;
+DROP TABLE IF EXISTS `Personnel`;
 
-CREATE TABLE `personnel` (
+CREATE TABLE `Personnel` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `first_name` varchar(50) NOT NULL DEFAULT '',
   `last_name` varchar(50) NOT NULL DEFAULT '',
@@ -163,40 +163,33 @@ CREATE TABLE `personnel` (
 
 
 
-# Dump of table users
+# Dump of table Users
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `users`;
+DROP TABLE IF EXISTS `Users`;
 
-CREATE TABLE `users` (
+CREATE TABLE `Users` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `username` varchar(50) NOT NULL DEFAULT '',
   `password` varchar(75) NOT NULL DEFAULT '',
   `first_name` varchar(50) DEFAULT NULL,
   `last_name` varchar(50) DEFAULT NULL,
   `email` varchar(75) NOT NULL DEFAULT '',
+  `createdAt` datetime DEFAULT NULL,
+  `updatedAt` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-LOCK TABLES `users` WRITE;
-/*!40000 ALTER TABLE `users` DISABLE KEYS */;
-
-INSERT INTO `users` (`id`, `username`, `password`, `first_name`, `last_name`, `email`)
-VALUES
-	(18,'admin','$2a$10$wAvm8qZfEGhc.lQLbcrB5uVKNZ8Z5KeY7xUkPoPU.QICCejtI1EL2',NULL,NULL,'apgiscenter@gmail.com');
-
-/*!40000 ALTER TABLE `users` ENABLE KEYS */;
-UNLOCK TABLES;
 
 
-# Dump of table visits
+# Dump of table Visits
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `visits`;
+DROP TABLE IF EXISTS `Visits`;
 
-CREATE TABLE `visits` (
+CREATE TABLE `Visits` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `visit_date` datetime NOT NULL,
   `appointment` tinyint(1) DEFAULT NULL,
@@ -208,8 +201,8 @@ CREATE TABLE `visits` (
   PRIMARY KEY (`id`),
   KEY `client_id` (`client_id`),
   KEY `personnel_id` (`personnel_id`),
-  CONSTRAINT `visits_ibfk_1` FOREIGN KEY (`client_id`) REFERENCES `clients` (`id`),
-  CONSTRAINT `visits_ibfk_2` FOREIGN KEY (`personnel_id`) REFERENCES `personnel` (`id`)
+  CONSTRAINT `Visits_ibfk_1` FOREIGN KEY (`client_id`) REFERENCES `Clients` (`id`),
+  CONSTRAINT `Visits_ibfk_2` FOREIGN KEY (`personnel_id`) REFERENCES `Personnel` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 

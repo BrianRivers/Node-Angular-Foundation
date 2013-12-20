@@ -10,7 +10,6 @@ describe('/dbtest:', function() {
 		.end(function (err, res) {
 			if (err) return done(err);
 			res.body.should.have.property('data').and.be.an.instanceof(Array).and.not.be.empty;
-			console.log(res.body);
 			done();
 		});
 	});
@@ -27,7 +26,6 @@ describe('/authenticate:', function() {
 			res.body.should.have.deep.property('status.success').and.equal(true);
 			res.body.should.have.deep.property('status.message').and.equal('Authorized');
 			res.body.should.have.deep.property('data.user');
-			console.log(res.body);
 			done();
 		});
 	});
@@ -40,7 +38,7 @@ describe('/authenticate:', function() {
 
 	it('error when username and password do not exist', function (done) {
 		api.post('/authenticate')
-		.send({ username: 'none', password: 'none' })
+		.send({ username: 'nouser', password: 'nouser' })
 		.expect(302, done);
 	});
 });
@@ -62,7 +60,6 @@ describe('/user/create:', function() {
 		.end(function (err, res) {
 			if (err) return done(err);
 			res.body.should.not.be.empty;
-			console.log(res.body);
 			done();
 		});
 	});
@@ -75,7 +72,6 @@ describe('/user/create:', function() {
 		.end(function (err, res) {
 			if (err) return done(err);
 			res.body.should.not.be.empty;
-			console.log(res.body);
 			done();
 		});
 	});
