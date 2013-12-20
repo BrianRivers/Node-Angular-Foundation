@@ -6,14 +6,21 @@ var db = require('./db'),
 	moment = require('moment');
 
 var intialSetup = function intialSetup(callback) {
-	var admin_user = {
-		username: 'admin',
-		password: 'giscenter',
-		first_name: null,
-		last_name: null,
-		email: 'apgiscenter@gmail.com'
-	};
-	createUser(admin_user, callback);
+	db.sequelize
+	.sync({force: true})
+	.complete(function (err) {
+		if (err) throw err;
+		else {
+			var admin_user = {
+				username: 'admin',
+				password: 'giscenter',
+				first_name: null,
+				last_name: null,
+				email: 'apgiscenter@gmail.com'
+			};
+			createUser(admin_user, callback);
+		}
+	});
 };
 
 var createUser = function createUser(user, callback) {

@@ -19,6 +19,10 @@ module.exports = function(sequelize, Sequelize) {
 				isEmail: true
 			}
 		}
+	}, {
+		associate: function (models) {
+			User.hasOne(models.Key);
+		}
 	});
 	return User;
 };
