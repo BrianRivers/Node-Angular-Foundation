@@ -4,16 +4,17 @@
 	"version": "0.0.1",
 	"private": true,
 	"dependencies": {
-		"express": "3.4.4",
-        "moment": "*",
-		"passport": "0.1.17",
-		"passport-local": "0.1.6",
+		"express": "*",
+        	"moment": "*",
+		"passport": "*",
+		"passport-local": "*",
 		"passport-localapikey": "git+https://github.com/cholalabs/passport-localapikey.git",
-		"node-uuid": "1.4.1",
+		"node-uuid": "*",
 		"bcrypt": "*",
-		"cors": "2.1.0",
-		"mysql": "~2.0.0-alpha9",
-		"mysql-activerecord": "~0.8.3"
+		"cors": "*",
+		"mysql": "*",
+		"sequelize": "*",
+		"lodash": "*"
 	},
 	"devDependencies": {
 		"mocha": "*",

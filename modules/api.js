@@ -1,21 +1,13 @@
 module.exports = function(app) {
 	
-	var auth = require('./auth'),
-		mysql = require('mysql-activerecord'),
+	var db = require('./db'),
+		auth = require('./auth'),
 		uuid = require('node-uuid'),
 		bcrypt = require('bcrypt'),
 		moment = require('moment'),
 		passport = require('passport'),
 		LocalStrategy = require('passport-local').Strategy,
 		LocalAPIKeyStrategy = require('passport-localapikey').Strategy;
-
-
-	// var db = mysql.Adapter({
-	// 	host: '10.0.2.15',
-	// 	database: 'dev_db',
-	// 	user: 'dev_db',
-	// 	password: 'giscenter'
-	// });
 
 	/* Passport strategies and methods
 	------------*/
@@ -98,6 +90,9 @@ module.exports = function(app) {
 		done(null, obj);
 	});
 
+	/* API methods
+	------------*/
+
 	// creates and sends api response
 	function response(res, code, success, message, data) {
 		res.json(code, {
@@ -109,57 +104,37 @@ module.exports = function(app) {
 		});
 	}
 
-	/* API methods
-	------------*/
-
-	// check for db tables
-	// returns status and object with db tables info
-	app.get('/dbtest', function (req, res) {
-		db.query('SHOW TABLES FROM dev_db', function (err, results) {
-			if (!err) {
-				response(res, 200, true, "Tables", results);
-			} else {
-				response(res, 500, false, err.message, null);
-			}
-		});
-	});
-
 	// response for unauthorized users
 	// returns status with no data
 	app.get('/unauthorized', function (req, res) {
 		response(res, 401, false, "Not Authorized", null);
 	});
 
-	// verify username and password
-	// returns status and object with user info and key
-	app.post('/authenticate',
-		passport.authenticate('local', {
-			session: false,
-			failureRedirect: 'unauthorized'
-		}),
-		function (req, res) {
-			db
-			.where({ user_id: req.user.id })
-			.get('api_keys', function (err, rows, fields) {
-				// search for api key for user
-				if (!err) {
-					if (rows[0] !== undefined) {
-						response(res, 200, true, "Authorized", {
-							"user": req.user,
-							"key": rows[0].key
-						});
-					} else {
-						res.redirect('unauthorized');
-					}
-				} else {
-					response(res, 500, false, err.message, null);
-				}
-			});
-		}
-	);
+	// check for db tables
+	// returns status and object with db tables info
+	app.get('/dbtest', function (req, res) {
+		db.sequelize.query('SHOW TABLES FROM dev_db')
+		.success(function (rows) {
+			response(res, 200, true, "Tables", rows);
+		})
+		.error(function (errors) {
+			response(res, 500, false, "Database error", errors);
+		});
+	});
 
-	// create user
-	// returns status with db data for successful insert
+	// // verify username and password
+	// // returns status and object with user info and key
+	// app.post('/authenticate',
+	// 	passport.authenticate('local', {
+	// 		session: false,
+	// 		failureRedirect: 'unauthorized'
+	// 	}),
+	// 	function (req, res) {
+	// 	}
+	// );
+
+	// // create user
+	// // returns status with db data for successful insert
 	app.post('/user/create',
 		// passport.authenticate('localapikey', {
 		// 	session: false,
@@ -173,8 +148,13 @@ module.exports = function(app) {
 				last_name: req.body.last_name,
 				email: req.body.email
 			};
-			var result = auth.createUser(new_user);
-			response(res, 200, true, 'test', result);
+			// create user and respond with result or error
+			auth.createUser(new_user, function (err, results) {
+				if (!err)
+					response(res, 200, true, 'user created', results);
+				else
+					response(res, 500, false, 'Database error', err);
+			});
 		}
 	);
 };

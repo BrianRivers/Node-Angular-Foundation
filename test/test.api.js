@@ -10,6 +10,7 @@ describe('/dbtest:', function() {
 		.end(function (err, res) {
 			if (err) return done(err);
 			res.body.should.have.property('data').and.be.an.instanceof(Array).and.not.be.empty;
+			console.log(res.body);
 			done();
 		});
 	});
@@ -23,10 +24,10 @@ describe('/authenticate:', function() {
 		.expect(200)
 		.end(function (err, res) {
 			if (err) return done(err);
-			console.log(res.body);
 			res.body.should.have.deep.property('status.success').and.equal(true);
 			res.body.should.have.deep.property('status.message').and.equal('Authorized');
 			res.body.should.have.deep.property('data.user');
+			console.log(res.body);
 			done();
 		});
 	});

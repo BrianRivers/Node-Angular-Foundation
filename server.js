@@ -28,7 +28,12 @@ app.configure(function () {
 
 // run initial user setup
 var auth = require('./modules/auth');
-auth.intialSetup();
+auth.intialSetup(function (err, results) {
+	if (!err)
+		console.log(results);
+	else
+		console.log(err);
+});
 
 // require api routes and functions
 var api = require('./modules/api');

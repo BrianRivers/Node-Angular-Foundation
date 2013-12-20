@@ -1,16 +1,9 @@
-var uuid = require('node-uuid'),
+var db = require('./db'),
+	uuid = require('node-uuid'),
 	bcrypt = require('bcrypt'),
-	moment = require('moment'),
-	mysql = require('mysql-activerecord');
+	moment = require('moment');
 
-var db = mysql.Adapter({
-		host: '10.0.2.15',
-		database: 'dev_db',
-		user: 'dev_db',
-		password: 'giscenter'
-});
-
-var intialSetup = function intialSetup() {
+var intialSetup = function intialSetup(callback) {
 	var admin_user = {
 		username: 'admin',
 		password: 'giscenter',
@@ -18,17 +11,20 @@ var intialSetup = function intialSetup() {
 		last_name: null,
 		email: 'apgiscenter@gmail.com'
 	};
-	createUser(admin_user);
+	createUser(admin_user, callback);
 };
 
-var createUser = function createUser(user) {
+var createUser = function createUser(user, callback) {
+	//insert user into db
 	user.password = bcrypt.hashSync(user.password, 10);
-	db.insert('users', user, function (err, info) {
-		return 'test';
+	db.User.create(user)
+	.success(function (user, created) {
+		callback(null, user.values);
+	})
+	.error(function (errors) {
+		callback(errors, false);
 	});
 };
 
-// create connection to db
-module.exports.db = db;
 module.exports.intialSetup = intialSetup;
 module.exports.createUser = createUser;

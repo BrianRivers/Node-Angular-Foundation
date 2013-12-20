@@ -11,12 +11,21 @@ var new_user = {
 };
 
 describe('createUser', function() {
-	it('should create a new user with api key', function() {
-		var user = auth.createUser(new_user);
+	it('should create a new user', function() {
+		auth.createUser(new_user, function (err, results) {
+			expect(results).to.not.equal(false);
+			expect(results).to.be.instanceof(Object);
+			expect(results).to.have.property('id');
+			expect(err).to.equal(null);
+			console.log(results);
+		});
 	});
 
 	it('should error when user already exists', function() {
-		var user = auth.createUser(new_user);
-		console.log(user);
+		auth.createUser(new_user, function (err, results) {
+			expect(results).to.equal(false);
+			expect(err).to.not.equal(null);
+			console.log(err);
+		});
 	});
 });
