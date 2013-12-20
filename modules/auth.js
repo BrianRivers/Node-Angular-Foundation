@@ -23,9 +23,8 @@ var intialSetup = function intialSetup() {
 
 var createUser = function createUser(user) {
 	user.password = bcrypt.hashSync(user.password, 10);
-	db.insert('users', user, function (err, result) {
-		if (err) return err;
-		else return result;
+	db.insert('users', user, function (err, info) {
+		return 'test';
 	});
 };
 

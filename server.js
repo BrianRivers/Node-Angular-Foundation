@@ -26,9 +26,9 @@ app.configure(function () {
 	});
 });
 
-// run initial setup
-var helpers = require('./modules/helpers');
-helpers.intialSetup();
+// run initial user setup
+var auth = require('./modules/auth');
+auth.intialSetup();
 
 // require api routes and functions
 var api = require('./modules/api');

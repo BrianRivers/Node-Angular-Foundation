@@ -46,16 +46,15 @@ describe('/authenticate:', function() {
 
 describe('/user/create:', function() {
 	var user = {
-		username: 'admin',
-		password: 'giscenter',
-		first_name: '',
-		last_name: '',
-		email: 'apgiscenter@gmail.com'
+		username: 'tester',
+		password: 'tester',
+		first_name: 'tester',
+		last_name: 'tester',
+		email: 'tester@no-reply.com'
 	};
 
 	it('created user with salt+hash password in db', function (done) {
 		api.post('/user/create')
-		.set('x-api-key', '356cc090-68f6-11e3-be46-a9bd7be89f21')
 		.send(user)
 		.expect(200)
 		.expect('Content-Type', /json/)
@@ -69,7 +68,6 @@ describe('/user/create:', function() {
 
 	it('error when username or email already exists', function (done) {
 		api.post('/user/create')
-		.set('x-api-key', 'b837e7a0-68f3-11e3-96b7-9f6032743f50')
 		.send(user)
 		.expect(500)
 		.expect('Content-Type', /json/)

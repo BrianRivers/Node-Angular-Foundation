@@ -1,6 +1,6 @@
 module.exports = function(app) {
 	
-	var helper = require('./helpers'),
+	var auth = require('./auth'),
 		mysql = require('mysql-activerecord'),
 		uuid = require('node-uuid'),
 		bcrypt = require('bcrypt'),
@@ -10,12 +10,12 @@ module.exports = function(app) {
 		LocalAPIKeyStrategy = require('passport-localapikey').Strategy;
 
 
-	var db = mysql.Adapter({
-		host: '10.0.2.15',
-		database: 'dev_db',
-		user: 'dev_db',
-		password: 'giscenter'
-	});
+	// var db = mysql.Adapter({
+	// 	host: '10.0.2.15',
+	// 	database: 'dev_db',
+	// 	user: 'dev_db',
+	// 	password: 'giscenter'
+	// });
 
 	/* Passport strategies and methods
 	------------*/
@@ -173,7 +173,7 @@ module.exports = function(app) {
 				last_name: req.body.last_name,
 				email: req.body.email
 			};
-			var result = helper.createUser(new_user);
+			var result = auth.createUser(new_user);
 			response(res, 200, true, 'test', result);
 		}
 	);
