@@ -1,10 +1,12 @@
 /* User authenticaion and creation methods
 ------------------------------------------*/
+
 var db = require('./db'),
 	uuid = require('node-uuid'),
 	bcrypt = require('bcrypt'),
 	moment = require('moment');
 
+// runs inital db setup and creates default admin user
 var intialSetup = function intialSetup(callback) {
 	db.sequelize
 	.sync({force: true})
@@ -14,8 +16,8 @@ var intialSetup = function intialSetup(callback) {
 			var admin_user = {
 				username: 'admin',
 				password: 'giscenter',
-				first_name: null,
-				last_name: null,
+				firstName: null,
+				lastName: null,
 				email: 'apgiscenter@gmail.com'
 			};
 			createUser(admin_user, callback);
@@ -23,27 +25,53 @@ var intialSetup = function intialSetup(callback) {
 	});
 };
 
-var createUser = function createUser(user, callback) {
-	// insert user into db
-	user.password = bcrypt.hashSync(user.password, 10);
-	db.User.create(user)
+// creates user and api key, returns this data
+var createUser = function createUser(newUser, callback) {
+	// create user
+	newUser.password = bcrypt.hashSync(newUser.password, 10);
+	db.User
+	.create(newUser)
 	.success(function (user, created) {
-		callback(null, user.values);
+		// create api key for user
+		var newKey = uuid.v1();
+		db.Key
+		.create({key: newKey})
+		.success(function (key, created) {
+			// associate user with key
+			user.setKey(key)
+			.success(function (){
+				callback(null, {
+					"user": db.Sequelize.Utils._.merge(user.values,key.values)
+				});
+			})
+			.error(function (errors) {
+				callback(errors, false);
+			});
+		})
+		.error(function (errors) {
+			callback(errors, false);
+		});
 	})
 	.error(function (errors) {
 		callback(errors, false);
 	});
 };
 
+// verifies a users credentials
 var authenticateUser = function authenticateUser(user, callback) {
 	// search for user
-	db.User.find({where: {username: user.username}})
+	db.User.find({
+		where: {username: user.username},
+		include: [db.Key]
+	})
 	.success(function (result) {
 		// if user is found
 		if (result) {
 			// check password hash against provided password
 			if (bcrypt.compareSync(user.password, result.password)) {
-				callback(null, result);
+				var key = result.key;
+				delete result.key;
+				callback(null, db.Sequelize.Utils._.merge(result, key));
 			} else {
 				callback(null, false);
 			}

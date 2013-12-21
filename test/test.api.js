@@ -15,40 +15,12 @@ describe('/dbtest:', function() {
 	});
 });
 
-describe('/authenticate:', function() {
-	it('user and password match and exist', function (done) {
-		api.post('/authenticate')
-		.send({ username: 'tester', password: 'tester' })
-		.expect('Content-Type', /json/)
-		.expect(200)
-		.end(function (err, res) {
-			if (err) return done(err);
-			res.body.should.have.deep.property('status.success').and.equal(true);
-			res.body.should.have.deep.property('status.message').and.equal('Authorized');
-			res.body.should.have.deep.property('data.user');
-			done();
-		});
-	});
-
-	it('error when username and password do not match', function (done) {
-		api.post('/authenticate')
-		.send({ username: 'tester', password: 'badpassword' })
-		.expect(302, done);
-	});
-
-	it('error when username and password do not exist', function (done) {
-		api.post('/authenticate')
-		.send({ username: 'nouser', password: 'nouser' })
-		.expect(302, done);
-	});
-});
-
 describe('/user/create:', function() {
 	var user = {
 		username: 'tester',
 		password: 'tester',
-		first_name: 'tester',
-		last_name: 'tester',
+		firstName: 'tester',
+		lastName: 'tester',
 		email: 'tester@no-reply.com'
 	};
 
@@ -60,6 +32,7 @@ describe('/user/create:', function() {
 		.end(function (err, res) {
 			if (err) return done(err);
 			res.body.should.not.be.empty;
+			console.log(res.body);
 			done();
 		});
 	});
@@ -74,5 +47,35 @@ describe('/user/create:', function() {
 			res.body.should.not.be.empty;
 			done();
 		});
+	});
+});
+
+describe('/authenticate:', function() {
+	it('user and password match and exist', function (done) {
+		api.post('/authenticate')
+		.send({ username: 'tester', password: 'tester' })
+		.expect('Content-Type', /json/)
+		.expect(200)
+		.end(function (err, res) {
+			if (err) return done(err);
+			res.body.should.have.deep.property('status.success').and.equal(true);
+			res.body.should.have.deep.property('status.message').and.equal('Authorized');
+			res.body.should.have.deep.property('data.user');
+			res.body.should.have.deep.property('data.user.key');
+			console.log(res.body);
+			done();
+		});
+	});
+
+	it('error when username and password do not match', function (done) {
+		api.post('/authenticate')
+		.send({ username: 'tester', password: 'badpassword' })
+		.expect(302, done);
+	});
+
+	it('error when username and password do not exist', function (done) {
+		api.post('/authenticate')
+		.send({ username: 'nouser', password: 'nouser' })
+		.expect(302, done);
 	});
 });

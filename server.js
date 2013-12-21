@@ -27,13 +27,13 @@ app.configure(function () {
 });
 
 // run initial user setup
-var auth = require('./modules/auth');
+var auth = require('./app/auth');
 auth.intialSetup(function (err, results) {
 	console.log(err, results);
 });
 
 // require api routes and functions
-var api = require('./modules/api');
+var api = require('./app/api');
 // send app to api to handle incoming requests
 api(app);
 

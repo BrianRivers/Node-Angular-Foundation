@@ -1,5 +1,6 @@
 /* API methods
 ------------*/
+
 var db = require('./db'),
 	auth = require('./auth'),
 	passport = require('passport'),
@@ -7,8 +8,10 @@ var db = require('./db'),
 	LocalAPIKeyStrategy = require('passport-localapikey').Strategy;
 
 module.exports = function(app) {
+
 	/* Passport strategies and methods
 	----------------------------------*/
+	
 	// verify user
 	passport.use(new LocalStrategy(
 		function (username, password, done) {
@@ -53,6 +56,9 @@ module.exports = function(app) {
 			"data": data
 		});
 	}
+
+	/* Routes
+	---------*/
 
 	// response for unauthorized users
 	// returns status with no data

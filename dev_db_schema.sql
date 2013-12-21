@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.5.34-0ubuntu0.12.04.1-log)
 # Database: dev_db
-# Generation Time: 2013-12-20 20:35:06 +0000
+# Generation Time: 2013-12-21 04:05:46 +0000
 # ************************************************************
 
 
@@ -43,12 +43,12 @@ DROP TABLE IF EXISTS `Keys`;
 
 CREATE TABLE `Keys` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `key` varchar(40) NOT NULL DEFAULT '',
-  `timestamp` datetime NOT NULL,
-  `user_id` int(11) unsigned NOT NULL,
+  `key` varchar(50) NOT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime NOT NULL,
+  `UserId` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  CONSTRAINT `Keys_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `Users` (`id`)
+  UNIQUE KEY `key` (`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
@@ -170,13 +170,13 @@ DROP TABLE IF EXISTS `Users`;
 
 CREATE TABLE `Users` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `username` varchar(50) NOT NULL DEFAULT '',
-  `password` varchar(75) NOT NULL DEFAULT '',
-  `first_name` varchar(50) DEFAULT NULL,
-  `last_name` varchar(50) DEFAULT NULL,
-  `email` varchar(75) NOT NULL DEFAULT '',
-  `createdAt` datetime DEFAULT NULL,
-  `updatedAt` datetime DEFAULT NULL,
+  `username` varchar(50) NOT NULL,
+  `password` varchar(75) NOT NULL,
+  `firstName` varchar(50) DEFAULT NULL,
+  `lastName` varchar(50) DEFAULT NULL,
+  `email` varchar(75) NOT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `email` (`email`)

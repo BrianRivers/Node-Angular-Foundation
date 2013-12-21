@@ -1,5 +1,12 @@
+/* User model
+-------------*/
 module.exports = function(sequelize, Sequelize) {
 	var User = sequelize.define('User', {
+		id: {
+			type: Sequelize.INTEGER(11).UNSIGNED,
+			primaryKey: true,
+			autoIncrement: true
+		},
 		username: {
 			type: Sequelize.STRING(50),
 			allowNull: false,
@@ -9,8 +16,8 @@ module.exports = function(sequelize, Sequelize) {
 			type: Sequelize.STRING(75),
 			allowNull: false
 		},
-		first_name: Sequelize.STRING(50),
-		last_name: Sequelize.STRING(50),
+		firstName: Sequelize.STRING(50),
+		lastName: Sequelize.STRING(50),
 		email: {
 			type: Sequelize.STRING(75),
 			allowNull: false,
