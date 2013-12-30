@@ -27,8 +27,9 @@ var intialSetup = function intialSetup(callback) {
 
 // creates user and api key, returns this data
 var createUser = function createUser(newUser, callback) {
-	// create user
+	// hash new password
 	newUser.password = bcrypt.hashSync(newUser.password, 10);
+	// create user
 	db.User
 	.create(newUser)
 	.success(function (user, created) {
@@ -44,16 +45,42 @@ var createUser = function createUser(newUser, callback) {
 					"user": db.Sequelize.Utils._.merge(user.values,key.values)
 				});
 			})
-			.error(function (errors) {
-				callback(errors, false);
+			.error(function (err) {
+				callback(err, false);
 			});
 		})
-		.error(function (errors) {
-			callback(errors, false);
+		.error(function (err) {
+			callback(err, false);
 		});
 	})
-	.error(function (errors) {
-		callback(errors, false);
+	.error(function (err) {
+		callback(err, false);
+	});
+};
+
+// updates user with given attributes
+var updateUser = function updateUser(existingUser, callback) {
+	// hash updated password
+	existingUser.password = bcrypt.hashSync(existingUser.password, 10);
+	// find exsiting user matching id
+	db.User.find({ where: { id: existingUser.id } })
+	.success(function (user) {
+		if (user) {
+			// update user and respond with result or error
+			delete existingUser.id;
+			user.updateAttributes(existingUser)
+			.success(function () {
+				callback(null, true);
+			})
+			.error(function (err) {
+				callback(err, false);
+			});
+		} else {
+			callback('user not found', false);
+		}
+	})
+	.error(function (err) {
+		callback(err, false);
 	});
 };
 
@@ -61,7 +88,7 @@ var createUser = function createUser(newUser, callback) {
 var authenticateUser = function authenticateUser(user, callback) {
 	// search for user
 	db.User.find({
-		where: {username: user.username},
+		where: { username: user.username },
 		include: [db.Key]
 	})
 	.success(function (result) {
@@ -79,11 +106,29 @@ var authenticateUser = function authenticateUser(user, callback) {
 			callback(null, false);
 		}
 	})
-	.error(function (errors) {
-		callback(errors, false);
+	.error(function (err) {
+		callback(err, false);
+	});
+};
+
+// verifies key exists
+var authenticateKey = function authenticateKey(apikey, callback) {
+	// search for key
+	db.Key.find({ where: { key: apikey } })
+	.success(function (result) {
+		// if key is found
+		if (result)
+			callback(null, true);
+		else
+			callback(null, false);
+	})
+	.error(function (err) {
+		callback(err, false);
 	});
 };
 
 module.exports.intialSetup = intialSetup;
 module.exports.createUser = createUser;
+module.exports.updateUser = updateUser;
 module.exports.authenticateUser = authenticateUser;
+module.exports.authenticateKey = authenticateKey;

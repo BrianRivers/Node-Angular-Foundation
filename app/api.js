@@ -31,10 +31,17 @@ module.exports = function(app) {
 	);
 
 	// verify api key
-	passport.use(new LocalAPIKeyStrategy({ apiKeyField: 'x-api-key' },
+	passport.use(new LocalAPIKeyStrategy({ apiKeyHeader: 'x-api-key' },
 		function (apikey, done) {
 			// check if valid api key
-			return done(null, false);
+			auth.authenticateKey(
+			apikey,
+			function (err, results) {
+				if (!err)
+					return done(null, results);
+				else
+					throw err;
+			});
 		})
 	);
 
@@ -63,7 +70,7 @@ module.exports = function(app) {
 	// response for unauthorized users
 	// returns status with no data
 	app.get('/unauthorized', function (req, res) {
-		response(res, 401, false, "Not Authorized", null);
+		response(res, 401, false, 'Not Authorized', null);
 	});
 
 	// check for db tables
@@ -72,10 +79,10 @@ module.exports = function(app) {
 		// sql query using sequelize
 		db.sequelize.query('SHOW TABLES FROM dev_db')
 		.success(function (rows) {
-			response(res, 200, true, "Tables", rows);
+			response(res, 200, true, 'Tables', rows);
 		})
-		.error(function (errors) {
-			response(res, 500, false, "Database error", errors);
+		.error(function (err) {
+			response(res, 500, false, err, null);
 		});
 	});
 
@@ -94,26 +101,78 @@ module.exports = function(app) {
 	);
 
 	// create user
-	// returns status with user data for successful insert
+	// returns status with user data
 	app.post('/user/create',
-		// passport.authenticate('localapikey', {
-		// 	session: false,
-		// 	failureRedirect: 'unauthorized'
-		// }),
+		passport.authenticate('localapikey', {
+			session: false,
+			failureRedirect: 'unauthorized'
+		}),
 		function (req, res) {
-			var new_user = {
-				username: req.body.username,
-				password: req.body.password,
-				first_name: req.body.first_name,
-				last_name: req.body.last_name,
-				email: req.body.email
-			};
 			// create user and respond with result or error
-			auth.createUser(new_user, function (err, results) {
+			auth.createUser(req.body, function (err, results) {
 				if (!err)
 					response(res, 200, true, 'user created', results);
 				else
-					response(res, 500, false, 'Database error', err);
+					response(res, 500, false, err, null);
+			});
+		}
+	);
+
+	// update user
+	// returns status with no data
+	app.post('/user/update',
+		passport.authenticate('localapikey', {
+			session: false,
+			failureRedirect: 'unauthorized'
+		}),
+		function (req, res) {
+			// search for user to update matching given id
+			auth.updateUser(req.body, function (err, results) {
+				if (!err)
+					response(res, 200, true, 'user updated', results);
+				else
+					response(res, 500, false, err, null);
+			});
+		}
+	);
+
+	// delete user
+	// returns status with user data for successful insert
+	app.post('/user/delete',
+		passport.authenticate('localapikey', {
+			session: false,
+			failureRedirect: 'unauthorized'
+		}),
+		function (req, res) {
+			// update user and respond with result or error
+			db.User.update(req.body)
+			.success(function () {
+				response(res, 200, true, 'user updated', null);
+			})
+			.error(function (err) {
+				response(res, 500, false, err, null);
+			});
+		}
+	);
+
+	// list users
+	// returns status with list of users
+	app.get('/user/list',
+		passport.authenticate('localapikey', {
+			session: false,
+			failureRedirect: 'unauthorized'
+		}),
+		function (req, res) {
+			// find all users and return list or error
+			db.User.findAll()
+			.success(function (users) {
+				if (users)
+					response(res, 200, true, 'users found', users);
+				else
+					response(res, 404, false, 'no users found', null);
+			})
+			.error(function (err) {
+				response(res, 500, false, err, null);
 			});
 		}
 	);

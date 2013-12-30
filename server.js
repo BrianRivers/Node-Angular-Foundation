@@ -2,7 +2,8 @@
 var http = require('http'),
 	cors = require('cors'),
 	express = require('express'),
-	passport = require('passport');
+	passport = require('passport'),
+	fs = require('fs');
 
 // create app
 var app = express();
@@ -29,7 +30,11 @@ app.configure(function () {
 // run initial user setup
 var auth = require('./app/auth');
 auth.intialSetup(function (err, results) {
-	console.log(err, results);
+	if (err) throw err;
+	fs.writeFile('test/userdata.json', JSON.stringify(results), function (err) {
+		if (err) throw err;
+		console.log('User created and written to data file');
+	});
 });
 
 // require api routes and functions
