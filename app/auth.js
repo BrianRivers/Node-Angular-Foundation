@@ -9,7 +9,10 @@ var db = require('./db'),
 // runs inital db setup and creates default admin user
 var intialSetup = function intialSetup(callback) {
 	db.sequelize
-	.sync({force: true})
+	.sync({
+		force: true,
+		logging: true
+	})
 	.complete(function (err) {
 		if (err) throw err;
 		else {
@@ -76,7 +79,30 @@ var updateUser = function updateUser(existingUser, callback) {
 				callback(err, false);
 			});
 		} else {
-			callback('user not found', false);
+			callback('user not found or unable to update', false);
+		}
+	})
+	.error(function (err) {
+		callback(err, false);
+	});
+};
+
+// delete user matching given id
+var deleteUser = function deleteUser(existingUser, callback) {
+	// find existing user matching id
+	db.User.find({ where: { id: existingUser.id } })
+	.success(function (user) {
+		if (user) {
+			// remove user and respond with result or error
+			user.destroy()
+			.success( function () {
+				callback(null, true);
+			})
+			.error(function (err) {
+				callback(err, false);
+			});
+		} else {
+			callback('user not found or unable to delete', false);
 		}
 	})
 	.error(function (err) {
@@ -130,5 +156,6 @@ var authenticateKey = function authenticateKey(apikey, callback) {
 module.exports.intialSetup = intialSetup;
 module.exports.createUser = createUser;
 module.exports.updateUser = updateUser;
+module.exports.deleteUser = deleteUser;
 module.exports.authenticateUser = authenticateUser;
 module.exports.authenticateKey = authenticateKey;

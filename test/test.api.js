@@ -60,6 +60,7 @@ describe('/user/create:', function() {
 	});
 });
 
+// User update tests
 describe('/user/update:', function() {
 	var user = {
 		id: 2,
@@ -114,7 +115,6 @@ describe('/user/update:', function() {
 	});
 });
 
-
 // User list test
 describe('/user/list:', function() {
 	it('lists all users', function (done) {
@@ -157,5 +157,39 @@ describe('/authenticate:', function() {
 		api.post('/authenticate')
 		.send({ username: 'nouser', password: 'nouser' })
 		.expect(302, done);
+	});
+});
+
+// User delete tests
+describe('/user/delete', function() {
+	var user = {
+		id: 2
+	};
+
+	it('removes user with given id', function (done) {
+		api.post('/user/delete')
+		.set('x-api-key', admin_user.key)
+		.send(user)
+		.expect(200)
+		.expect('Content-Type', /json/)
+		.end(function (err, res) {
+			if (err) return done(err);
+			res.body.should.have.deep.property('status.success').and.equal(true);
+			done();
+		});
+	});
+
+	it('error when user does not exist to delete', function (done) {
+		user.id = 0;
+		api.post('/user/delete')
+		.set('x-api-key', admin_user.key)
+		.send(user)
+		.expect(500)
+		.expect('Content-Type', /json/)
+		.end(function (err, res) {
+			if (err) return done(err);
+			res.body.should.have.deep.property('status.success').and.equal(false);
+			done();
+		});
 	});
 });

@@ -7,7 +7,7 @@ var fs = require('fs'),
 	sequelize = new Sequelize('dev_db', 'dev_db', 'giscenter', {
 		host: '10.0.2.15',
 		dialect: 'mysql',
-		logging: false
+		logging: true
 	}),
 	db = {};
 

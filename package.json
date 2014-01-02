@@ -12,16 +12,16 @@
 		"node-uuid": "*",
 		"bcrypt": "*",
 		"cors": "*",
-		"mysql": "2.0.0-alpha9",
-		"sequelize": "1.7.0-beta.2",
+		"mysql": "*",
+		"sequelize": "git://github.com:sequelize/sequelize.git#master",
 		"lodash": "*"
 	},
 	"devDependencies": {
 		"mocha": "*",
 		"supertest": "*",
 		"chai": "*",
-		"grunt": "~0.4.2",
-		"grunt-contrib-watch": "~0.4.4",
+		"grunt": "*",
+		"grunt-contrib-watch": "*",
 		"grunt-ember-templates": "*",
 		"grunt-mocha-test": "*"
 	}

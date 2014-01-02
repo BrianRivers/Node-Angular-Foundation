@@ -144,13 +144,12 @@ module.exports = function(app) {
 			failureRedirect: 'unauthorized'
 		}),
 		function (req, res) {
-			// update user and respond with result or error
-			db.User.update(req.body)
-			.success(function () {
-				response(res, 200, true, 'user updated', null);
-			})
-			.error(function (err) {
-				response(res, 500, false, err, null);
+			// search for and delete user matching given id
+			auth.deleteUser(req.body, function (err, results) {
+				if (!err)
+					response(res, 200, true, 'user deleted', results);
+				else
+					response(res, 500, false, err, null)
 			});
 		}
 	);

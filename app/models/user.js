@@ -28,7 +28,7 @@ module.exports = function(sequelize, Sequelize) {
 		}
 	}, {
 		associate: function (models) {
-			User.hasOne(models.Key);
+			User.hasOne(models.Key, { onDelete: 'cascade' });
 		}
 	});
 	return User;
