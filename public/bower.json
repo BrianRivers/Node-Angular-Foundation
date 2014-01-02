@@ -1,0 +1,21 @@
+{
+	"name": "Veterans Services",
+	"version": "0.0.1",
+	"authors": [
+		"Lance Batson <lbatson@my.apsu.edu>"
+	],
+	"license": "MIT",
+	"homepage": "http://gisweb.apsu.edu",
+	"private": true,
+	"ignore": [
+		"**/.*",
+		"node_modules",
+		"bower_components",
+		"test",
+		"tests"
+	],
+	"dependencies": {
+		"ember": "~1.2.0"
+	},
+	"devDependencies": {}
+}
