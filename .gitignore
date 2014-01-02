@@ -20,3 +20,5 @@ sftp-config*
 
 Cheffile.lock
 chef/tmp/*
+
+test/*.json
