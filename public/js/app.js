@@ -42,25 +42,29 @@ App.LoginController = Ember.Controller.extend({
 	actions: {
 		// log user in
 		login: function() {
+			// get values from login form
 			var self = this;
 			var data = this.getProperties('username', 'password');
 
 			// make sure no error appears
 			self.set('error', null);
 
-			// authenticate username and password against API
-			Ember.$.post(BASE_URL+'/authenticate', data).then( function (res) {
-				// remove entry from login input
-				self.send('reset');
+			// if values, try to log user in
+			if (data.username !== null && data.password !== null) {
+				// authenticate username and password against API
+				Ember.$.post(BASE_URL+'/authenticate', data).then( function (res) {
+					// remove entry from login input
+					self.send('reset');
 
-				// check for successful login
-				if (res.status.success) {
-					$('#login-dropdown').removeClass('open');
-					self.set('key', res.data.key);
-				} else {
-					self.set('error', res.status.message);
-				}
-			});
+					// check for successful login
+					if (res.status.success) {
+						$('#login-dropdown').removeClass('open');
+						self.set('key', res.data.key);
+					} else {
+						self.set('error', res.status.message);
+					}
+				});
+			}
 		},
 		// reset login form properties
 		reset: function() {
