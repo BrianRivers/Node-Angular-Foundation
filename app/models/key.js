@@ -1,7 +1,7 @@
 /* Key model
 ------------*/
 module.exports = function(sequelize, Sequelize) {
-	var Key = sequelize.define('Key', {
+	var Key = sequelize.define('Keys', {
 		id: {
 			type: Sequelize.INTEGER(11).UNSIGNED,
 			primaryKey: true,
@@ -14,7 +14,7 @@ module.exports = function(sequelize, Sequelize) {
 		}
 	},{
 		associate: function(models) {
-			Key.belongsTo(models.User);
+			Key.belongsTo(models.Users);
 		}
 	});
 	return Key;

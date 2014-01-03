@@ -28,12 +28,23 @@ exports.intialSetup = function intialSetup(callback) {
 	});
 };
 
+exports.tableList = function tableList(callback) {
+	// sql query using sequelize
+	db.sequelize.query('SHOW TABLES FROM dev_db')
+	.success(function (rows) {
+		callback(null, { "tables": rows });
+	})
+	.error(function (err) {
+		response(res, 500, false, err, null);
+	});
+};
+
 // verifies a users credentials
 exports.authenticateUser = function authenticateUser(user, callback) {
 	// search for user
-	db.User.find({
+	db.Users.find({
 		where: { username: user.username },
-		include: [db.Key]
+		include: [db.Keys]
 	})
 	.success(function (result) {
 		// if user is found
@@ -58,11 +69,26 @@ exports.authenticateUser = function authenticateUser(user, callback) {
 // verifies key exists
 exports.authenticateKey = function authenticateKey(apikey, callback) {
 	// search for key
-	db.Key.find({ where: { key: apikey } })
+	db.Keys.find({ where: { key: apikey } })
 	.success(function (result) {
 		// if key is found
 		if (result)
 			callback(null, true);
+		else
+			callback(null, false);
+	})
+	.error(function (err) {
+		callback(err, false);
+	});
+};
+
+exports.listData = function listData(path, query, callback) {
+	// find all users and return list or error
+	path = db.Sequelize.Utils._.capitalize(path);
+	db[path].findAll()
+	.success(function (result) {
+		if (result)
+			callback(null, { path: result });
 		else
 			callback(null, false);
 	})
@@ -76,12 +102,12 @@ exports.createUser = function createUser(newUser, callback) {
 	// hash new password
 	newUser.password = bcrypt.hashSync(newUser.password, 10);
 	// create user
-	db.User
+	db.Users
 	.create(newUser)
 	.success(function (user, created) {
 		// create api key for user
 		var newKey = uuid.v1();
-		db.Key
+		db.Keys
 		.create({key: newKey})
 		.success(function (key, created) {
 			// associate user with key
@@ -109,7 +135,7 @@ exports.updateUser = function updateUser(existingUser, callback) {
 	// hash updated password
 	existingUser.password = bcrypt.hashSync(existingUser.password, 10);
 	// find exsiting user matching id
-	db.User.find({ where: { id: existingUser.id } })
+	db.Users.find({ where: { id: existingUser.id } })
 	.success(function (user) {
 		if (user) {
 			// update user and respond with result or error
@@ -133,7 +159,7 @@ exports.updateUser = function updateUser(existingUser, callback) {
 // delete user matching given id
 exports.deleteUser = function deleteUser(existingUser, callback) {
 	// find existing user matching id
-	db.User.find({ where: { id: existingUser.id } })
+	db.Users.find({ where: { id: existingUser.id } })
 	.success(function (user) {
 		if (user) {
 			// remove user and respond with result or error

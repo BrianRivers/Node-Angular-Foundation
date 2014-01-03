@@ -1,7 +1,7 @@
 /* API methods
 ------------*/
 
-var db = require('./db'),
+var _ = require('lodash'),
 	data = require('./data'),
 	passport = require('passport'),
 	LocalStrategy = require('passport-local').Strategy,
@@ -55,18 +55,19 @@ module.exports = function(app) {
 
 	// creates and sends api response
 	function response(res, code, success, message, data) {
-		res.json(code, {
-			"status": {
+		var meta = {
+			"meta": {
 				"success": success,
-				"message": message
-			},
-			"data": data
-		});
+				"message": message,
+				"total": null,
+				"page": null
+			}
+		};
+		res.json(code, _.extend(meta, data));
 	}
 
 	/* Routes
 	---------*/
-	app.param
 
 	// response for unauthorized users
 	// returns status with no data
@@ -75,15 +76,13 @@ module.exports = function(app) {
 	});
 
 	// check for db tables
-	// returns status and object with db tables info
+	// returns metadata with list of tables
 	app.get('/dbtest', function (req, res) {
-		// sql query using sequelize
-		db.sequelize.query('SHOW TABLES FROM dev_db')
-		.success(function (rows) {
-			response(res, 200, true, 'Tables', rows);
-		})
-		.error(function (err) {
-			response(res, 500, false, err, null);
+		data.tableList(function (err, results) {
+			if (!err)
+				response(res, 200, true, 'Tables', results);
+			else
+				response(res, 500, false, err, null);
 		});
 	});
 
@@ -95,15 +94,13 @@ module.exports = function(app) {
 			failureRedirect: 'unauthorized'
 		}),
 		function (req, res) {
-			response(res, 200, true, 'Authorized', {
-				"user": req.user
-			});
+			response(res, 200, true, 'Authorized', { "user": req.user });
 		}
 	);
 
 	// search
 	// returns array list of items
-	app.get('/:base',
+	app.get('/:path',
 		passport.authenticate('localapikey', {
 			session: false,
 			failureRedirect: 'unauthorized'
@@ -111,23 +108,20 @@ module.exports = function(app) {
 		function (req, res) {
 			console.log('get');
 			console.log(req.params);
-			// find all users and return list or error
-			db.User.findAll()
-			.success(function (users) {
-				if (users)
-					response(res, 200, true, 'users found', users);
+			if (req.query)
+				console.log(req.query);
+			data.listData(req.params.path, req.query, function (err, results) {
+				if (!err)
+					response(res, 200, true, 'data found', results);
 				else
-					response(res, 404, false, 'no users found', null);
-			})
-			.error(function (err) {
-				response(res, 500, false, err, null);
+					response(res, 500, false, err, null);
 			});
 		}
 	);
 
 	// create
 	// returns status with data
-	app.post('/:base',
+	app.post('/:path',
 		passport.authenticate('localapikey', {
 			session: false,
 			failureRedirect: 'unauthorized'
@@ -147,7 +141,7 @@ module.exports = function(app) {
 
 	// update
 	// returns status with no data
-	app.put('/:base/:id',
+	app.put('/:path/:id',
 		passport.authenticate('localapikey', {
 			session: false,
 			failureRedirect: 'unauthorized'
@@ -167,7 +161,7 @@ module.exports = function(app) {
 
 	// delete
 	// returns status with no data
-	app.delete('/:base/:id',
+	app.delete('/:path/:id',
 		passport.authenticate('localapikey', {
 			session: false,
 			failureRedirect: 'unauthorized'

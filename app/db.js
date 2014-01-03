@@ -2,7 +2,7 @@
 ------------------*/
 var fs = require('fs'),
 	path = require('path'),
-	lodash = require('lodash'),
+	_ = require('lodash'),
 	Sequelize = require('sequelize'),
 	sequelize = new Sequelize('dev_db', 'dev_db', 'giscenter', {
 		host: '10.0.2.15',
@@ -11,6 +11,8 @@ var fs = require('fs'),
 	}),
 	db = {};
 
+var tableNames = [];
+
 // import all data models into sequelize
 fs.readdirSync(__dirname+'/models').filter(function(file) {
 	return (file.indexOf('.') !== 0);
@@ -18,6 +20,7 @@ fs.readdirSync(__dirname+'/models').filter(function(file) {
 .forEach(function(file) {
 	var model = sequelize.import(path.join(__dirname+'/models', file));
 	db[model.name] = model;
+	tableNames.push(model.tableName);
 });
 
 // set up relationships
@@ -28,7 +31,8 @@ Object.keys(db).forEach(function(modelName) {
 });
 
 // export db
-module.exports = lodash.extend({
+module.exports = _.extend({
 	sequelize: sequelize,
-	Sequelize: Sequelize
+	Sequelize: Sequelize,
+	tableNames: tableNames
 }, db);

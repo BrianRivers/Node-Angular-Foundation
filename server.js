@@ -45,4 +45,3 @@ api(app);
 // start server
 app.listen(8001, '127.0.0.1');
 console.log('Listening on http://localhost:3001');
-console.log(app.routes);

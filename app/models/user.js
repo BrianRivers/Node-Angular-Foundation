@@ -1,7 +1,7 @@
 /* User model
 -------------*/
 module.exports = function(sequelize, Sequelize) {
-	var User = sequelize.define('User', {
+	var User = sequelize.define('Users', {
 		id: {
 			type: Sequelize.INTEGER(11).UNSIGNED,
 			primaryKey: true,
@@ -28,7 +28,7 @@ module.exports = function(sequelize, Sequelize) {
 		}
 	}, {
 		associate: function (models) {
-			User.hasOne(models.Key, { onDelete: 'cascade' });
+			User.hasOne(models.Keys, { onDelete: 'cascade' });
 		}
 	});
 	return User;

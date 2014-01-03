@@ -14,8 +14,9 @@ describe('/dbtest:', function() {
 		.expect(200)
 		.end(function (err, res) {
 			if (err) return done(err);
-			res.body.should.have.deep.property('status.success').and.equal(true);
-			res.body.should.have.property('data').and.be.an.instanceof(Array).and.not.be.empty;
+			res.body.should.have.deep.property('meta.success').and.equal(true);
+			res.body.should.have.property('tables').and.be.an.instanceof(Array).and.not.be.empty;
+			console.log(res.body);
 			done();
 		});
 	});
@@ -39,9 +40,9 @@ describe('POST /users', function() {
 		.expect('Content-Type', /json/)
 		.end(function (err, res) {
 			if (err) return done(err);
-			res.body.should.have.deep.property('status.success').and.equal(true);
-			res.body.should.have.deep.property('data.user').and.be.an.instanceof(Object).and.not.be.empty;
-			res.body.should.have.deep.property('data.user.key');
+			res.body.should.have.deep.property('meta.success').and.equal(true);
+			res.body.should.have.deep.property('user').and.be.an.instanceof(Object).and.not.be.empty;
+			res.body.should.have.deep.property('user.key');
 			done();
 		});
 	});
@@ -54,7 +55,7 @@ describe('POST /users', function() {
 		.expect('Content-Type', /json/)
 		.end(function (err, res) {
 			if (err) return done(err);
-			res.body.should.have.deep.property('status.success').and.equal(false);
+			res.body.should.have.deep.property('meta.success').and.equal(false);
 			done();
 		});
 	});
@@ -124,8 +125,9 @@ describe('GET /users', function() {
 		.expect('Content-Type', /json/)
 		.end(function (err, res) {
 			if (err) return done(err);
-			res.body.should.have.deep.property('status.success').and.equal(true);
-			res.body.should.have.property('data').and.be.an.instanceof(Array).and.not.be.empty;
+			// res.body.should.have.deep.property('status.success').and.equal(true);
+			// res.body.should.have.property('meta').and.be.an.instanceof(Array).and.not.be.empty;
+			console.log(res.body);
 			done();
 		});
 	});
@@ -141,8 +143,8 @@ describe('/authenticate:', function() {
 		.end(function (err, res) {
 			if (err) return done(err);
 			res.body.should.have.deep.property('status.success').and.equal(true);
-			res.body.should.have.deep.property('data.user').and.be.an.instanceof(Object).and.not.be.empty;
-			res.body.should.have.deep.property('data.user.key');
+			res.body.should.have.deep.property('meta.user').and.be.an.instanceof(Object).and.not.be.empty;
+			res.body.should.have.deep.property('meta.user.key');
 			done();
 		});
 	});
