@@ -22,7 +22,7 @@ describe('/dbtest:', function() {
 });
 
 // User creation tests
-describe('/user/create:', function() {
+describe('POST /users', function() {
 	var user = {
 		username: 'test',
 		password: 'test',
@@ -32,7 +32,7 @@ describe('/user/create:', function() {
 	};
 
 	it('creates user with salted and hashed password in db', function (done) {
-		api.post('/user/create')
+		api.post('/users')
 		.set('x-api-key', admin_user.key)
 		.send(user)
 		.expect(200)
@@ -47,7 +47,7 @@ describe('/user/create:', function() {
 	});
 
 	it('error when username or email already exists', function (done) {
-		api.post('/user/create')
+		api.post('/users')
 		.set('x-api-key', admin_user.key)
 		.send(user)
 		.expect(500)
@@ -61,7 +61,7 @@ describe('/user/create:', function() {
 });
 
 // User update tests
-describe('/user/update:', function() {
+describe('PUT /users/:id', function() {
 	var user = {
 		id: 2,
 		username: 'tester',
@@ -72,7 +72,7 @@ describe('/user/update:', function() {
 	};
 
 	it('updates user with given attributes', function (done) {
-		api.post('/user/update')
+		api.put('/users/'+user.id)
 		.set('x-api-key', admin_user.key)
 		.send(user)
 		.expect(200)
@@ -86,7 +86,7 @@ describe('/user/update:', function() {
 
 	it('error when user does not exist to update', function (done) {
 		user.id = 0;
-		api.post('/user/update')
+		api.put('/users/'+user.id)
 		.set('x-api-key', admin_user.key)
 		.send(user)
 		.expect(500)
@@ -102,7 +102,7 @@ describe('/user/update:', function() {
 		user.id = 'TEST';
 		user.firstName = null;
 		user.email = 'TEST';
-		api.post('/user/update')
+		api.put('/users/'+user.id)
 		.set('x-api-key', admin_user.key)
 		.send(user)
 		.expect(500)
@@ -116,9 +116,9 @@ describe('/user/update:', function() {
 });
 
 // User list test
-describe('/user/list:', function() {
+describe('GET /users', function() {
 	it('lists all users', function (done) {
-		api.get('/user/list')
+		api.get('/users')
 		.set('x-api-key', admin_user.key)
 		.expect(200)
 		.expect('Content-Type', /json/)
@@ -161,15 +161,14 @@ describe('/authenticate:', function() {
 });
 
 // User delete tests
-describe('/user/delete', function() {
+describe('DELETE /users/:id', function() {
 	var user = {
 		id: 2
 	};
 
 	it('removes user with given id', function (done) {
-		api.post('/user/delete')
+		api.del('/users/'+user.id)
 		.set('x-api-key', admin_user.key)
-		.send(user)
 		.expect(200)
 		.expect('Content-Type', /json/)
 		.end(function (err, res) {
@@ -181,9 +180,8 @@ describe('/user/delete', function() {
 
 	it('error when user does not exist to delete', function (done) {
 		user.id = 0;
-		api.post('/user/delete')
+		api.del('/users/'+user.id)
 		.set('x-api-key', admin_user.key)
-		.send(user)
 		.expect(500)
 		.expect('Content-Type', /json/)
 		.end(function (err, res) {

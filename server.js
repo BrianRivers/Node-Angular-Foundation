@@ -28,8 +28,8 @@ app.configure(function () {
 });
 
 // run initial user setup
-var auth = require('./app/auth');
-auth.intialSetup(function (err, results) {
+var data = require('./app/data');
+data.intialSetup(function (err, results) {
 	if (err) throw err;
 	fs.writeFile('test/userdata.json', JSON.stringify(results), function (err) {
 		if (err) throw err;
@@ -45,3 +45,4 @@ api(app);
 // start server
 app.listen(8001, '127.0.0.1');
 console.log('Listening on http://localhost:3001');
+console.log(app.routes);

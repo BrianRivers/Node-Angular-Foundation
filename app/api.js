@@ -2,7 +2,7 @@
 ------------*/
 
 var db = require('./db'),
-	auth = require('./auth'),
+	data = require('./data'),
 	passport = require('passport'),
 	LocalStrategy = require('passport-local').Strategy,
 	LocalAPIKeyStrategy = require('passport-localapikey').Strategy;
@@ -16,7 +16,7 @@ module.exports = function(app) {
 	passport.use(new LocalStrategy(
 		function (username, password, done) {
 			// check if valid user
-			auth.authenticateUser({
+			data.authenticateUser({
 				username: username,
 				password: password
 			},
@@ -34,7 +34,7 @@ module.exports = function(app) {
 	passport.use(new LocalAPIKeyStrategy({ apiKeyHeader: 'x-api-key' },
 		function (apikey, done) {
 			// check if valid api key
-			auth.authenticateKey(
+			data.authenticateKey(
 			apikey,
 			function (err, results) {
 				if (!err)
@@ -66,6 +66,7 @@ module.exports = function(app) {
 
 	/* Routes
 	---------*/
+	app.param
 
 	// response for unauthorized users
 	// returns status with no data
@@ -100,68 +101,16 @@ module.exports = function(app) {
 		}
 	);
 
-	// create user
-	// returns status with user data
-	app.post('/user/create',
+	// search
+	// returns array list of items
+	app.get('/:base',
 		passport.authenticate('localapikey', {
 			session: false,
 			failureRedirect: 'unauthorized'
 		}),
 		function (req, res) {
-			// create user and respond with result or error
-			auth.createUser(req.body, function (err, results) {
-				if (!err)
-					response(res, 200, true, 'user created', results);
-				else
-					response(res, 500, false, err, null);
-			});
-		}
-	);
-
-	// update user
-	// returns status with no data
-	app.post('/user/update',
-		passport.authenticate('localapikey', {
-			session: false,
-			failureRedirect: 'unauthorized'
-		}),
-		function (req, res) {
-			// search for user to update matching given id
-			auth.updateUser(req.body, function (err, results) {
-				if (!err)
-					response(res, 200, true, 'user updated', results);
-				else
-					response(res, 500, false, err, null);
-			});
-		}
-	);
-
-	// delete user
-	// returns status with user data for successful insert
-	app.post('/user/delete',
-		passport.authenticate('localapikey', {
-			session: false,
-			failureRedirect: 'unauthorized'
-		}),
-		function (req, res) {
-			// search for and delete user matching given id
-			auth.deleteUser(req.body, function (err, results) {
-				if (!err)
-					response(res, 200, true, 'user deleted', results);
-				else
-					response(res, 500, false, err, null)
-			});
-		}
-	);
-
-	// list users
-	// returns status with list of users
-	app.get('/user/list',
-		passport.authenticate('localapikey', {
-			session: false,
-			failureRedirect: 'unauthorized'
-		}),
-		function (req, res) {
+			console.log('get');
+			console.log(req.params);
 			// find all users and return list or error
 			db.User.findAll()
 			.success(function (users) {
@@ -172,6 +121,66 @@ module.exports = function(app) {
 			})
 			.error(function (err) {
 				response(res, 500, false, err, null);
+			});
+		}
+	);
+
+	// create
+	// returns status with data
+	app.post('/:base',
+		passport.authenticate('localapikey', {
+			session: false,
+			failureRedirect: 'unauthorized'
+		}),
+		function (req, res) {
+			console.log('post');
+			console.log(req.params);
+			// create user and respond with result or error
+			data.createUser(req.body, function (err, results) {
+				if (!err)
+					response(res, 200, true, 'user created', results);
+				else
+					response(res, 500, false, err, null);
+			});
+		}
+	);
+
+	// update
+	// returns status with no data
+	app.put('/:base/:id',
+		passport.authenticate('localapikey', {
+			session: false,
+			failureRedirect: 'unauthorized'
+		}),
+		function (req, res) {
+			// search for user to update matching given id
+			data.updateUser(req.body, function (err, results) {
+				console.log('put');
+				console.log(req.params);
+				if (!err)
+					response(res, 200, true, 'user updated', results);
+				else
+					response(res, 500, false, err, null);
+			});
+		}
+	);
+
+	// delete
+	// returns status with no data
+	app.delete('/:base/:id',
+		passport.authenticate('localapikey', {
+			session: false,
+			failureRedirect: 'unauthorized'
+		}),
+		function (req, res) {
+			console.log('delete');
+			console.log(req.params);
+			// search for and delete user matching given id
+			data.deleteUser(req.params, function (err, results) {
+				if (!err)
+					response(res, 200, true, 'user deleted', results);
+				else
+					response(res, 500, false, err, null);
 			});
 		}
 	);
