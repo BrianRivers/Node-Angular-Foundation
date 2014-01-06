@@ -31,7 +31,7 @@ exports.intialSetup = function intialSetup(callback) {
         lastName: null,
         email: 'apgiscenter@gmail.com'
       };
-      exports.createUser(admin_user, callback);
+      exports.createData('Users', admin_user, callback);
     }
   });
 };
@@ -112,83 +112,110 @@ exports.listData = function listData(path, query, callback) {
 };
 
 // creates user and api key, returns this data
-exports.createUser = function createUser(newUser, callback) {
-  // hash new password
-  newUser.password = bcrypt.hashSync(newUser.password, 10);
-  // create user
-  db.Users
-  .create(newUser)
-  .success(function (user, created) {
-    // create api key for user
-    var newKey = uuid.v1();
-    db.Keys
-    .create({key: newKey})
-    .success(function (key, created) {
-      // associate user with key
-      user.setKey(key)
-      .success(function (){
-        callback(null, {
-          "user": db.Sequelize.Utils._.merge(user.values,key.values)
+exports.createData = function createData(path, data, callback) {
+  // determine model availability
+  var model = verifyPath(path);
+  if (model) {
+    // hash new password
+    if (model === 'Users') {
+      data.password = bcrypt.hashSync(data.password, 10);
+    }
+    // create user
+    db[model]
+    .create(data)
+    .success(function (result, created) {
+      if (model === 'Users') {
+        // create api key for user
+        var newKey = uuid.v1();
+        db.Keys
+        .create({key: newKey})
+        .success(function (key, created) {
+          // associate user with key
+          result.setKey(key)
+          .success(function (){
+            callback(null, {
+              "user": db.Sequelize.Utils._.merge(result.values,key.values)
+            });
+          })
+          .error(function (err) {
+            callback(err, false);
+          });
+        })
+        .error(function (err) {
+          callback(err, false);
         });
-      })
-      .error(function (err) {
-        callback(err, false);
-      });
+      } else {
+        var values = {};
+        values[path] = result.values;
+        callback(null, values);
+      }
     })
     .error(function (err) {
       callback(err, false);
     });
-  })
-  .error(function (err) {
-    callback(err, false);
-  });
+  } else {
+    callback('Invalid creation', false);
+  }
 };
 
-// updates user with given attributes
-exports.updateUser = function updateUser(existingUser, callback) {
-  // hash updated password
-  existingUser.password = bcrypt.hashSync(existingUser.password, 10);
-  // find exsiting user matching id
-  db.Users.find({ where: { id: existingUser.id } })
-  .success(function (user) {
-    if (user) {
-      // update user and respond with result or error
-      delete existingUser.id;
-      user.updateAttributes(existingUser)
-      .success(function () {
-        callback(null, true);
-      })
-      .error(function (err) {
-        callback(err, false);
-      });
-    } else {
-      callback('user not found or unable to update', false);
+// updates data with given attributes
+exports.updateData = function updateData(path, id, data, callback) {
+  // determine model availability
+  var model = verifyPath(path);
+  if (model) {
+    // hash updated password
+    if (model === 'Users') {
+      data.password = bcrypt.hashSync(data.password, 10);
     }
-  })
-  .error(function (err) {
-    callback(err, false);
-  });
+    // find exsiting data matching id
+    db[model].find({ where: { id: id } })
+    .success(function (result) {
+      if (result) {
+        // update data and respond with result or error
+        delete data.id;
+        result.updateAttributes(data)
+        .success(function () {
+          callback(null, true);
+        })
+        .error(function (err) {
+          callback(err, false);
+        });
+      } else {
+        callback('Data not found or unable to update', false);
+      }
+    })
+    .error(function (err) {
+      callback(err, false);
+    });
+  }
+  else callback('Invalid update', false);
 };
 
 // delete user matching given id
-exports.deleteUser = function deleteUser(existingUser, callback) {
-  // find existing user matching id
-  db.Users.find({ where: { id: existingUser.id } })
-  .success(function (user) {
-    if (user) {
-      // remove user and respond with result or error
-      user.destroy()
-      .success( function () {
-        callback(null, true);
-      })
-      .error(function (err) {
-        callback(err, false);
-      });
-    } else {
-      callback('user not found or unable to delete', false);
-    }
-  })
-  .error(function (err) {
-    callback(err, false);
-  });
+exports.deleteData = function deleteData(path, id, callback) {
+  // determine model availability
+  var model = verifyPath(path);
+  if (model) {
+    // find existing data matching id
+    db[model].find({ where: { id: id } })
+    .success(function (result) {
+      if (result) {
+        // remove user and respond with result or error
+        result.destroy()
+        .success( function () {
+          callback(null, true);
+        })
+        .error(function (err) {
+          callback(err, false);
+        });
+      } else {
+        callback('Data not found or unable to delete', false);
+      }
+    })
+    .error(function (err) {
+      callback(err, false);
+    });
+  } else {
+    callback('Invalid deletion', false);
+  }
 };

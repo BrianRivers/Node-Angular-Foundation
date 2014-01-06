@@ -2,10 +2,10 @@
 ------------*/
 
 var _ = require('lodash'),
-  data = require('./data'),
-  passport = require('passport'),
-  LocalStrategy = require('passport-local').Strategy,
-  LocalAPIKeyStrategy = require('passport-localapikey').Strategy;
+      data = require('./data'),
+      passport = require('passport'),
+      LocalStrategy = require('passport-local').Strategy,
+      LocalAPIKeyStrategy = require('passport-localapikey').Strategy;
 
 module.exports = function(app) {
 
@@ -130,7 +130,7 @@ module.exports = function(app) {
       console.log('post');
       console.log(req.params);
       // create user and respond with result or error
-      data.createUser(req.body, function (err, results) {
+      data.createData(req.params.path, req.body, function (err, results) {
         if (!err)
           response(res, 200, true, 'Data created', results);
         else
@@ -147,10 +147,10 @@ module.exports = function(app) {
       failureRedirect: 'unauthorized'
     }),
     function (req, res) {
+      console.log('put');
+      console.log(req.params);
       // search for user to update matching given id
-      data.updateUser(req.body, function (err, results) {
-        console.log('put');
-        console.log(req.params);
+      data.updateData(req.params.path, req.params.id, req.body, function (err, results) {
         if (!err)
           response(res, 200, true, 'Data updated', results);
         else
@@ -169,8 +169,8 @@ module.exports = function(app) {
     function (req, res) {
       console.log('delete');
       console.log(req.params);
-      // search for and delete user matching given id
-      data.deleteUser(req.params, function (err, results) {
+      // search for and delete data matching given id
+      data.deleteData(req.params.path, req.params.id, function (err, results) {
         if (!err)
           response(res, 200, true, 'Data deleted', results);
         else
