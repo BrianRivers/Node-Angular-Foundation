@@ -6,6 +6,7 @@ var db = require('./db'),
   bcrypt = require('bcrypt'),
   moment = require('moment');
 
+// verifies model exists in db
 function verifyPath(path) {
   // get path aka table or model to search for
   path = db.Sequelize.Utils._.capitalize(path);
@@ -36,6 +37,7 @@ exports.intialSetup = function intialSetup(callback) {
   });
 };
 
+// lists all tables in db
 exports.tableList = function tableList(callback) {
   // sql query using sequelize
   db.sequelize.query('SHOW TABLES FROM dev_db')
@@ -111,7 +113,7 @@ exports.listData = function listData(path, query, callback) {
   else callback('Invalid search', false);
 };
 
-// creates user and api key, returns this data
+// creates data, returns this data
 exports.createData = function createData(path, data, callback) {
   // determine model availability
   var model = verifyPath(path);
@@ -191,7 +193,7 @@ exports.updateData = function updateData(path, id, data, callback) {
   else callback('Invalid update', false);
 };
 
-// delete user matching given id
+// delete data matching given id
 exports.deleteData = function deleteData(path, id, callback) {
   // determine model availability
   var model = verifyPath(path);

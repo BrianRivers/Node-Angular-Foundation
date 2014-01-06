@@ -75,7 +75,7 @@ module.exports = function(app) {
     response(res, 401, false, 'Not Authorized', null);
   });
 
-  // check for db tables
+  // list db tables
   // returns metadata with list of tables
   app.get('/dbtest', function (req, res) {
     data.tableList(function (err, results) {
