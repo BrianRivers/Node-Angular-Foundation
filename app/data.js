@@ -92,7 +92,28 @@ exports.authenticateKey = function authenticateKey(apikey, callback) {
   });
 };
 
-exports.listData = function listData(path, query, callback) {
+exports.listItem = function listItem(path, id, callback) {
+  // determine model availability
+  var model = verifyPath(path);
+  if (model) {
+    // find all users and return list or error
+    db[model].find(id)
+    .success(function (result) {
+      var values = {};
+      values[model.toLowerCase()] = result;
+      if (result)
+        callback(null, values);
+      else
+        callback(null, false);
+    })
+    .error(function (err) {
+      callback(err, false);
+    });
+  }
+  else callback('Invalid search', false);
+};
+
+exports.listItems = function listItems(path, query, callback) {
   // determine model availability
   var model = verifyPath(path);
   if (model) {

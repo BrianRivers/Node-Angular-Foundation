@@ -216,6 +216,18 @@ describe('GET /:path', function() {
         done();
       });
     });
+    it('lists single user with id', function (done) {
+      api.get('/users/' + 1)
+      .set('x-api-key', admin_user.key)
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .end(function (err, res) {
+        if (err) return done(err);
+        res.body.should.have.deep.property('meta.success').and.equal(true);
+        res.body.should.have.property('users').and.be.an.instanceof(Object).and.not.be.empty;
+        done();
+      });
+    });
   });
   // Key list
   describe('keys', function() {

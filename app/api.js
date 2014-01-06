@@ -98,6 +98,27 @@ module.exports = function(app) {
     }
   );
 
+  // search id
+  // returns status with item data
+    app.get('/:path/:id',
+    passport.authenticate('localapikey', {
+      session: false,
+      failureRedirect: 'unauthorized'
+    }),
+    function (req, res) {
+      console.log('get');
+      console.log(req.params);
+      if (req.query)
+        console.log(req.query);
+      data.listItem(req.params.path, req.params.id, function (err, results) {
+        if (!err)
+          response(res, 200, true, 'Data found', results);
+        else
+          response(res, 500, false, err, null);
+      });
+    }
+  );
+
   // search
   // returns array list of items
   app.get('/:path',
@@ -110,7 +131,7 @@ module.exports = function(app) {
       console.log(req.params);
       if (req.query)
         console.log(req.query);
-      data.listData(req.params.path, req.query, function (err, results) {
+      data.listItems(req.params.path, req.query, function (err, results) {
         if (!err)
           response(res, 200, true, 'Data found', results);
         else
