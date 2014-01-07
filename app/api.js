@@ -52,8 +52,7 @@ module.exports = function(app) {
   passport.deserializeUser(function (obj, done) {
     done(null, obj);
   });
-
-  // creates and sends api response
+ // creates and sends api response
   function response(res, code, success, message, data, total) {
     var meta = {
       "meta": {
@@ -98,27 +97,6 @@ module.exports = function(app) {
     }
   );
 
-  // search id
-  // returns status with item data
-  app.get('/:path/:id',
-    passport.authenticate('localapikey', {
-      session: false,
-      failureRedirect: 'unauthorized'
-    }),
-    function (req, res) {
-      console.log('get');
-      console.log(req.params);
-      if (req.query)
-        console.log(req.query);
-      data.listItem(req.params.path, req.params.id, function (err, results) {
-        if (!err)
-          response(res, 200, true, 'Data found', results);
-        else
-          response(res, 500, false, err, null);
-      });
-    }
-  );
-
   // search
   // returns array list of items
   app.get('/:path',
@@ -127,11 +105,30 @@ module.exports = function(app) {
       failureRedirect: 'unauthorized'
     }),
     function (req, res) {
-      console.log('get');
-      console.log(req.params);
-      if (req.query)
-        console.log(req.query);
-      data.listItems(req.params.path, req.query, function (err, results) {
+      // parse query string into object
+      var query = require('url').parse(req.url,true).query;
+      // determine if query string exists
+      query = (_.isEmpty(query)) ? null : query;
+      // search for all data or data limited by where conditions in query string
+      data.searchData(req.params.path, null, query, function (err, results) {
+        if (!err)
+          response(res, 200, true, 'Data found', results);
+        else
+          response(res, 500, false, err, null);
+      });
+    }
+  );
+
+  // search by id
+  // returns status with item data
+  app.get('/:path/:id',
+    passport.authenticate('localapikey', {
+      session: false,
+      failureRedirect: 'unauthorized'
+    }),
+    function (req, res) {
+      // search for data matching given id
+      data.searchData(req.params.path, req.params.id, null, function (err, results) {
         if (!err)
           response(res, 200, true, 'Data found', results);
         else
@@ -148,9 +145,7 @@ module.exports = function(app) {
       failureRedirect: 'unauthorized'
     }),
     function (req, res) {
-      console.log('post');
-      console.log(req.params);
-      // create user and respond with result or error
+      // create data and respond with data or error
       data.createData(req.params.path, req.body, function (err, results) {
         if (!err)
           response(res, 200, true, 'Data created', results);
@@ -168,9 +163,7 @@ module.exports = function(app) {
       failureRedirect: 'unauthorized'
     }),
     function (req, res) {
-      console.log('put');
-      console.log(req.params);
-      // search for user to update matching given id
+      // search for data to update matching given id
       data.updateData(req.params.path, req.params.id, req.body, function (err, results) {
         if (!err)
           response(res, 200, true, 'Data updated', results);
@@ -188,9 +181,7 @@ module.exports = function(app) {
       failureRedirect: 'unauthorized'
     }),
     function (req, res) {
-      console.log('delete');
-      console.log(req.params);
-      // search for and delete data matching given id
+      // search for data to delete matching given id
       data.deleteData(req.params.path, req.params.id, function (err, results) {
         if (!err)
           response(res, 200, true, 'Data deleted', results);

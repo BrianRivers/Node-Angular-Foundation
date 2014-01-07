@@ -61,37 +61,6 @@ describe('POST /:path', function() {
       });
     });
   });
-  // Key creation
-  describe('keys', function() {
-    var key = { key: 'testkey' };
-
-    it('creates test key', function (done) {
-      api.post('/keys')
-      .set('x-api-key', admin_user.key)
-      .send(key)
-      .expect(200)
-      .expect('Content-Type', /json/)
-      .end(function (err, res) {
-        if (err) return done(err);
-        res.body.should.have.deep.property('meta.success').and.equal(true);
-        res.body.should.have.deep.property('keys').and.be.an.instanceof(Object).and.not.be.empty;
-        done();
-      });
-    });
-
-    it('error when key already exists', function (done) {
-      api.post('/keys')
-      .set('x-api-key', admin_user.key)
-      .send(key)
-      .expect(500)
-      .expect('Content-Type', /json/)
-      .end(function (err, res) {
-        if (err) return done(err);
-        res.body.should.have.deep.property('meta.success').and.equal(false);
-        done();
-      });
-    });
-  });
 });
 
 // Data update tests
@@ -108,21 +77,26 @@ describe('PUT /:path/:id', function() {
     };
 
     it('updates user with given attributes', function (done) {
-      api.put('/users/'+user.id)
+      api.get('/users?username=test')
       .set('x-api-key', admin_user.key)
-      .send(user)
-      .expect(200)
-      .expect('Content-Type', /json/)
       .end(function (err, res) {
-        if (err) return done(err);
-        res.body.should.have.deep.property('meta.success').and.equal(true);
-        done();
+        user.id = res.body.users.id;
+        api.put('/users/'+user.id)
+        .set('x-api-key', admin_user.key)
+        .send(user)
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .end(function (err, res) {
+          if (err) return done(err);
+          res.body.should.have.deep.property('meta.success').and.equal(true);
+          res.body.should.have.deep.property('users').and.not.be.empty;
+          done();
+        });
       });
     });
 
     it('error when user does not exist to update', function (done) {
-      user.id = 0;
-      api.put('/users/'+user.id)
+      api.put('/users/0')
       .set('x-api-key', admin_user.key)
       .send(user)
       .expect(500)
@@ -135,60 +109,11 @@ describe('PUT /:path/:id', function() {
     });
 
     it('error when attribute values are invalid', function (done) {
-      user.id = 'TEST';
       user.firstName = null;
       user.email = 'TEST';
       api.put('/users/'+user.id)
       .set('x-api-key', admin_user.key)
       .send(user)
-      .expect(500)
-      .expect('Content-Type', /json/)
-      .end(function (err, res) {
-        if (err) return done(err);
-        res.body.should.have.deep.property('meta.success').and.equal(false);
-        done();
-      });
-    });
-  });
-  // Key update
-  describe('keys', function() {
-    var key = {
-      id: 3,
-      key: 'updatekeytest'
-    };
-
-    it('updates key with given attributes', function (done) {
-      api.put('/keys/'+key.id)
-      .set('x-api-key', admin_user.key)
-      .send(key)
-      .expect(200)
-      .expect('Content-Type', /json/)
-      .end(function (err, res) {
-        if (err) return done(err);
-        res.body.should.have.deep.property('meta.success').and.equal(true);
-        done();
-      });
-    });
-
-    it('error when user does not exist to update', function (done) {
-      key.id = 0;
-      api.put('/keys/'+key.id)
-      .set('x-api-key', admin_user.key)
-      .send(key)
-      .expect(500)
-      .expect('Content-Type', /json/)
-      .end(function (err, res) {
-        if (err) return done(err);
-        res.body.should.have.deep.property('meta.success').and.equal(false);
-        done();
-      });
-    });
-
-    it('error when attribute values are invalid', function (done) {
-      key.id = 'TEST';
-      api.put('/keys/'+key.id)
-      .set('x-api-key', admin_user.key)
-      .send(key)
       .expect(500)
       .expect('Content-Type', /json/)
       .end(function (err, res) {
@@ -216,8 +141,20 @@ describe('GET /:path', function() {
         done();
       });
     });
+    it('lists single user with query parameters', function (done) {
+      api.get('/users?username=' + admin_user.username)
+      .set('x-api-key', admin_user.key)
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .end(function (err, res) {
+        if (err) return done(err);
+        res.body.should.have.deep.property('meta.success').and.equal(true);
+        res.body.should.have.property('users').and.not.be.empty;
+        done();
+      });
+    });
     it('lists single user with id', function (done) {
-      api.get('/users/' + 1)
+      api.get('/users/1')
       .set('x-api-key', admin_user.key)
       .expect(200)
       .expect('Content-Type', /json/)
@@ -280,55 +217,29 @@ describe('DELETE /:path/:id', function() {
   // User delete
   describe('users', function() {
     var user = {
-      id: 2
+      id: null
     };
 
     it('removes user with given id', function (done) {
-      api.del('/users/'+user.id)
+      api.get('/users?username=tester')
       .set('x-api-key', admin_user.key)
-      .expect(200)
-      .expect('Content-Type', /json/)
       .end(function (err, res) {
-        if (err) return done(err);
-        res.body.should.have.deep.property('meta.success').and.equal(true);
-        done();
+        user.id = res.body.users.id;
+        api.del('/users/'+user.id)
+        .set('x-api-key', admin_user.key)
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .end(function (err, res) {
+          if (err) return done(err);
+          res.body.should.have.deep.property('meta.success').and.equal(true);
+          done();
+        });
       });
     });
 
     it('error when user does not exist to delete', function (done) {
       user.id = 0;
       api.del('/users/'+user.id)
-      .set('x-api-key', admin_user.key)
-      .expect(500)
-      .expect('Content-Type', /json/)
-      .end(function (err, res) {
-        if (err) return done(err);
-        res.body.should.have.deep.property('meta.success').and.equal(false);
-        done();
-      });
-    });
-  });
-  // Key delete
-  describe('keys', function() {
-    var key = {
-      id: 3
-    };
-
-    it('removes key with given id', function (done) {
-      api.del('/keys/'+key.id)
-      .set('x-api-key', admin_user.key)
-      .expect(200)
-      .expect('Content-Type', /json/)
-      .end(function (err, res) {
-        if (err) return done(err);
-        res.body.should.have.deep.property('meta.success').and.equal(true);
-        done();
-      });
-    });
-
-    it('error when key does not exist to delete', function (done) {
-      key.id = 0;
-      api.del('/keys/'+key.id)
       .set('x-api-key', admin_user.key)
       .expect(500)
       .expect('Content-Type', /json/)

@@ -93,44 +93,53 @@ exports.authenticateKey = function authenticateKey(apikey, callback) {
   });
 };
 
-exports.listItem = function listItem(path, id, callback) {
+exports.searchData = function searchData(path, id, query, callback) {
   // determine model availability
   var model = verifyPath(path);
   if (model) {
-    // find all users and return list or error
-    db[model].find(id)
-    .success(function (result) {
-      var values = {};
-      values[model.toLowerCase()] = result;
-      if (result)
-        callback(null, values);
-      else
-        callback(null, false);
-    })
-    .error(function (err) {
-      callback(err, false);
-    });
-  }
-  else callback('Invalid search', false);
-};
-
-exports.listItems = function listItems(path, query, callback) {
-  // determine model availability
-  var model = verifyPath(path);
-  if (model) {
-    // find all users and return list or error
-    db[model].findAll()
-    .success(function (result) {
-      var values = {};
-      values[model.toLowerCase()] = result;
-      if (result)
-        callback(null, values);
-      else
-        callback(null, false);
-    })
-    .error(function (err) {
-      callback(err, false);
-    });
+    if (id) {
+      // find model data by id
+      db[model].find(id)
+      .success(function (result) {
+        var values = {};
+        values[model.toLowerCase()] = result;
+        if (result)
+          callback(null, values);
+        else
+          callback(null, false);
+      })
+      .error(function (err) {
+        callback(err, false);
+      });
+    } else if (query) {
+      // find model data by where conditions
+      db[model].find({ where: query })
+      .success(function (result) {
+        var values = {};
+        values[model.toLowerCase()] = result;
+        if (result)
+          callback(null, values);
+        else
+          callback(null, false);
+      })
+      .error(function (err) {
+        callback(err, false);
+      });
+    } else {
+      // find all data for model
+      db[model].findAll()
+      .success(function (result) {
+        var values = {};
+        values[model.toLowerCase()] = result;
+        if (result)
+          callback(null, values);
+        else
+          callback(null, false);
+      })
+      .error(function (err) {
+        callback(err, false);
+      });
+    }
   }
   else callback('Invalid search', false);
 };
@@ -140,11 +149,11 @@ exports.createData = function createData(path, data, callback) {
   // determine model availability
   var model = verifyPath(path);
   if (model) {
-    // hash new password
     if (model === 'Users') {
+      // hash new password
       data.password = bcrypt.hashSync(data.password, 10);
     }
-    // create user
+    // create data
     db[model]
     .create(data)
     .success(function (result, created) {
@@ -157,6 +166,7 @@ exports.createData = function createData(path, data, callback) {
           // associate user with key
           result.setKey(key)
           .success(function (){
+            // return newly created user and key
             callback(null, {
               "user": db.Sequelize.Utils._.merge(result.values,key.values)
             });
@@ -169,6 +179,7 @@ exports.createData = function createData(path, data, callback) {
           callback(err, false);
         });
       } else {
+        // return newly created data
         var values = {};
         values[path] = result.values;
         callback(null, values);
@@ -187,8 +198,8 @@ exports.updateData = function updateData(path, id, data, callback) {
   // determine model availability
   var model = verifyPath(path);
   if (model) {
-    // hash updated password
     if (model === 'Users') {
+      // hash updated password
       data.password = bcrypt.hashSync(data.password, 10);
     }
     // find exsiting data matching id
@@ -199,7 +210,16 @@ exports.updateData = function updateData(path, id, data, callback) {
         delete data.id;
         result.updateAttributes(data)
         .success(function () {
-          callback(null, true);
+          // respond with updated record
+          db[model].find(id)
+          .success(function (result) {
+            var values = {};
+            values[model.toLowerCase()] = result.values;
+            callback(null, values);
+          })
+          .error(function (err) {
+            callback(err, false);
+          });
         })
         .error(function (err) {
           callback(err, false);
