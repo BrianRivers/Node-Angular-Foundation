@@ -100,7 +100,7 @@ module.exports = function(app) {
 
   // search id
   // returns status with item data
-    app.get('/:path/:id',
+  app.get('/:path/:id',
     passport.authenticate('localapikey', {
       session: false,
       failureRedirect: 'unauthorized'

@@ -20,7 +20,8 @@ exports.intialSetup = function intialSetup(callback) {
   db.sequelize
   .sync({
     force: true,
-    logging: false
+    language: 'en',
+    logging: true
   })
   .complete(function (err) {
     if (err) throw err;
