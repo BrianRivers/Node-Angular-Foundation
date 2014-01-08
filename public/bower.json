@@ -15,7 +15,9 @@
 		"tests"
 	],
 	"dependencies": {
-		"ember": "~1.2.0"
+		"angular": "*",
+		"angular-route": "*",
+		"jquery": "*"
 	},
 	"devDependencies": {}
 }

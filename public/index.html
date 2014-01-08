@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html data-ng-app="">
 <head>
 	<meta charset="utf-8">
 	<title>Test</title>
@@ -7,18 +8,19 @@
 	<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-	<script type="text/x-handlebars">
-		<div class="container">
-			{{render 'login' login}}
-			{{outlet}}
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="jumbotron">
+					<label for="">Name:</label><br>
+					<input type="text" class="form-control" data-ng-model="name"/>&nbsp;{{ name }}
+				</div>
+			</div>
 		</div>
-	</script>
-
+	</div>
+	<script src="bower_components/angular/angular.min.js"></script>
 	<script src="bower_components/jquery/jquery.min.js"></script>
 	<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
-	<script src="bower_components/handlebars/handlebars.min.js"></script>
-	<script src="bower_components/ember/ember.js"></script>
-	<script src="js/templates.js"></script>
 	<script src="js/app.js"></script>
 </body>
 </html>
