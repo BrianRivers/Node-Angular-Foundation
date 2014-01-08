@@ -24,6 +24,10 @@ app.configure(function () {
 			url: req.originalUrl,
 			error: 'Not found'
 		});
+	})
+	.use(function (err, req, res, next){
+		console.error(err.stack);
+		res.json(500, 'Internal Error');
 	});
 });
 
