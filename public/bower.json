@@ -17,7 +17,11 @@
 	"dependencies": {
 		"angular": "*",
 		"angular-route": "*",
-		"jquery": "*"
+		"jquery": "*",
+		"angular-resource": "~1.2.0",
+		"angular-cookies": "~1.2.0",
+		"angular-sanitize": "~1.2.0",
+		"angular-route": "~1.2.0"
 	},
 	"devDependencies": {}
 }
