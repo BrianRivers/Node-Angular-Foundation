@@ -52,6 +52,13 @@ module.exports = function(app) {
   passport.deserializeUser(function (obj, done) {
     done(null, obj);
   });
+
+  // generate error or invalid auth responses
+  function invalidAuth(err, res) {
+    if (err) { response(res, 500, false, err, null); }
+    else { response(res, 401, false, 'Not Authorized', null); }
+  }
+
  // creates and sends api response
   function response(res, code, success, message, data, total) {
     var meta = {
@@ -68,12 +75,6 @@ module.exports = function(app) {
   /* Routes
   ---------*/
 
-  // response for unauthorized users
-  // returns status with no data
-  app.get('/unauthorized', function (req, res) {
-    response(res, 401, false, 'Not Authorized', null);
-  });
-
   // list db tables
   // returns metadata with list of tables
   app.get('/dbtest', function (req, res) {
@@ -88,104 +89,104 @@ module.exports = function(app) {
   // verify username and password
   // returns status and object with user info and key
   app.post('/authenticate', function(req, res, next) {
-    passport.authenticate('local', { session: false }, function(err, user, info) {
-      if (err) { response(res, 500, false, err, null); }
-      if (!user) { response(res, 401, false, 'Not Authorized', null); }
-      else { response(res, 200, true, 'Authorized', { "user": user }); }
+    passport.authenticate('local', function(err, user, info) {
+      if (err) { invalidAuth(err, res); }
+      else if (!user) { invalidAuth(null, res); }
+      else if (user) { response(res, 200, true, 'Authorized', { "user": user }); }
     })(req, res, next);
   });
 
   // search
   // returns array list of items
-  app.get('/:path',
-    passport.authenticate('localapikey', {
-      session: false,
-      failureRedirect: 'unauthorized'
-    }),
-    function (req, res) {
-      // parse query string into object
-      var query = require('url').parse(req.url,true).query;
-      // determine if query string exists
-      query = (_.isEmpty(query)) ? null : query;
-      // search for all data or data limited by where conditions in query string
-      data.searchData(req.params.path, null, query, function (err, results) {
-        if (!err)
-          response(res, 200, true, 'Data found', results);
-        else
-          response(res, 500, false, err, null);
-      });
-    }
-  );
+  app.get('/:path', function(req, res, next) {
+    passport.authenticate('localapikey', function(err, key, info) {
+      if (err) { invalidAuth(err, res); }
+      else if (!key) { invalidAuth(null, res); }
+      else if (key) {
+        // parse query string into object
+        var query = require('url').parse(req.url,true).query;
+        // determine if query string exists
+        query = (_.isEmpty(query)) ? null : query;
+        // search for all data or data limited by where conditions in query string
+        data.searchData(req.params.path, null, query, function (err, results) {
+          if (!err)
+            response(res, 200, true, 'Data found', results);
+          else
+            response(res, 500, false, err, null);
+        });
+      }
+    })(req, res, next);
+  });
 
   // search by id
   // returns status with item data
-  app.get('/:path/:id',
-    passport.authenticate('localapikey', {
-      session: false,
-      failureRedirect: 'unauthorized'
-    }),
-    function (req, res) {
-      // search for data matching given id
-      data.searchData(req.params.path, req.params.id, null, function (err, results) {
-        if (!err)
-          response(res, 200, true, 'Data found', results);
-        else
-          response(res, 500, false, err, null);
-      });
-    }
-  );
+  app.get('/:path/:id', function (req, res, next) {
+    passport.authenticate('localapikey', function(err, key, info) {
+      if (err) { invalidAuth(err, res); }
+      else if (!key) { invalidAuth(null, res); }
+      else if (key) {
+        // search for data matching given id
+        data.searchData(req.params.path, req.params.id, null, function (err, results) {
+          if (!err)
+            response(res, 200, true, 'Data found', results);
+          else
+            response(res, 500, false, err, null);
+        });
+      }
+    })(req, res, next);
+  });
 
   // create
   // returns status with data
-  app.post('/:path',
-    passport.authenticate('localapikey', {
-      session: false,
-      failureRedirect: 'unauthorized'
-    }),
-    function (req, res) {
-      // create data and respond with data or error
-      data.createData(req.params.path, req.body, function (err, results) {
-        if (!err)
-          response(res, 200, true, 'Data created', results);
-        else
-          response(res, 500, false, err, null);
-      });
-    }
-  );
+  app.post('/:path', function (req, res, next) {
+    passport.authenticate('localapikey', function(err, key, info) {
+      if (err) { invalidAuth(err, res); }
+      else if (!key) { invalidAuth(null, res); }
+      else if (key) {
+        // create data and respond with data or error
+        data.createData(req.params.path, req.body, function (err, results) {
+          if (!err)
+            response(res, 200, true, 'Data created', results);
+          else
+            response(res, 500, false, err, null);
+        });
+      }
+    })(req, res, next);
+  });
 
   // update
   // returns status with no data
-  app.put('/:path/:id',
-    passport.authenticate('localapikey', {
-      session: false,
-      failureRedirect: 'unauthorized'
-    }),
-    function (req, res) {
-      // search for data to update matching given id
-      data.updateData(req.params.path, req.params.id, req.body, function (err, results) {
-        if (!err)
-          response(res, 200, true, 'Data updated', results);
-        else
-          response(res, 500, false, err, null);
-      });
-    }
-  );
+  app.put('/:path/:id', function (req, res, next) {
+    passport.authenticate('localapikey', function(err, key, info) {
+      if (err) { invalidAuth(err, res); }
+      else if (!key) { invalidAuth(null, res); }
+      else if (key) {
+        // search for data to update matching given id
+        data.updateData(req.params.path, req.params.id, req.body, function (err, results) {
+          if (!err)
+            response(res, 200, true, 'Data updated', results);
+          else
+            response(res, 500, false, err, null);
+        });
+      }
+    })(req, res, next);
+  });
 
   // delete
   // returns status with no data
-  app.delete('/:path/:id',
-    passport.authenticate('localapikey', {
-      session: false,
-      failureRedirect: 'unauthorized'
-    }),
-    function (req, res) {
-      // search for data to delete matching given id
-      data.deleteData(req.params.path, req.params.id, function (err, results) {
-        if (!err)
-          response(res, 200, true, 'Data deleted', results);
-        else
-          response(res, 500, false, err, null);
-      });
-    }
-  );
+  app.delete('/:path/:id', function (req, res, next) {
+    passport.authenticate('localapikey', function(err, key, info) {
+      if (err) { invalidAuth(err, res); }
+      else if (!key) { invalidAuth(null, res); }
+      else if (key) {
+        // search for data to delete matching given id
+        data.deleteData(req.params.path, req.params.id, function (err, results) {
+          if (!err)
+            response(res, 200, true, 'Data deleted', results);
+          else
+            response(res, 500, false, err, null);
+        });
+      }
+    })(req, res, next);
+  });
 };

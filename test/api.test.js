@@ -60,6 +60,21 @@ describe('POST /:path', function() {
         done();
       });
     });
+
+    it('error unauthorized 401 when using incorrect key', function(done) {
+      user.username = 'tester';
+      user.email = 'tester@no-reply.com';
+      api.post('/users')
+      .set('x-api-key', 'badkey')
+      .send(user)
+      .expect(401)
+      .expect('Content-Type', /json/)
+      .end(function (err, res) {
+        if (err) return done(err);
+        res.body.should.have.deep.property('meta.success').and.equal(false);
+        done();
+      });
+    });
   });
 });
 
@@ -122,6 +137,19 @@ describe('PUT /:path/:id', function() {
         done();
       });
     });
+
+    it('error unauthorized 401 when using incorrect key', function(done) {
+      api.put('/users/'+admin_user.id)
+      .set('x-api-key', 'badkey')
+      .send(user)
+      .expect(401)
+      .expect('Content-Type', /json/)
+      .end(function (err, res) {
+        if (err) return done(err);
+        res.body.should.have.deep.property('meta.success').and.equal(false);
+        done();
+      });
+    });
   });
 });
 
@@ -141,7 +169,7 @@ describe('GET /:path', function() {
         done();
       });
     });
-    it('lists single user with query parameters', function (done) {
+    it('lists single user with query parameters', function(done) {
       api.get('/users?username=' + admin_user.username)
       .set('x-api-key', admin_user.key)
       .expect(200)
@@ -153,7 +181,7 @@ describe('GET /:path', function() {
         done();
       });
     });
-    it('lists single user with id', function (done) {
+    it('lists single user with id', function(done) {
       api.get('/users/1')
       .set('x-api-key', admin_user.key)
       .expect(200)
@@ -162,6 +190,17 @@ describe('GET /:path', function() {
         if (err) return done(err);
         res.body.should.have.deep.property('meta.success').and.equal(true);
         res.body.should.have.property('users').and.be.an.instanceof(Object).and.not.be.empty;
+        done();
+      });
+    });
+    it('error unauthorized 401 when using incorrect key', function(done) {
+      api.get('/users')
+      .set('x-api-key', 'badkey')
+      .expect(401)
+      .expect('Content-Type', /json/)
+      .end(function (err, res) {
+        if (err) return done(err);
+        res.body.should.have.deep.property('meta.success').and.equal(false);
         done();
       });
     });
@@ -202,13 +241,13 @@ describe('POST /authenticate', function() {
   it('error when username and password do not match', function (done) {
     api.post('/authenticate')
     .send({ username: 'tester', password: 'badpassword' })
-    .expect(302, done);
+    .expect(401, done);
   });
 
   it('error when username and password do not exist', function (done) {
     api.post('/authenticate')
     .send({ username: 'nouser', password: 'nouser' })
-    .expect(302, done);
+    .expect(401, done);
   });
 });
 
@@ -242,6 +281,18 @@ describe('DELETE /:path/:id', function() {
       api.del('/users/'+user.id)
       .set('x-api-key', admin_user.key)
       .expect(500)
+      .expect('Content-Type', /json/)
+      .end(function (err, res) {
+        if (err) return done(err);
+        res.body.should.have.deep.property('meta.success').and.equal(false);
+        done();
+      });
+    });
+
+    it('error unauthorized 401 when using incorrect key', function(done) {
+      api.del('/users/1')
+      .set('x-api-key', 'badkey')
+      .expect(401)
       .expect('Content-Type', /json/)
       .end(function (err, res) {
         if (err) return done(err);
