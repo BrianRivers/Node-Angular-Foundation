@@ -87,15 +87,13 @@ module.exports = function(app) {
 
   // verify username and password
   // returns status and object with user info and key
-  app.post('/authenticate',
-    passport.authenticate('local', {
-      session: false,
-      failureRedirect: 'unauthorized'
-    }),
-    function (req, res) {
-      response(res, 200, true, 'Authorized', { "user": req.user });
-    }
-  );
+  app.post('/authenticate', function(req, res, next) {
+    passport.authenticate('local', { session: false }, function(err, user, info) {
+      if (err) { response(res, 500, false, err, null); }
+      if (!user) { response(res, 401, false, 'Not Authorized', null); }
+      else { response(res, 200, true, 'Authorized', { "user": user }); }
+    })(req, res, next);
+  });
 
   // search
   // returns array list of items
