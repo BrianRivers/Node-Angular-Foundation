@@ -1,6 +1,6 @@
 /* Services */
 angular.module('mainApp.services', [])
-.factory('UserService', function() {
+.factory('UserService', ['$http', function($http) {
   var self = {};
 
     self.username = "";
@@ -10,7 +10,7 @@ angular.module('mainApp.services', [])
     self.email = "";
     self.loggedIn = false;
 
-  self.login = function ($http, ctrl) {
+  self.login = function (ctrl) {
     $http.post('http://localhost:3001/authenticate', {
       username: ctrl.usernameInput,
       password: ctrl.passwordInput
@@ -43,4 +43,4 @@ angular.module('mainApp.services', [])
   };
 
   return self;
-});
+}]);
