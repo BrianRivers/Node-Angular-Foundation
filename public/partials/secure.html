@@ -2,7 +2,7 @@
   <div class="col-md-12">
     <h3>Must be signed in to view this page</h3>
     <ul class="list-group">
-      <li class="list-group-item" ng-repeat="(key,val) in user">
+      <li class="list-group-item" ng-repeat="(key,val) in user.loggedUser">
         <b>{{ key | uppercase }}:</b> 
         <span ng-if="val !== null">
           {{ val }}

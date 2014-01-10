@@ -23,7 +23,7 @@ var app = angular.module('mainApp', [
 .run(['$rootScope', '$location', 'UserService', function($root, $location, User) {
   // check for user logged in and access level on each route
   $root.$on('$routeChangeSuccess', function(scope, curRoute, prevRoute) {
-    if (!curRoute.access.isFree && !User.loggedIn) {
+    if (!curRoute.access.isFree && !User.loggedUser.loggedIn) {
       $location.path('/');
     }
   });
