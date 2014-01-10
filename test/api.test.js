@@ -231,7 +231,6 @@ describe('POST /authenticate', function() {
     .expect(200)
     .end(function (err, res) {
       if (err) return done(err);
-      console.log(res.body);
       res.body.should.have.deep.property('meta.success').and.equal(true);
       res.body.should.have.deep.property('user').and.be.an.instanceof(Object).and.not.be.empty;
       res.body.should.have.deep.property('user.id');

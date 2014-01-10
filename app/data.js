@@ -104,8 +104,16 @@ exports.authenticateKey = function authenticateKey(apikey, callback) {
   db.Keys.find({ where: { key: apikey } })
   .success(function (result) {
     // if key is found
-    if (result)
-      callback(null, true);
+    if (result) {
+      // check if key is older than 12 hours for needing to log in again
+      var now = moment();
+      var keyTime = moment(result.updatedAt);
+      if (now.diff(keyTime, 'hours') < 12) {
+        callback(null, true);
+      } else {
+        callback(null, false);
+      }
+    }
     else
       callback(null, false);
   })
