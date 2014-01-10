@@ -1,27 +1,19 @@
 var app = angular.module('mainApp', ['ngRoute'])
 .factory('UserService', function() {
   var loggedUser = {
-    username : "",
-    key : "",
-    firstName : "",
-    lastName : "",
-    email : "",
-    loggedIn : false
+    username: "",
+    key: "",
+    firstName: "",
+    lastName: "",
+    email: "",
+    loggedIn: false
   };
   return loggedUser;
 })
 .run(['$rootScope', '$location', 'UserService', function($root, $location, User) {
   $root.$on('$routeChangeSuccess', function(scope, curRoute, prevRoute) {
-    console.log(curRoute);
-    console.log(prevRoute);
-    if (!prevRoute) {
-      if (!curRoute.access.isFree && !User.loggedIn) {
-        $location.path('/');
-      }
-    } else {
-      if (!prevRoute.access.isFree && !User.loggedIn) {
-        $location.path('/');
-      }
+    if (!curRoute.access.isFree && !User.loggedIn) {
+      $location.path('/');
     }
   });
 }]);
@@ -30,12 +22,12 @@ app.config(['$routeProvider',
   function($routeProvider) {
     $routeProvider
     .when('/', {
-      templateUrl: 'mainPage.html',
+      templateUrl: 'partials/main.html',
       access: { isFree: true }
     })
     .when('/secure', {
-      controller: 'secureCtrl',
-      templateUrl: 'secure.html',
+      controller: 'secureController',
+      templateUrl: 'partials/secure.html',
       access: { isFree: false }
     })
     .otherwise({ redirectTo: '/' });
@@ -58,6 +50,7 @@ app.controller('loginController', ['$scope', '$http', 'UserService', function($s
           User.email = data.user.email;
           User.loggedIn = true;
         }
+        $('#login-dropdown').removeClass('open');
       })
       .error(function(err) {
         console.log(err);
@@ -69,6 +62,6 @@ app.controller('loginController', ['$scope', '$http', 'UserService', function($s
   };
 }]);
 
-app.controller('secureCtrl', ['$scope', 'UserService', function($scope, User){
+app.controller('secureController', ['$scope', 'UserService', function($scope, User){
 
 }]);
