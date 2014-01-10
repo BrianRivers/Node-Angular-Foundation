@@ -1,27 +1,24 @@
 {
-	"name": "Veterans Services",
-	"version": "0.0.1",
-	"authors": [
-		"Lance Batson <lbatson@my.apsu.edu>"
-	],
-	"license": "MIT",
-	"homepage": "http://gisweb.apsu.edu",
-	"private": true,
-	"ignore": [
-		"**/.*",
-		"node_modules",
-		"bower_components",
-		"test",
-		"tests"
-	],
-	"dependencies": {
-		"angular": "*",
-		"angular-route": "*",
-		"jquery": "*",
-		"angular-resource": "~1.2.0",
-		"angular-cookies": "~1.2.0",
-		"angular-sanitize": "~1.2.0",
-		"angular-route": "~1.2.0"
-	},
-	"devDependencies": {}
+  "name": "Veterans Services",
+  "version": "0.0.1",
+  "authors": [
+    "Lance Batson <lbatson@my.apsu.edu>"
+  ],
+  "license": "MIT",
+  "homepage": "http://gisweb.apsu.edu",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "lib",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "1.2.7",
+    "angular-resource": "1.2.7",
+    "angular-route": "1.2.7",
+    "jquery": "2.0.3"
+  },
+  "devDependencies": {}
 }
