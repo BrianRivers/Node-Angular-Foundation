@@ -1,6 +1,6 @@
 /* Services */
 angular.module('mainApp.services', [])
-.factory('UserService', ['$http', '$location', 'localStorageService', function($http, $location, localStorageService) {
+.factory('UserService', ['$http', 'localStorageService', function($http, localStorageService) {
   var self = {};
     self.loggedIn = false;
 
@@ -30,10 +30,20 @@ angular.module('mainApp.services', [])
 
   self.userCheck = function() {
     if(localStorageService.get('user') !== null) {
-      self.loggedIn = true;
+      var now = moment();
+      var user = localStorageService.get('user');
+      var updated_date = user.key.updatedAt;
+      console.log(now);
+      console.log(user);
+      console.log(updated_date);
+      console.log(now.diff(updated_date, 'hours', true));
+      if(now.diff(updated_date, 'hours') > 12) {
+        localStorageService.clearAll();
+      } else {
+        self.loggedIn = true;
+      }
     } else {
       self.loggedIn = false;
-      //$location.path('/');
     }
   };
 
