@@ -1,5 +1,7 @@
+/* Services */
 angular.module('mainApp.services', [])
 .factory('UserService', function() {
+  // create user
   var loggedUser = {
     username: "",
     key: "",
