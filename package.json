@@ -20,9 +20,6 @@
 		"mocha": "*",
 		"supertest": "*",
 		"chai": "*",
-		"grunt": "*",
-		"grunt-contrib-watch": "*",
-		"grunt-ember-templates": "*",
-		"grunt-mocha-test": "*"
+		"grunt": "*"
 	}
 }

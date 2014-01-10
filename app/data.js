@@ -62,9 +62,30 @@ exports.authenticateUser = function authenticateUser(user, callback) {
     if (result) {
       // check password hash against provided password
       if (bcrypt.compareSync(user.password, result.password)) {
-        var key = result.key;
-        delete result.key;
-        callback(null, db.Sequelize.Utils._.merge(result, key));
+        // generate new key for user on valid authentication
+        db.Keys.find(result.key.id)
+        .success(function(currentKey) {
+          currentKey.key =  uuid.v1();
+          currentKey.save()
+          .success(function() {
+            // return user information
+            var authUser = {
+              "id": result.id,
+              "key": {
+                "id": currentKey.key,
+                "createdAt": currentKey.createdAt,
+                "updatedAt": currentKey.updatedAt
+              }
+            };
+            callback(null, authUser);
+          })
+          .error(function(err) {
+            callback(err, false);
+          });
+        })
+        .error(function(err) {
+          callback(err, false);
+        });
       } else {
         callback(null, false);
       }
