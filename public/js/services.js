@@ -35,7 +35,7 @@ angular.module('mainApp.services', [])
 
   self.logout = function() {
     self.username = "";
-    self.loggedUser.key = "";
+    self.key = "";
     self.firstName = "";
     self.lastName = "";
     self.email = "";

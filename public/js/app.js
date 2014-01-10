@@ -9,8 +9,8 @@ var app = angular.module('mainApp', [
     // configure routes with controller and template
     $routeProvider
     .when('/', {
-      controller: 'mainController',
-      templateUrl: 'partials/main.html',
+      controller: 'homeController',
+      templateUrl: 'partials/home.html',
       access: { isFree: true }
     })
     .when('/secure', {
