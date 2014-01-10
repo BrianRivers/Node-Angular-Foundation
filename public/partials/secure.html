@@ -1,6 +1,16 @@
 <div class="row">
   <div class="col-md-12">
     <h3>Must be signed in to view this page</h3>
-    <p>User values: {{ user }}</p>
+    <ul class="list-group">
+      <li class="list-group-item" ng-repeat="(key,val) in user">
+        <b>{{ key | uppercase }}:</b> 
+        <span ng-if="val !== null">
+          {{ val }}
+        </span>
+        <span ng-if="val === null">
+          n/a
+        </span>
+      </li>
+    </ul>
   </div>
 </div>
