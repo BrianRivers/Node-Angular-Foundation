@@ -3,6 +3,7 @@ var app = angular.module('mainApp', [
   'ngRoute',
   'mainApp.services',
   'mainApp.controllers',
+  'LocalStorageModule',
 ])
 .config(['$routeProvider',
   function($routeProvider) {
@@ -18,11 +19,18 @@ var app = angular.module('mainApp', [
       templateUrl: 'partials/secure.html',
       access: { isFree: false }
     })
+    .when('/secure2', {
+      controller: 'secure2Controller',
+      templateUrl: 'partials/secure2.html',
+      access: { isFree: false }
+    })
     .otherwise({ redirectTo: '/' });
 }])
 .run(['$rootScope', '$location', 'UserService', function($root, $location, User) {
   // check for user logged in and access level on each route
+  User.userCheck();
   $root.$on('$routeChangeSuccess', function(scope, curRoute, prevRoute) {
+    User.userCheck();
     if (!curRoute.access.isFree && !User.loggedIn) {
       $location.path('/');
     }

@@ -19,4 +19,7 @@ angular.module('mainApp.controllers', [])
 }])
 .controller('secureController', ['$scope', 'UserService', function($scope, User){
   $scope.user = User;
+}])
+.controller('secure2Controller', ['$scope', 'UserService', function($scope, User){
+  $scope.user = User;
 }]);

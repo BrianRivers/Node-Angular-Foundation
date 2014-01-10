@@ -1,13 +1,7 @@
 /* Services */
 angular.module('mainApp.services', [])
-.factory('UserService', ['$http', function($http) {
+.factory('UserService', ['$http', '$location', 'localStorageService', function($http, $location, localStorageService) {
   var self = {};
-
-    self.username = "";
-    self.key = "";
-    self.firstName = "";
-    self.lastName = "";
-    self.email = "";
     self.loggedIn = false;
 
   self.login = function (ctrl) {
@@ -17,11 +11,7 @@ angular.module('mainApp.services', [])
     })
     .success(function(data) {
       if (data) {
-        self.username = data.user.username;
-        self.key = data.user.key;
-        self.firstName = data.user.firstName;
-        self.lastName = data.user.lastName;
-        self.email = data.user.email;
+        localStorageService.add('user', data.user);
         self.loggedIn = true;
       }
       $('#login-dropdown').removeClass('open');
@@ -34,12 +24,17 @@ angular.module('mainApp.services', [])
   };
 
   self.logout = function() {
-    self.username = "";
-    self.key = "";
-    self.firstName = "";
-    self.lastName = "";
-    self.email = "";
+    localStorageService.clearAll();
     self.loggedIn = false;
+  };
+
+  self.userCheck = function() {
+    if(localStorageService.get('user') !== null) {
+      self.loggedIn = true;
+    } else {
+      self.loggedIn = false;
+      //$location.path('/');
+    }
   };
 
   return self;
