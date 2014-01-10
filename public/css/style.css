@@ -4,3 +4,6 @@ body{
 .dropdown-menu input{
 	margin-bottom: 10px;
 }
+.ng-cloak{
+  display: none;
+}
