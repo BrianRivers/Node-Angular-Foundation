@@ -7,13 +7,16 @@ var db = require('./db'),
   bcrypt = require('bcrypt'),
   moment = require('moment');
 
-// verifies model exists in db
+// verifies model exists in db and is allowed to be accessed
 function verifyPath(path) {
+  var ALLOWED = ['Users'];
   // get path aka table or model to search for
   path = db.Sequelize.Utils._.capitalize(path);
 
-  if (db.Sequelize.Utils._.contains(db.tableNames, path)) return path;
-  else return null;
+  if (db.Sequelize.Utils._.contains(db.tableNames, path) &&
+    db.Sequelize.Utils._.contains(ALLOWED, path)) {
+    return path;
+  } else { return null; }
 }
 
 // runs inital db setup and creates default admin user
@@ -180,7 +183,7 @@ exports.searchData = function searchData(path, id, query, callback) {
       });
     }
   }
-  else callback('Invalid search', false);
+  else callback(null, false);
 };
 
 // creates data, returns this data
@@ -228,7 +231,7 @@ exports.createData = function createData(path, data, callback) {
       callback(err, false);
     });
   } else {
-    callback('Invalid creation', false);
+    callback(null, false);
   }
 };
 
@@ -271,7 +274,7 @@ exports.updateData = function updateData(path, id, data, callback) {
       callback(err, false);
     });
   }
-  else callback('Invalid update', false);
+  else callback(null, false);
 };
 
 // delete data matching given id
@@ -299,6 +302,6 @@ exports.deleteData = function deleteData(path, id, callback) {
       callback(err, false);
     });
   } else {
-    callback('Invalid deletion', false);
+    callback(null, false);
   }
 };

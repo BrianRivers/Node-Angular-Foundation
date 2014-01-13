@@ -95,7 +95,7 @@ describe('POST /:path', function() {
       });
     });
 
-    it('error unauthorized 401 when using incorrect key', function(done) {
+    it('error 401 unauthorized when using incorrect key', function(done) {
       user.username = 'tester';
       user.email = 'tester@no-reply.com';
       api.post('/users')
@@ -172,7 +172,7 @@ describe('PUT /:path/:id', function() {
       });
     });
 
-    it('error unauthorized 401 when using incorrect key', function(done) {
+    it('error 401 unauthorized when using incorrect key', function(done) {
       api.put('/users/'+admin_user.id)
       .set('x-api-key', 'badkey')
       .send(user)
@@ -230,7 +230,7 @@ describe('GET /:path', function() {
       });
     });
     
-    it('error unauthorized 401 when using incorrect key', function(done) {
+    it('error 401 unauthorized when using incorrect key', function(done) {
       api.get('/users')
       .set('x-api-key', 'badkey')
       .expect(401)
@@ -242,17 +242,15 @@ describe('GET /:path', function() {
       });
     });
   });
-  // Key list
   describe('keys', function() {
-    it('lists all keys', function (done) {
+    it('error 403 forbidden when trying to access protected data', function (done) {
       api.get('/keys')
       .set('x-api-key', admin_user.key)
-      .expect(200)
+      .expect(403)
       .expect('Content-Type', /json/)
       .end(function (err, res) {
         if (err) return done(err);
-        res.body.should.have.deep.property('meta.success').and.equal(true);
-        res.body.should.have.property('keys').and.be.an.instanceof(Array).and.not.be.empty;
+        res.body.should.have.deep.property('meta.success').and.equal(false);
         done();
       });
     });
@@ -297,7 +295,7 @@ describe('DELETE /:path/:id', function() {
       });
     });
 
-    it('error unauthorized 401 when using incorrect key', function(done) {
+    it('error 401 unauthorized when using incorrect key', function(done) {
       api.del('/users/1')
       .set('x-api-key', 'badkey')
       .expect(401)

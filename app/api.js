@@ -97,8 +97,9 @@ module.exports = function(app) {
         query = (_.isEmpty(query)) ? null : query;
         // search for all data or data limited by where conditions in query string
         data.searchData(req.params.path, null, query, function (err, results) {
-          if (!err) { response(res, 200, true, 'Data found', results); }
-          else { response(res, 500, false, err, null); }
+          if (err) { response(res, 500, false, err, null); }
+          else if (!results) { response(res, 403, false, err, null); }
+          else if (results) { response(res, 200, true, 'Data found', results); }
         });
       }
     })(req, res, next);
@@ -113,8 +114,9 @@ module.exports = function(app) {
       else if (key) {
         // search for data matching given id
         data.searchData(req.params.path, req.params.id, null, function (err, results) {
-          if (!err) { response(res, 200, true, 'Data found', results); }
-          else { response(res, 500, false, err, null); }
+          if (err) { response(res, 500, false, err, null); }
+          else if (!results) { response(res, 403, false, err, null); }
+          else if (results) { response(res, 200, true, 'Data found', results); }
         });
       }
     })(req, res, next);
@@ -129,8 +131,9 @@ module.exports = function(app) {
       else if (key && key.user.RoleId < READ_ONLY) {
         // create data and respond with data or error
         data.createData(req.params.path, req.body, function (err, results) {
-          if (!err) { response(res, 200, true, 'Data created', results); }
-          else { response(res, 500, false, err, null); }
+          if (err) { response(res, 500, false, err, null); }
+          else if (!results) { response(res, 403, false, err, null); }
+          else if (results) { response(res, 200, true, 'Data created', results); }
         });
       } else { response(res, 403, false, 'Not Authorized', null); }
     })(req, res, next);
@@ -145,8 +148,9 @@ module.exports = function(app) {
       else if (key && key.user.RoleId < READ_ONLY) {
         // search for data to update matching given id
         data.updateData(req.params.path, req.params.id, req.body, function (err, results) {
-          if (!err) { response(res, 200, true, 'Data updated', results); }
-          else { response(res, 500, false, err, null); }
+          if (err) { response(res, 500, false, err, null); }
+          else if (!results) { response(res, 403, false, err, null); }
+          else if (results) { response(res, 200, true, 'Data updated', results); }
         });
       } else { response(res, 403, false, 'Not Authorized', null); }
     })(req, res, next);
@@ -161,8 +165,9 @@ module.exports = function(app) {
       else if (key && key.user.RoleId < READ_ONLY) {
         // search for data to delete matching given id
         data.deleteData(req.params.path, req.params.id, function (err, results) {
-          if (!err) { response(res, 200, true, 'Data deleted', results); }
-          else { response(res, 500, false, err, null); }
+          if (err) { response(res, 500, false, err, null); }
+          else if (!results) { response(res, 403, false, err, null); }
+          else if (results) { response(res, 200, true, 'Data deleted', results); }
         });
       } else { response(res, 403, false, 'Not Authorized', null); }
     })(req, res, next);
