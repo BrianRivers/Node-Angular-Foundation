@@ -108,7 +108,10 @@ exports.authenticateUser = function authenticateUser(user, callback) {
 // verifies key exists
 exports.authenticateKey = function authenticateKey(apikey, callback) {
   // search for key
-  db.Keys.find({ where: { key: apikey } })
+  db.Keys.find({
+    where: { key: apikey },
+    include: [db.Users]
+  })
   .success(function (result) {
     // if key is found
     if (result) {
@@ -116,7 +119,7 @@ exports.authenticateKey = function authenticateKey(apikey, callback) {
       var now = moment();
       var keyTime = moment(result.updatedAt);
       if (now.diff(keyTime, 'hours') < 12) {
-        callback(null, true);
+        callback(null, result.values);
       } else {
         callback(null, false);
       }

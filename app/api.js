@@ -11,7 +11,7 @@ module.exports = function(app) {
 
   /* Passport strategies and methods
   ----------------------------------*/
-  
+
   // verify user
   passport.use(new LocalStrategy(
     function (username, password, done) {
@@ -22,10 +22,8 @@ module.exports = function(app) {
       },
       // return user or error
       function (err, results) {
-        if (!err)
-          return done(null, results);
-        else
-          return done(err);
+        if (!err) { return done(null, results); }
+        else { return done(err); }
       });
     })
   );
@@ -34,24 +32,16 @@ module.exports = function(app) {
   passport.use(new LocalAPIKeyStrategy({ apiKeyHeader: 'x-api-key' },
     function (apikey, done) {
       // check if valid api key
-      data.authenticateKey(
-      apikey,
+      data.authenticateKey( apikey,
       function (err, results) {
-        if (!err)
-          return done(null, results);
-        else
-          throw err;
+        if (!err) { return done(null, results); }
+        else { throw err; }
       });
     })
   );
 
-  passport.serializeUser(function (user, done) {
-    done(null, user);
-  });
-
-  passport.deserializeUser(function (obj, done) {
-    done(null, obj);
-  });
+  // const for read only access
+  var READ_ONLY = 3;
 
   // generate error or invalid auth responses
   function invalidAuth(err, res) {
@@ -79,10 +69,8 @@ module.exports = function(app) {
   // returns metadata with list of tables
   app.get('/dbtest', function (req, res) {
     data.tableList(function (err, results) {
-      if (!err)
-        response(res, 200, true, 'Tables', results);
-      else
-        response(res, 500, false, err, null);
+      if (!err) { response(res, 200, true, 'Tables', results); }
+      else { response(res, 500, false, err, null); }
     });
   });
 
@@ -109,10 +97,8 @@ module.exports = function(app) {
         query = (_.isEmpty(query)) ? null : query;
         // search for all data or data limited by where conditions in query string
         data.searchData(req.params.path, null, query, function (err, results) {
-          if (!err)
-            response(res, 200, true, 'Data found', results);
-          else
-            response(res, 500, false, err, null);
+          if (!err) { response(res, 200, true, 'Data found', results); }
+          else { response(res, 500, false, err, null); }
         });
       }
     })(req, res, next);
@@ -127,10 +113,8 @@ module.exports = function(app) {
       else if (key) {
         // search for data matching given id
         data.searchData(req.params.path, req.params.id, null, function (err, results) {
-          if (!err)
-            response(res, 200, true, 'Data found', results);
-          else
-            response(res, 500, false, err, null);
+          if (!err) { response(res, 200, true, 'Data found', results); }
+          else { response(res, 500, false, err, null); }
         });
       }
     })(req, res, next);
@@ -142,15 +126,13 @@ module.exports = function(app) {
     passport.authenticate('localapikey', function(err, key, info) {
       if (err) { invalidAuth(err, res); }
       else if (!key) { invalidAuth(null, res); }
-      else if (key) {
+      else if (key && key.user.RoleId < READ_ONLY) {
         // create data and respond with data or error
         data.createData(req.params.path, req.body, function (err, results) {
-          if (!err)
-            response(res, 200, true, 'Data created', results);
-          else
-            response(res, 500, false, err, null);
+          if (!err) { response(res, 200, true, 'Data created', results); }
+          else { response(res, 500, false, err, null); }
         });
-      }
+      } else { response(res, 403, false, 'Not Authorized', null); }
     })(req, res, next);
   });
 
@@ -160,15 +142,13 @@ module.exports = function(app) {
     passport.authenticate('localapikey', function(err, key, info) {
       if (err) { invalidAuth(err, res); }
       else if (!key) { invalidAuth(null, res); }
-      else if (key) {
+      else if (key && key.user.RoleId < READ_ONLY) {
         // search for data to update matching given id
         data.updateData(req.params.path, req.params.id, req.body, function (err, results) {
-          if (!err)
-            response(res, 200, true, 'Data updated', results);
-          else
-            response(res, 500, false, err, null);
+          if (!err) { response(res, 200, true, 'Data updated', results); }
+          else { response(res, 500, false, err, null); }
         });
-      }
+      } else { response(res, 403, false, 'Not Authorized', null); }
     })(req, res, next);
   });
 
@@ -178,15 +158,13 @@ module.exports = function(app) {
     passport.authenticate('localapikey', function(err, key, info) {
       if (err) { invalidAuth(err, res); }
       else if (!key) { invalidAuth(null, res); }
-      else if (key) {
+      else if (key && key.user.RoleId < READ_ONLY) {
         // search for data to delete matching given id
         data.deleteData(req.params.path, req.params.id, function (err, results) {
-          if (!err)
-            response(res, 200, true, 'Data deleted', results);
-          else
-            response(res, 500, false, err, null);
+          if (!err) { response(res, 200, true, 'Data deleted', results); }
+          else { response(res, 500, false, err, null); }
         });
-      }
+      } else { response(res, 403, false, 'Not Authorized', null); }
     })(req, res, next);
   });
 };
