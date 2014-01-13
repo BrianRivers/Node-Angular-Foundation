@@ -31,7 +31,14 @@ exports.intialSetup = function intialSetup(callback) {
       else {
         db.sequelize.query("SET FOREIGN_KEY_CHECKS = 1");
         var admin_user = JSON.parse(fs.readFileSync(process.cwd() + '/config.json')).default_admin;
-        exports.createData('Users', admin_user, callback);
+        var roles = JSON.parse(fs.readFileSync(process.cwd() + '/config.json')).roles;
+        db.Roles.bulkCreate(roles)
+        .success(function() {
+           exports.createData('Users', admin_user, callback);
+        })
+        .error(function(err) {
+          callback(err, false);
+        });
       }
     });
   });
@@ -70,6 +77,7 @@ exports.authenticateUser = function authenticateUser(user, callback) {
             // return user information
             var authUser = {
               "id": result.id,
+              "role": result.RoleId,
               "key": {
                 "id": currentKey.key,
                 "createdAt": currentKey.createdAt,

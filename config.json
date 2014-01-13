@@ -4,6 +4,12 @@
     "password": "giscenter",
     "firstName": null,
     "lastName": null,
-    "email": "apgiscenter@gmail.com"
-  }
+    "email": "apgiscenter@gmail.com",
+    "RoleId": 1
+  },
+  "roles": [
+    { "type": "Admin" },
+    { "type": "Write" },
+    { "type": "Read" }
+  ]
 }
