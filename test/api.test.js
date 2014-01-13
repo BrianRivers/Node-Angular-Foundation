@@ -30,13 +30,14 @@ describe('POST /authenticate', function() {
     .expect(200)
     .end(function (err, res) {
       if (err) return done(err);
+      admin_user.key = (res.body.user.key.id) ? res.body.user.key.id : null;
       res.body.should.have.deep.property('meta.success').and.equal(true);
       res.body.should.have.deep.property('user').and.be.an.instanceof(Object).and.not.be.empty;
       res.body.should.have.deep.property('user.id');
+      res.body.should.have.deep.property('user.role').and.equal(1);
       res.body.should.have.deep.property('user.key.id');
       res.body.should.have.deep.property('user.key.createdAt');
       res.body.should.have.deep.property('user.key.updatedAt');
-      admin_user.key = res.body.user.key.id;
       done();
     });
   });
