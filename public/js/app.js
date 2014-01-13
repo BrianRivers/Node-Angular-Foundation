@@ -14,14 +14,9 @@ var app = angular.module('mainApp', [
       templateUrl: 'partials/home.html',
       access: { isFree: true }
     })
-    .when('/secure', {
-      controller: 'secureController',
-      templateUrl: 'partials/secure.html',
-      access: { isFree: false }
-    })
-    .when('/secure2', {
-      controller: 'secure2Controller',
-      templateUrl: 'partials/secure2.html',
+    .when('/users/list', {
+      controller: 'userListController',
+      templateUrl: 'partials/userlist.html',
       access: { isFree: false }
     })
     .otherwise({ redirectTo: '/' });

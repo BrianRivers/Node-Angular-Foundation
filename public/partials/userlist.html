@@ -1,0 +1,26 @@
+<div class="row">
+  <div class="col-md-12">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Last Updated</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="user in users">
+          <td>{{ user.username }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.updatedAt }}</td>
+          <td>
+            <button class="btn btn-primary" ng-click="editUser(user.id)">Edit User</button>
+          </td>
+          <td>
+            <button class="btn btn-danger" ng-click="deleteUser(user.id)">Delete User</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
