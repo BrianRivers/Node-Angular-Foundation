@@ -18,18 +18,22 @@ function verifyPath(path) {
 
 // runs inital db setup and creates default admin user
 exports.intialSetup = function intialSetup(callback) {
-  db.sequelize
-  .sync({
-    force: true,
-    language: 'en',
-    logging: true
-  })
-  .complete(function (err) {
-    if (err) throw err;
-    else {
-      var admin_user = JSON.parse(fs.readFileSync(process.cwd() + '/config.json')).default_admin;
-      exports.createData('Users', admin_user, callback);
-    }
+  db.sequelize.query("SET FOREIGN_KEY_CHECKS = 0")
+  .success(function() {
+    db.sequelize
+    .sync({
+      force: true,
+      language: 'en',
+      logging: true
+    })
+    .complete(function (err) {
+      if (err) throw err;
+      else {
+        db.sequelize.query("SET FOREIGN_KEY_CHECKS = 1");
+        var admin_user = JSON.parse(fs.readFileSync(process.cwd() + '/config.json')).default_admin;
+        exports.createData('Users', admin_user, callback);
+      }
+    });
   });
 };
 
