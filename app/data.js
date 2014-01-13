@@ -2,6 +2,7 @@
 ------------------------------------------*/
 
 var db = require('./db'),
+  fs = require('fs'),
   uuid = require('node-uuid'),
   bcrypt = require('bcrypt'),
   moment = require('moment');
@@ -26,13 +27,7 @@ exports.intialSetup = function intialSetup(callback) {
   .complete(function (err) {
     if (err) throw err;
     else {
-      var admin_user = {
-        username: 'admin',
-        password: 'giscenter',
-        firstName: null,
-        lastName: null,
-        email: 'apgiscenter@gmail.com'
-      };
+      var admin_user = JSON.parse(fs.readFileSync(process.cwd() + '/config.json')).default_admin;
       exports.createData('Users', admin_user, callback);
     }
   });

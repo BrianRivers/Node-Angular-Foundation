@@ -4,7 +4,7 @@ var fs = require('fs'),
       api = supertest('http://localhost:3001');
 
 // Get admin user created on intial setup for API key to use with tests
-var admin_user = JSON.parse(fs.readFileSync(process.cwd() + '/test/userdata.json')).user;
+var admin_user = JSON.parse(fs.readFileSync(process.cwd() + '/config.json')).default_admin;
 
 // DB table list test
 describe('GET /dbtest', function() {
@@ -18,6 +18,39 @@ describe('GET /dbtest', function() {
       res.body.should.have.property('tables').and.be.an.instanceof(Array).and.not.be.empty;
       done();
     });
+  });
+});
+
+// User authentication tests
+describe('POST /authenticate', function() {
+  it('user and password match and exist', function (done) {
+    api.post('/authenticate')
+    .send({ username: admin_user.username, password: admin_user.password })
+    .expect('Content-Type', /json/)
+    .expect(200)
+    .end(function (err, res) {
+      if (err) return done(err);
+      res.body.should.have.deep.property('meta.success').and.equal(true);
+      res.body.should.have.deep.property('user').and.be.an.instanceof(Object).and.not.be.empty;
+      res.body.should.have.deep.property('user.id');
+      res.body.should.have.deep.property('user.key.id');
+      res.body.should.have.deep.property('user.key.createdAt');
+      res.body.should.have.deep.property('user.key.updatedAt');
+      admin_user.key = res.body.user.key.id;
+      done();
+    });
+  });
+
+  it('error when username and password do not match', function (done) {
+    api.post('/authenticate')
+    .send({ username: admin_user.username, password: 'badpassword' })
+    .expect(401, done);
+  });
+
+  it('error when username and password do not exist', function (done) {
+    api.post('/authenticate')
+    .send({ username: 'nouser', password: 'nouser' })
+    .expect(401, done);
   });
 });
 
@@ -169,6 +202,7 @@ describe('GET /:path', function() {
         done();
       });
     });
+
     it('lists single user with query parameters', function(done) {
       api.get('/users?username=' + admin_user.username)
       .set('x-api-key', admin_user.key)
@@ -181,6 +215,7 @@ describe('GET /:path', function() {
         done();
       });
     });
+
     it('lists single user with id', function(done) {
       api.get('/users/1')
       .set('x-api-key', admin_user.key)
@@ -193,6 +228,7 @@ describe('GET /:path', function() {
         done();
       });
     });
+    
     it('error unauthorized 401 when using incorrect key', function(done) {
       api.get('/users')
       .set('x-api-key', 'badkey')
@@ -219,38 +255,6 @@ describe('GET /:path', function() {
         done();
       });
     });
-  });
-});
-
-// User authentication tests
-describe('POST /authenticate', function() {
-  it('user and password match and exist', function (done) {
-    api.post('/authenticate')
-    .send({ username: 'tester', password: 'tester' })
-    .expect('Content-Type', /json/)
-    .expect(200)
-    .end(function (err, res) {
-      if (err) return done(err);
-      res.body.should.have.deep.property('meta.success').and.equal(true);
-      res.body.should.have.deep.property('user').and.be.an.instanceof(Object).and.not.be.empty;
-      res.body.should.have.deep.property('user.id');
-      res.body.should.have.deep.property('user.key.id');
-      res.body.should.have.deep.property('user.key.createdAt');
-      res.body.should.have.deep.property('user.key.updatedAt');
-      done();
-    });
-  });
-
-  it('error when username and password do not match', function (done) {
-    api.post('/authenticate')
-    .send({ username: 'tester', password: 'badpassword' })
-    .expect(401, done);
-  });
-
-  it('error when username and password do not exist', function (done) {
-    api.post('/authenticate')
-    .send({ username: 'nouser', password: 'nouser' })
-    .expect(401, done);
   });
 });
 

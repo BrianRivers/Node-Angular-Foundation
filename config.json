@@ -1,0 +1,9 @@
+{
+  "default_admin": {
+    "username": "admin",
+    "password": "giscenter",
+    "firstName": null,
+    "lastName": null,
+    "email": "apgiscenter@gmail.com"
+  }
+}
