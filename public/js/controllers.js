@@ -11,7 +11,7 @@ angular.module('mainApp.controllers', [])
   };
   $scope.logout = function() {
     User.logout();
-    $location.path('/');
+    $locaction.path('/');
   };
 }])
 .controller('homeController', ['$scope', 'UserService', function($scope, User){
