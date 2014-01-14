@@ -64,7 +64,8 @@ describe('POST /:path', function() {
       password: 'test',
       firstName: 'test',
       lastName: 'test',
-      email: 'test@no-reply.com'
+      email: 'test@no-reply.com',
+      RoleId: 3
     };
 
     it('creates user with salted and hashed password in db', function (done) {

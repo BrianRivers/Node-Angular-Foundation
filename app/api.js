@@ -40,8 +40,53 @@ module.exports = function(app) {
     })
   );
 
-  // const for read only access
-  var READ_ONLY = 3;
+  /* Helper methods for authorization and responses
+  -----------------------------------------*/
+
+  // constants for authorization levels
+  var ADMIN_ONLY = [];
+  var ADMIN = 1;
+  var WRITE = 2;
+  var READ = 3;
+
+  // route authorization
+  function verifyWriteAccess(key, params, type) {
+    // seperate authorization for modifying users
+    if (params.path === 'users') {
+      switch (type) {
+        case 'POST': {
+          // check to insure admin creating user
+          if (key.user.RoleId === ADMIN) { return true; }
+          else { return false; }
+        }
+        break;
+        case 'PUT': {
+          // check to insure self or admin updating user
+          if (key.user.id === params.id || key.user.RoleId === ADMIN) { return true; }
+          else { return false; }
+        }
+        break;
+        case 'DELETE': {
+          // check to insure admin and not deleting self
+          if (key.user.id !== params.id && key.user.RoleId === ADMIN) { return true; }
+          else { return false; }
+        }
+        break;
+      }
+    } else {
+      // check write protection
+      if (key.user.RoleId === WRITE || key.user.RoleId === ADMIN) {
+        // check admin only paths for admin users
+        if (_.contains(ADMIN_ONLY, params.path) && key.user.RoleId === ADMIN) { return true; }
+        // permit for non admin if not admin only path
+        else if (!_.contains(ADMIN_ONLY, params.path)) { return true; }
+        // deny access to non admin
+        else { return false; }
+      }
+      // deny access to read only users
+      else if (key.user.RoleId === READ) { return false; }
+    }
+  }
 
   // generate error or invalid auth responses
   function invalidAuth(err, res) {
@@ -128,7 +173,7 @@ module.exports = function(app) {
     passport.authenticate('localapikey', function(err, key, info) {
       if (err) { invalidAuth(err, res); }
       else if (!key) { invalidAuth(null, res); }
-      else if (key && key.user.RoleId < READ_ONLY) {
+      else if (key && verifyWriteAccess(key, req.params, req.method)) {
         // create data and respond with data or error
         data.createData(req.params.path, req.body, function (err, results) {
           if (err) { response(res, 500, false, err, null); }
@@ -145,7 +190,7 @@ module.exports = function(app) {
     passport.authenticate('localapikey', function(err, key, info) {
       if (err) { invalidAuth(err, res); }
       else if (!key) { invalidAuth(null, res); }
-      else if (key && key.user.RoleId < READ_ONLY) {
+      else if (key && verifyWriteAccess(key, req.params, req.method)) {
         // search for data to update matching given id
         data.updateData(req.params.path, req.params.id, req.body, function (err, results) {
           if (err) { response(res, 500, false, err, null); }
@@ -162,7 +207,7 @@ module.exports = function(app) {
     passport.authenticate('localapikey', function(err, key, info) {
       if (err) { invalidAuth(err, res); }
       else if (!key) { invalidAuth(null, res); }
-      else if (key && key.user.RoleId < READ_ONLY) {
+      else if (key && verifyWriteAccess(key, req.params, req.method)) {
         // search for data to delete matching given id
         data.deleteData(req.params.path, req.params.id, function (err, results) {
           if (err) { response(res, 500, false, err, null); }
