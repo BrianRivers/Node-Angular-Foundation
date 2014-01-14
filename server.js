@@ -36,7 +36,7 @@ app.configure(function () {
 
 // determine if inital setup should run based on -initalize flag
 process.argv.forEach(function(val, index, array) {
-  if (val === '-initialize') {
+  if (val === '-init') {
     // run initial db setup
     var data = require('./app/data');
     data.intialSetup(function (err, results) {
