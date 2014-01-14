@@ -17,6 +17,11 @@ var app = angular.module('mainApp', [
       templateUrl: 'partials/home.html',
       access: { isFree: true }
     })
+    .when('/profile', {
+      controller: 'profileController',
+      templateUrl: 'partials/profile.html',
+      access: { isFree: false }
+    })
     .when('/users/list', {
       controller: 'userListController',
       templateUrl: 'partials/userlist.html',

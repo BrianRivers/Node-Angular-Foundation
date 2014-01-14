@@ -26,6 +26,10 @@ angular.module('mainApp.controllers', [])
   // set session data for page
   $scope.session = Session;
 }])
+.controller('profileController', ['$scope', 'SessionService', function($scope, Session) {
+  // set session data for page
+  $scope.session = Session;
+}])
 .controller('userListController', ['$scope', 'SessionService', 'UserService', function($scope, Session, User){
   // check for session
   if (Session.info) {
