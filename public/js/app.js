@@ -30,4 +30,13 @@ var app = angular.module('mainApp', [
       $location.path('/');
     }
   });
+  var lastDigestRun = moment();
+  $root.$watch(function detectIdle() {
+    var now = moment();
+    if (now.diff(lastDigestRun, 'minutes') > 1) {
+      User.logout();
+      $location.path('/');
+    }
+    lastDigestRun = now;
+  });
 }]);
