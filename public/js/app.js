@@ -28,7 +28,7 @@ var app = angular.module('mainApp', [
   Session.sessionCheck();
   $root.$on('$routeChangeSuccess', function(scope, curRoute, prevRoute) {
     Session.sessionCheck();
-    if (!curRoute.access.isFree && !Session.loggedIn) {
+    if (!curRoute.access.isFree && !Session.info) {
       $location.path('/');
     }
   });

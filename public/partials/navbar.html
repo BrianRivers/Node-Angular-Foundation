@@ -9,11 +9,11 @@
     <a class="navbar-brand" href="#/">Home</a>
   </div>
   <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-    <ul class="nav navbar-nav ng-cloak" ng-show="session.loggedIn">
+    <ul class="nav navbar-nav ng-cloak" ng-hide="session.info.role != 1">
       <li><a href="#/users/list">Users</a></li>
     </ul>
     <ul class="nav navbar-nav navbar-right ng-cloak">
-      <li class="dropdown" id="login-dropdown" ng-hide="session.loggedIn">
+      <li class="dropdown" id="login-dropdown" ng-hide="session.info">
         <a href="" class="dropdown-toggle" data-toggle="dropdown">Sign-In</a>
         <div class="dropdown-menu">
           <form class="navbar-form navbar-right" role="login" data-ng-submit="submit()">
@@ -27,11 +27,11 @@
           </form>
         </div>
       </li>
-      <li class="dropdown" ng-show="session.loggedIn">
+      <li class="dropdown" ng-show="session.info">
         <a href="" class="dropdown-toggle" data-toggle="dropdown">User Menu <b class="caret"></b></a>
         <ul class="dropdown-menu">
-          <li><a href="" ng-click="" ng-show="session.loggedIn">Profile</a></li>
-          <li><a href="" ng-click="logout()" ng-show="session.loggedIn">Logout</a></li>
+          <li><a href="" ng-click="">Profile</a></li>
+          <li><a href="" ng-click="logout()">Logout</a></li>
         </ul>
       </li>
     </ul>

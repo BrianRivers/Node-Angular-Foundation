@@ -2,7 +2,7 @@
 angular.module('mainApp.services', [])
 .factory('SessionService', ['$http', 'localStorageService', function($http, localStorageService) {
   var self = {};
-  self.loggedIn = false;
+  self.info = null;
   
   self.login = function (ctrl) {
     $http.post('http://localhost:3001/authenticate', {
@@ -12,7 +12,7 @@ angular.module('mainApp.services', [])
     .success(function(data) {
       if (data) {
         localStorageService.add('session', data.user);
-        self.loggedIn = true;
+        self.info = data.user;
       }
       $('#login-dropdown').removeClass('open');
       ctrl.usernameInput = '';
@@ -27,38 +27,22 @@ angular.module('mainApp.services', [])
 
   self.logout = function() {
     localStorageService.clearAll();
-    self.loggedIn = false;
+    self.info = false;
   };
 
   self.sessionCheck = function() {
     if(localStorageService.get('session') !== null) {
       var now = moment();
-      var user = localStorageService.get('session');
-      var updated_date = user.key.updatedAt;
+      var session = localStorageService.get('session');
+      var updated_date = session.key.updatedAt;
       if(now.diff(updated_date, 'hours') > 12) {
         localStorageService.clearAll();
       } else {
-        self.loggedIn = true;
+        self.info = session;
       }
     } else {
-      self.loggedIn = false;
+      self.info = null;
     }
-  };
-
-  return self;
-}])
-.factory('UserService', ['$http', 'localStorageService', function($http, localStorageService) {
-  var self = {};
-  // searches for all users against api
-  self.userList = function() {
-    // promise info http://stackoverflow.com/a/12513509/1415348
-    var promise = $http.get('http://localhost:3001/users')
-    .then(function(response) {
-      return response.data;
-    }, function(error) {
-      return error.data;
-    });
-    return promise;
   };
 
   return self;
@@ -75,4 +59,20 @@ angular.module('mainApp.services', [])
       }
     }
   };
+}])
+.factory('UserService', ['$http', 'localStorageService', function($http, localStorageService) {
+  var self = {};
+  // searches for all users against api
+  self.userList = function() {
+    // promise info http://stackoverflow.com/a/12513509/1415348
+    var promise = $http.get('http://localhost:3001/users')
+    .then(function(response) {
+      return response.data;
+    }, function(error) {
+      return error.data;
+    });
+    return promise;
+  };
+
+  return self;
 }]);

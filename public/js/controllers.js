@@ -18,7 +18,7 @@ angular.module('mainApp.controllers', [])
   $scope.session = Session;
 }])
 .controller('userListController', ['$scope', 'SessionService', 'UserService', function($scope, Session, User){
-  if (Session.loggedIn) {
+  if (Session.info) {
     // List users in table or log error
     User.userList().then(function(data) {
       if (data.meta.success) {
