@@ -67,3 +67,26 @@ npm install
 cd public/
 bower install
 ````
+
+####SSH into Vagrant to the project folder
+````
+cd public/
+vagrant ssh
+cd /srv/site
+````
+
+####Run the application
+If this is the first time running, make sure to initialize the application by passing the -initialize flag
+````
+node server.js -initialize
+````
+
+You can then quit the server at any time using Ctrl-C. Run the application by being in the application folder and typing
+````
+node server.js
+````
+
+You can also run the server that will auto restart after file changes by using nodemon
+````
+nodemon -L server.js
+````

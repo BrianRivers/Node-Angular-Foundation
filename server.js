@@ -34,22 +34,17 @@ app.configure(function () {
   });
 });
 
-// determine if inital setup should run
-try {
-  fs.statSync('test/userdata.json').isFile();
-}
-catch (e) {
-  // run initial db setup
-  var data = require('./app/data');
-  data.intialSetup(function (err, results) {
-    if (err) throw err;
-    fs.writeFile('test/userdata.json', JSON.stringify(results), function (err) {
+// determine if inital setup should run based on -initalize flag
+process.argv.forEach(function(val, index, array) {
+  if (val === '-initialize') {
+    // run initial db setup
+    var data = require('./app/data');
+    data.intialSetup(function (err, results) {
       if (err) throw err;
-      console.log('User created and written to data file');
+      console.log('Default admin user created');
     });
-  });
-}
-
+  }
+});
 
 // require api routes and functions
 var api = require('./app/api');

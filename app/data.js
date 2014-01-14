@@ -2,39 +2,48 @@
 ------------------------------------------*/
 
 var db = require('./db'),
+  fs = require('fs'),
   uuid = require('node-uuid'),
   bcrypt = require('bcrypt'),
   moment = require('moment');
 
-// verifies model exists in db
+// verifies model exists in db and is allowed to be accessed
 function verifyPath(path) {
+  var ALLOWED = ['Users'];
   // get path aka table or model to search for
   path = db.Sequelize.Utils._.capitalize(path);
 
-  if (db.Sequelize.Utils._.contains(db.tableNames, path)) return path;
-  else return null;
+  if (db.Sequelize.Utils._.contains(db.tableNames, path) &&
+    db.Sequelize.Utils._.contains(ALLOWED, path)) {
+    return path;
+  } else { return null; }
 }
 
 // runs inital db setup and creates default admin user
 exports.intialSetup = function intialSetup(callback) {
-  db.sequelize
-  .sync({
-    force: true,
-    language: 'en',
-    logging: true
-  })
-  .complete(function (err) {
-    if (err) throw err;
-    else {
-      var admin_user = {
-        username: 'admin',
-        password: 'giscenter',
-        firstName: null,
-        lastName: null,
-        email: 'apgiscenter@gmail.com'
-      };
-      exports.createData('Users', admin_user, callback);
-    }
+  db.sequelize.query("SET FOREIGN_KEY_CHECKS = 0")
+  .success(function() {
+    db.sequelize
+    .sync({
+      force: true,
+      language: 'en',
+      logging: true
+    })
+    .complete(function (err) {
+      if (err) throw err;
+      else {
+        db.sequelize.query("SET FOREIGN_KEY_CHECKS = 1");
+        var admin_user = JSON.parse(fs.readFileSync(process.cwd() + '/config.json')).default_admin;
+        var roles = JSON.parse(fs.readFileSync(process.cwd() + '/config.json')).roles;
+        db.Roles.bulkCreate(roles)
+        .success(function() {
+           exports.createData('Users', admin_user, callback);
+        })
+        .error(function(err) {
+          callback(err, false);
+        });
+      }
+    });
   });
 };
 
@@ -71,6 +80,7 @@ exports.authenticateUser = function authenticateUser(user, callback) {
             // return user information
             var authUser = {
               "id": result.id,
+              "role": result.RoleId,
               "key": {
                 "id": currentKey.key,
                 "createdAt": currentKey.createdAt,
@@ -101,7 +111,10 @@ exports.authenticateUser = function authenticateUser(user, callback) {
 // verifies key exists
 exports.authenticateKey = function authenticateKey(apikey, callback) {
   // search for key
-  db.Keys.find({ where: { key: apikey } })
+  db.Keys.find({
+    where: { key: apikey },
+    include: [db.Users]
+  })
   .success(function (result) {
     // if key is found
     if (result) {
@@ -109,7 +122,7 @@ exports.authenticateKey = function authenticateKey(apikey, callback) {
       var now = moment();
       var keyTime = moment(result.updatedAt);
       if (now.diff(keyTime, 'hours') < 12) {
-        callback(null, true);
+        callback(null, result.values);
       } else {
         callback(null, false);
       }
@@ -170,7 +183,7 @@ exports.searchData = function searchData(path, id, query, callback) {
       });
     }
   }
-  else callback('Invalid search', false);
+  else callback(null, false);
 };
 
 // creates data, returns this data
@@ -218,7 +231,7 @@ exports.createData = function createData(path, data, callback) {
       callback(err, false);
     });
   } else {
-    callback('Invalid creation', false);
+    callback(null, false);
   }
 };
 
@@ -261,7 +274,7 @@ exports.updateData = function updateData(path, id, data, callback) {
       callback(err, false);
     });
   }
-  else callback('Invalid update', false);
+  else callback(null, false);
 };
 
 // delete data matching given id
@@ -289,6 +302,6 @@ exports.deleteData = function deleteData(path, id, callback) {
       callback(err, false);
     });
   } else {
-    callback('Invalid deletion', false);
+    callback(null, false);
   }
 };
