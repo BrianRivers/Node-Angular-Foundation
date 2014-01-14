@@ -7,6 +7,7 @@ var app = angular.module('mainApp', [
 ])
 .config(['$routeProvider', '$httpProvider',
   function($routeProvider, $httpProvider) {
+    // add interceptor for additional request and response handling
     $httpProvider.interceptors.push('httpRequestInterceptor');
 
     // configure routes with controller and template
@@ -28,10 +29,12 @@ var app = angular.module('mainApp', [
   Session.sessionCheck();
   $root.$on('$routeChangeSuccess', function(scope, curRoute, prevRoute) {
     Session.sessionCheck();
+    // redirect to home page if protected page and no session
     if (!curRoute.access.isFree && !Session.info) {
       $location.path('/');
     }
   });
+  // idle logout functionality
   var lastDigestRun = moment();
   $root.$watch(function detectIdle() {
     var now = moment();
