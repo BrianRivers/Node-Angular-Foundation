@@ -5,8 +5,10 @@ var app = angular.module('mainApp', [
   'mainApp.controllers',
   'LocalStorageModule',
 ])
-.config(['$routeProvider',
-  function($routeProvider) {
+.config(['$routeProvider', '$httpProvider',
+  function($routeProvider, $httpProvider) {
+    $httpProvider.interceptors.push('httpRequestInterceptor');
+
     // configure routes with controller and template
     $routeProvider
     .when('/', {
@@ -33,8 +35,8 @@ var app = angular.module('mainApp', [
   var lastDigestRun = moment();
   $root.$watch(function detectIdle() {
     var now = moment();
-    if (now.diff(lastDigestRun, 'minutes') > 1) {
-      User.logout();
+    if (now.diff(lastDigestRun, 'hour') > 1) {
+      Session.logout();
       $location.path('/');
     }
     lastDigestRun = now;

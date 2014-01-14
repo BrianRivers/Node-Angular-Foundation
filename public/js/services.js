@@ -3,9 +3,7 @@ angular.module('mainApp.services', [])
 .factory('SessionService', ['$http', 'localStorageService', function($http, localStorageService) {
   var self = {};
   self.loggedIn = false;
-  // used for custom key header
-  var headers;
-
+  
   self.login = function (ctrl) {
     $http.post('http://localhost:3001/authenticate', {
       username: ctrl.usernameInput,
@@ -14,12 +12,6 @@ angular.module('mainApp.services', [])
     .success(function(data) {
       if (data) {
         localStorageService.add('session', data.user);
-        // set header for requests
-        headers = {
-          headers: {
-            "x-api-key": data.user.key.id
-          }
-        };
         self.loggedIn = true;
       }
       $('#login-dropdown').removeClass('open');
@@ -47,12 +39,6 @@ angular.module('mainApp.services', [])
         localStorageService.clearAll();
       } else {
         self.loggedIn = true;
-        // set header for requests
-        headers = {
-          headers: {
-            "x-api-key": localStorageService.get('session').key.id
-          }
-        };
       }
     } else {
       self.loggedIn = false;
@@ -63,15 +49,10 @@ angular.module('mainApp.services', [])
 }])
 .factory('UserService', ['$http', 'localStorageService', function($http, localStorageService) {
   var self = {};
-  var headers = {
-          headers: {
-            "x-api-key": localStorageService.get('session').key.id
-          }
-        };
   // searches for all users against api
   self.userList = function() {
     // promise info http://stackoverflow.com/a/12513509/1415348
-    var promise = $http.get('http://localhost:3001/users', headers)
+    var promise = $http.get('http://localhost:3001/users')
     .then(function(response) {
       return response.data;
     }, function(error) {
@@ -81,4 +62,17 @@ angular.module('mainApp.services', [])
   };
 
   return self;
+}])
+.factory('httpRequestInterceptor', ['localStorageService',
+  function (localStorageService) {
+  return {
+    request: function (config) {
+      if(localStorageService.get('session') !== null) {
+        config.headers = {'x-api-key': localStorageService.get('session').key.id};
+        return config;
+      } else {
+        return config;
+      }
+    }
+  };
 }]);
