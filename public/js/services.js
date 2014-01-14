@@ -1,9 +1,8 @@
 /* Services */
 angular.module('mainApp.services', [])
-.factory('UserService', ['$http', 'localStorageService', function($http, localStorageService) {
+.factory('SessionService', ['$http', 'localStorageService', function($http, localStorageService) {
   var self = {};
-    self.loggedIn = false;
-
+  self.loggedIn = false;
   // used for custom key header
   var headers;
 
@@ -14,7 +13,7 @@ angular.module('mainApp.services', [])
     })
     .success(function(data) {
       if (data) {
-        localStorageService.add('user', data.user);
+        localStorageService.add('session', data.user);
         // set header for requests
         headers = {
           headers: {
@@ -39,10 +38,10 @@ angular.module('mainApp.services', [])
     self.loggedIn = false;
   };
 
-  self.userCheck = function() {
-    if(localStorageService.get('user') !== null) {
+  self.sessionCheck = function() {
+    if(localStorageService.get('session') !== null) {
       var now = moment();
-      var user = localStorageService.get('user');
+      var user = localStorageService.get('session');
       var updated_date = user.key.updatedAt;
       console.log(now);
       console.log(user);
@@ -55,7 +54,7 @@ angular.module('mainApp.services', [])
         // set header for requests
         headers = {
           headers: {
-            "x-api-key": localStorageService.get('user').key.id
+            "x-api-key": localStorageService.get('session').key.id
           }
         };
       }
@@ -64,6 +63,15 @@ angular.module('mainApp.services', [])
     }
   };
 
+  return self;
+}])
+.factory('UserService', ['$http', 'localStorageService', function($http, localStorageService) {
+  var self = {};
+  var headers = {
+          headers: {
+            "x-api-key": localStorageService.get('session').key.id
+          }
+        };
   // searches for all users against api
   self.userList = function() {
     // promise info http://stackoverflow.com/a/12513509/1415348

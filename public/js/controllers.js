@@ -1,24 +1,24 @@
 /* Controllers */
 angular.module('mainApp.controllers', [])
-.controller('loginController', ['$scope', '$location', 'UserService', function($scope, $location, User) {
-  $scope.user = User;
+.controller('loginController', ['$scope', '$location', 'SessionService', function($scope, $location, Session) {
+  $scope.session = Session;
   // verify user credentials for sign in
   $scope.submit = function() {
     if (this.usernameInput && this.passwordInput) {
       var self = this;
-      User.login(self);
+      Session.login(self);
     }
   };
   $scope.logout = function() {
-    User.logout();
+    Session.logout();
     $location.path('/');
   };
 }])
-.controller('homeController', ['$scope', 'UserService', function($scope, User){
-  $scope.user = User;
+.controller('homeController', ['$scope', 'SessionService', function($scope, Session){
+  $scope.session = Session;
 }])
-.controller('userListController', ['$scope', 'UserService', function($scope, User){
-  if (User.loggedIn) {
+.controller('userListController', ['$scope', 'SessionService', 'UserService', function($scope, Session, User){
+  if (Session.loggedIn) {
     // List users in table or log error
     User.userList().then(function(data) {
       if (data.meta.success) {

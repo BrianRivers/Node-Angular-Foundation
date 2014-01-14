@@ -21,12 +21,12 @@ var app = angular.module('mainApp', [
     })
     .otherwise({ redirectTo: '/' });
 }])
-.run(['$rootScope', '$location', 'UserService', function($root, $location, User) {
-  // check for user logged in and access level on each route
-  User.userCheck();
+.run(['$rootScope', '$location', 'SessionService', function($root, $location, Session) {
+  // check for session logged in and access level on each route
+  Session.sessionCheck();
   $root.$on('$routeChangeSuccess', function(scope, curRoute, prevRoute) {
-    User.userCheck();
-    if (!curRoute.access.isFree && !User.loggedIn) {
+    Session.sessionCheck();
+    if (!curRoute.access.isFree && !Session.loggedIn) {
       $location.path('/');
     }
   });
