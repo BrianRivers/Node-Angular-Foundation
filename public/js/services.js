@@ -73,6 +73,18 @@ angular.module('mainApp.services', [])
 }])
 .factory('UserService', ['$http', 'localStorageService', function($http, localStorageService) {
   var self = {};
+
+  // searches for single user by id
+  self.userSearch = function(id) {
+    var promise = $http.get(BASE_URL+'users/'+id)
+    .then(function(response) {
+      return response.data;
+    }, function(error) {
+      return error.data;
+    });
+    return promise;
+  };
+
   // searches for all users against api
   self.userList = function() {
     // promise info http://stackoverflow.com/a/12513509/1415348
