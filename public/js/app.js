@@ -5,6 +5,7 @@ var app = angular.module('mainApp', [
   'mainApp.controllers',
   'mainApp.directives',
   'LocalStorageModule',
+  'ngAnimate',
   'ui.bootstrap'
 ])
 .config(['$routeProvider', '$httpProvider',
@@ -52,3 +53,40 @@ var app = angular.module('mainApp', [
     lastDigestRun = now;
   });
 }]);
+
+app.animation('.my-repeat-animation', function() {
+  return {
+    enter : function(element, done) {
+      jQuery(element).css({
+        position:'relative',
+        left:-10,
+        opacity:0
+      });
+      jQuery(element).animate({
+        left:0,
+        opacity:1
+      }, done);
+    },
+
+    leave : function(element, done) {
+      jQuery(element).css({
+        position:'relative',
+        left:0,
+        opacity:1
+      });
+      jQuery(element).animate({
+        left:-10,
+        opacity:0
+      }, done);
+    },
+
+    move : function(element, done) {
+      jQuery(element).css({
+        opacity:0.5
+      });
+      jQuery(element).animate({
+        opacity:1
+      }, done);
+    }
+  };
+});
