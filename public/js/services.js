@@ -1,11 +1,12 @@
 /* Services */
 var BASE_URL = 'http://localhost:3001/';
 angular.module('mainApp.services', [])
-.factory('SessionService', ['$http', 'localStorageService', function($http, localStorageService) {
+.factory('SessionService', ['$http', '$timeout', 'localStorageService', function($http, $timeout, localStorageService) {
   // set vars for service
   var self = {};
   self.info = null;
-  
+  self.alerts = []; // To store alerts that are displayed
+
   // verify user credentials to log in
   self.login = function (ctrl) {
     $http.post(BASE_URL+'authenticate', {
@@ -17,6 +18,7 @@ angular.module('mainApp.services', [])
         // store returned user info in session
         localStorageService.add('session', data.user);
         self.info = data.user;
+        self.alerts.push({type:'success', msg: "Login Successful!"});
       }
       // reset form and hide it
       $('#login-dropdown').removeClass('open');
@@ -28,7 +30,13 @@ angular.module('mainApp.services', [])
       console.log(err);
       ctrl.usernameInput = '';
       ctrl.passwordInput = '';
+      self.alerts.push({type:'danger', msg: "Username or Password are misspelled or do not exist."});
     });
+
+    $timeout(function() {
+      self.alerts.splice(0, 1);
+    }, 3000);
+
   };
 
   // remove session info for logout
@@ -53,6 +61,11 @@ angular.module('mainApp.services', [])
     } else {
       self.info = null;
     }
+  };
+
+  // To remove alerts when the 'x' button is pressed
+  self.closeAlert = function(index) {
+    self.alerts.splice(index, 1);
   };
 
   return self;

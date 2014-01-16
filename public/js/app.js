@@ -3,7 +3,9 @@ var app = angular.module('mainApp', [
   'ngRoute',
   'mainApp.services',
   'mainApp.controllers',
+  'mainApp.directives',
   'LocalStorageModule',
+  'ui.bootstrap'
 ])
 .config(['$routeProvider', '$httpProvider',
   function($routeProvider, $httpProvider) {
