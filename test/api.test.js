@@ -307,6 +307,7 @@ describe('GET /:path', function() {
       });
     });
   });
+
   describe('keys', function() {
     it('error 403 forbidden when trying to access protected data', function (done) {
       api.get('/keys')
@@ -366,6 +367,18 @@ describe('DELETE /:path/:id', function() {
       .expect(401)
       .expect('Content-Type', /json/)
       .end(function (err, res) {
+        if (err) return done(err);
+        res.body.should.have.deep.property('meta.success').and.equal(false);
+        done();
+      });
+    });
+
+    it('error 403 forbidden when trying to delete currently authenticated user', function(done) {
+      api.del('/users/1')
+      .set('x-api-key', admin_user.key)
+      .expect(403)
+      .expect('Content-Type', /json/)
+      .end(function(err, res) {
         if (err) return done(err);
         res.body.should.have.deep.property('meta.success').and.equal(false);
         done();
