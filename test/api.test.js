@@ -104,10 +104,33 @@ describe('POST /:path', function() {
       .send(user)
       .expect(401)
       .expect('Content-Type', /json/)
-      .end(function (err, res) {
+      .end(function(err, res) {
         if (err) return done(err);
         res.body.should.have.deep.property('meta.success').and.equal(false);
         done();
+      });
+    });
+
+    it('error 403 forbidden when user role does not allow creation', function(done) {
+      user.username = 'test';
+      user.password = 'test';
+      api.post('/authenticate')
+      .send({ username: user.username, password: user.password })
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end(function (err, res) {
+        user.username = 'testing';
+        user.email = 'testing@testing.com';
+        api.post('/users')
+        .set('x-api-key', res.body.user.key.id)
+        .send(user)
+        .expect(403)
+        .expect('Content-Type', /json/)
+        .end(function(err, res) {
+          if (err) return done(err);
+          res.body.should.have.deep.property('meta.success').and.equal(false);
+          done();
+        });
       });
     });
   });
@@ -118,7 +141,6 @@ describe('PUT /:path/:id', function() {
   // User update
   describe('users', function() {
     var user = {
-      id: 2,
       username: 'tester',
       password: 'tester',
       firstName: 'tester',
@@ -126,20 +148,43 @@ describe('PUT /:path/:id', function() {
       email: 'tester@no-reply.com'
     };
 
-    it('updates user with given attributes', function (done) {
+    it('updates another user when role allows updating other users', function (done) {
       api.get('/users?username=test')
       .set('x-api-key', admin_user.key)
+      .expect('Content-Type', /json/)
+      .expect(200)
       .end(function (err, res) {
         user.id = res.body.users.id;
-        api.put('/users/'+user.id)
+        api.put('/users/' + user.id)
         .set('x-api-key', admin_user.key)
         .send(user)
         .expect(200)
         .expect('Content-Type', /json/)
         .end(function (err, res) {
           if (err) return done(err);
+          user = res.body.users;
           res.body.should.have.deep.property('meta.success').and.equal(true);
           res.body.should.have.deep.property('users').and.not.be.empty;
+          done();
+        });
+      });
+    });
+
+    it('updates currently authorized user', function(done) {
+      api.post('/authenticate')
+      .send({ username: 'tester', password: 'tester' })
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end(function(err, res) {
+        user.email = 'testing@testing.com';
+        api.put('/users/' + res.body.user.id)
+        .set('x-api-key', res.body.user.key.id)
+        .send(user)
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .end(function(err, res) {
+          if (err) return done(err);
+          res.body.should.have.deep.property('meta.success').and.equal(true);
           done();
         });
       });
@@ -159,9 +204,8 @@ describe('PUT /:path/:id', function() {
     });
 
     it('error when attribute values are invalid', function (done) {
-      user.firstName = null;
       user.email = 'TEST';
-      api.put('/users/'+user.id)
+      api.put('/users/' + user.id)
       .set('x-api-key', admin_user.key)
       .send(user)
       .expect(500)
@@ -174,7 +218,7 @@ describe('PUT /:path/:id', function() {
     });
 
     it('error 401 unauthorized when using incorrect key', function(done) {
-      api.put('/users/'+admin_user.id)
+      api.put('/users/' + admin_user.id)
       .set('x-api-key', 'badkey')
       .send(user)
       .expect(401)
@@ -183,6 +227,27 @@ describe('PUT /:path/:id', function() {
         if (err) return done(err);
         res.body.should.have.deep.property('meta.success').and.equal(false);
         done();
+      });
+    });
+
+    it('error 403 forbidden when user role does not allow updates to other users', function(done) {
+      api.post('/authenticate')
+      .send({ username: 'tester', password: 'tester' })
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end(function (err, res) {
+        user.username = 'testing';
+        user.email = 'testing@testing.com';
+        api.put('/users/' + admin_user.id)
+        .set('x-api-key', res.body.user.key.id)
+        .send(user)
+        .expect(403)
+        .expect('Content-Type', /json/)
+        .end(function(err, res) {
+          if (err) return done(err);
+          res.body.should.have.deep.property('meta.success').and.equal(false);
+          done();
+        });
       });
     });
   });
