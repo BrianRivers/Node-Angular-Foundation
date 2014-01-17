@@ -162,7 +162,6 @@ describe('PUT /:path/:id', function() {
         .expect('Content-Type', /json/)
         .end(function (err, res) {
           if (err) return done(err);
-          user = res.body.users;
           res.body.should.have.deep.property('meta.success').and.equal(true);
           res.body.should.have.deep.property('users').and.not.be.empty;
           done();
@@ -238,7 +237,7 @@ describe('PUT /:path/:id', function() {
       .end(function (err, res) {
         user.username = 'testing';
         user.email = 'testing@testing.com';
-        api.put('/users/' + admin_user.id)
+        api.put('/users/1')
         .set('x-api-key', res.body.user.key.id)
         .send(user)
         .expect(403)

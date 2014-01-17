@@ -52,39 +52,39 @@ module.exports = function(app) {
   // route authorization
   function verifyWriteAccess(key, params, type) {
     // seperate authorization for modifying users
-    if (params.path === 'users') {
+    if (params.path == 'users') {
       switch (type) {
         case 'POST': {
           // check to insure admin creating user
-          if (key.user.RoleId === ADMIN) { return true; }
+          if (key.user.RoleId == ADMIN) { return true; }
           else { return false; }
         }
         break;
         case 'PUT': {
           // check to insure self or admin updating user
-          if (key.user.id === params.id || key.user.RoleId === ADMIN) { return true; }
+          if (key.user.id == params.id || key.user.RoleId == ADMIN) { return true; }
           else { return false; }
         }
         break;
         case 'DELETE': {
           // check to insure admin and not deleting self
-          if (key.user.id !== params.id && key.user.RoleId === ADMIN) { return true; }
+          if (key.user.id != params.id && key.user.RoleId == ADMIN) { return true; }
           else { return false; }
         }
         break;
       }
     } else {
       // check write protection
-      if (key.user.RoleId === WRITE || key.user.RoleId === ADMIN) {
+      if (key.user.RoleId == WRITE || key.user.RoleId == ADMIN) {
         // check admin only paths for admin users
-        if (_.contains(ADMIN_ONLY, params.path) && key.user.RoleId === ADMIN) { return true; }
+        if (_.contains(ADMIN_ONLY, params.path) && key.user.RoleId == ADMIN) { return true; }
         // permit for non admin if not admin only path
         else if (!_.contains(ADMIN_ONLY, params.path)) { return true; }
         // deny access to non admin
         else { return false; }
       }
       // deny access to read only users
-      else if (key.user.RoleId === READ) { return false; }
+      else if (key.user.RoleId == READ) { return false; }
     }
   }
 
