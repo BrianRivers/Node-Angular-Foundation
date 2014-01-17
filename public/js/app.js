@@ -12,6 +12,12 @@ var app = angular.module('mainApp', [
   function($routeProvider, $httpProvider) {
     // add interceptor for additional request and response handling
     $httpProvider.interceptors.push('httpRequestInterceptor');
+    $(document).ready(function() {
+      $(".dropdown").click(function(event){
+        alert('test');
+        event.stopPropagation();
+      });
+    });
 
     // configure routes with controller and template
     $routeProvider
