@@ -19,10 +19,10 @@
           <form class="navbar-form navbar-right" role="login" data-ng-submit="submit()">
             <div class="form-group">
               <label for="">Username:</label>
-              <input type="text" class="form-control" data-ng-model="usernameInput"/>
+              <input type="text" class="form-control" data-ng-model="usernameInput" ng-click="$event.stopPropagation();"/>
               <label for="">Password:</label>
-              <input type="password" class="form-control" data-ng-model="passwordInput"/>
-              <input type="submit" class="btn btn-primary btn-block"/>
+              <input type="password" class="form-control" data-ng-model="passwordInput" ng-click="$event.stopPropagation();"/>
+              <input type="submit" class="btn btn-primary btn-block" ng-click="$event.stopPropagation();"/>
             </div>
           </form>
         </div>
