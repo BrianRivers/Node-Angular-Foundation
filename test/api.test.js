@@ -306,6 +306,24 @@ describe('GET /:path', function() {
         done();
       });
     });
+
+    it('error 403 forbidden when non-admin tries to view users', function (done) {
+      api.post('/authenticate')
+      .send({ username: 'tester', password: 'tester' })
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end(function(err, res) {
+        api.get('/users')
+        .set('x-api-key', res.body.user.key.id)
+        .expect(403)
+        .expect('Content-Type', /json/)
+        .end(function(err, res) {
+          if (err) return done(err);
+          res.body.should.have.deep.property('meta.success').and.equal(false);
+          done();
+        });
+      });
+    });
   });
 
   describe('keys', function() {
@@ -373,7 +391,7 @@ describe('DELETE /:path/:id', function() {
       });
     });
 
-    it('error 403 forbidden when trying to delete currently authenticated user', function(done) {
+    it('error 403 forbidden when trying to delete currently authorized user', function(done) {
       api.del('/users/1')
       .set('x-api-key', admin_user.key)
       .expect(403)

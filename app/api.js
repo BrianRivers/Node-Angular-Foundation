@@ -44,47 +44,47 @@ module.exports = function(app) {
   -----------------------------------------*/
 
   // constants for authorization levels
-  var ADMIN_ONLY = [];
+  var ADMIN_ONLY = ['users'];
   var ADMIN = 1;
   var WRITE = 2;
   var READ = 3;
 
   // route authorization
-  function verifyWriteAccess(key, params, type) {
+  function requireRole(role, req, key) {
     // seperate authorization for modifying users
-    if (params.path == 'users') {
-      switch (type) {
+    if (req.params.path == 'users') {
+      switch (req.method) {
+        case 'GET':
         case 'POST': {
-          // check to insure admin creating user
+          // check to insure admin getting or creating users
           if (key.user.RoleId == ADMIN) { return true; }
           else { return false; }
         }
         break;
         case 'PUT': {
-          // check to insure self or admin updating user
-          if (key.user.id == params.id || key.user.RoleId == ADMIN) { return true; }
+          // check to insure self or admin updating users
+          if (key.user.id == req.params.id || key.user.RoleId == ADMIN) { return true; }
           else { return false; }
         }
         break;
         case 'DELETE': {
           // check to insure admin and not deleting self
-          if (key.user.id != params.id && key.user.RoleId == ADMIN) { return true; }
+          if (key.user.id != req.params.id && key.user.RoleId == ADMIN) { return true; }
           else { return false; }
         }
         break;
       }
     } else {
-      // check write protection
-      if (key.user.RoleId == WRITE || key.user.RoleId == ADMIN) {
-        // check admin only paths for admin users
-        if (_.contains(ADMIN_ONLY, params.path) && key.user.RoleId == ADMIN) { return true; }
-        // permit for non admin if not admin only path
-        else if (!_.contains(ADMIN_ONLY, params.path)) { return true; }
-        // deny access to non admin
-        else { return false; }
+      // check for admin only path and admin user
+      if (_.contains(ADMIN_ONLY, req.params.path) && key.user.RoleId == ADMIN) {
+        return true;
+      // check for valid permissions to access
+      } else if (!_.contains(ADMIN_ONLY, req.params.path) && key.user.RoleId <= role) {
+        return true;
+      // not allowed access
+      } else {
+        return false;
       }
-      // deny access to read only users
-      else if (key.user.RoleId == READ) { return false; }
     }
   }
 
@@ -135,7 +135,7 @@ module.exports = function(app) {
     passport.authenticate('localapikey', function(err, key, info) {
       if (err) { invalidAuth(err, res); }
       else if (!key) { invalidAuth(null, res); }
-      else if (key) {
+      else if (key && requireRole(READ, req, key)) {
         // parse query string into object
         var query = require('url').parse(req.url,true).query;
         // determine if query string exists
@@ -146,7 +146,7 @@ module.exports = function(app) {
           else if (!results) { response(res, 403, false, err, null); }
           else if (results) { response(res, 200, true, 'Data found', results); }
         });
-      }
+      } else { response(res, 403, false, 'Not Authorized', null); }
     })(req, res, next);
   });
 
@@ -156,14 +156,14 @@ module.exports = function(app) {
     passport.authenticate('localapikey', function(err, key, info) {
       if (err) { invalidAuth(err, res); }
       else if (!key) { invalidAuth(null, res); }
-      else if (key) {
+      else if (key && requireRole(READ, req, key)) {
         // search for data matching given id
         data.searchData(req.params.path, req.params.id, null, function (err, results) {
           if (err) { response(res, 500, false, err, null); }
           else if (!results) { response(res, 403, false, err, null); }
           else if (results) { response(res, 200, true, 'Data found', results); }
         });
-      }
+      } else { response(res, 403, false, 'Not Authorized', null); }
     })(req, res, next);
   });
 
@@ -173,7 +173,7 @@ module.exports = function(app) {
     passport.authenticate('localapikey', function(err, key, info) {
       if (err) { invalidAuth(err, res); }
       else if (!key) { invalidAuth(null, res); }
-      else if (key && verifyWriteAccess(key, req.params, req.method)) {
+      else if (key && requireRole(WRITE, req, key)) {
         // create data and respond with data or error
         data.createData(req.params.path, req.body, function (err, results) {
           if (err) { response(res, 500, false, err, null); }
@@ -190,7 +190,7 @@ module.exports = function(app) {
     passport.authenticate('localapikey', function(err, key, info) {
       if (err) { invalidAuth(err, res); }
       else if (!key) { invalidAuth(null, res); }
-      else if (key && verifyWriteAccess(key, req.params, req.method)) {
+      else if (key && requireRole(WRITE, req, key)) {
         // search for data to update matching given id
         data.updateData(req.params.path, req.params.id, req.body, function (err, results) {
           if (err) { response(res, 500, false, err, null); }
@@ -207,7 +207,7 @@ module.exports = function(app) {
     passport.authenticate('localapikey', function(err, key, info) {
       if (err) { invalidAuth(err, res); }
       else if (!key) { invalidAuth(null, res); }
-      else if (key && verifyWriteAccess(key, req.params, req.method)) {
+      else if (key && requireRole(WRITE, req, key)) {
         // search for data to delete matching given id
         data.deleteData(req.params.path, req.params.id, function (err, results) {
           if (err) { response(res, 500, false, err, null); }
