@@ -3,7 +3,6 @@ var app = angular.module('mainApp', [
   'ngRoute',
   'mainApp.services',
   'mainApp.controllers',
-  'mainApp.directives',
   'LocalStorageModule',
   'ngAnimate',
   'ui.bootstrap'

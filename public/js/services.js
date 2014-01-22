@@ -29,15 +29,10 @@ angular.module('mainApp.services', [])
       console.log(err);
       ctrl.usernameInput = '';
       ctrl.passwordInput = '';
-      self.alerts.push({type:'danger', msg: "Username or Password are misspelled or do not exist."});
+      self.makeAlert('danger', "Username or Password are misspelled or do not exist.");
     });
-
     $('#login-dropdown').removeClass('open');
-
-    $timeout(function() {
-      self.alerts.splice(0, 1);
-    }, 3000);
-
+    self.timeOutAlert();
   };
 
   // remove session info for logout
@@ -67,6 +62,16 @@ angular.module('mainApp.services', [])
   // To remove alerts when the 'x' button is pressed
   self.closeAlert = function(index) {
     self.alerts.splice(index, 1);
+  };
+
+  self.makeAlert = function(type, msg) {
+    self.alerts.push({type: type, msg: msg});
+  };
+
+  self.timeOutAlert = function() {
+    $timeout(function() {
+      self.alerts.splice(0, 1);
+    }, 3000);
   };
 
   return self;
