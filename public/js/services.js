@@ -21,7 +21,6 @@ angular.module('mainApp.services', [])
         self.alerts.push({type:'success', msg: "Login Successful!"});
       }
       // reset form and hide it
-      $('#login-dropdown').removeClass('open');
       ctrl.usernameInput = '';
       ctrl.passwordInput = '';
     })
@@ -32,6 +31,8 @@ angular.module('mainApp.services', [])
       ctrl.passwordInput = '';
       self.alerts.push({type:'danger', msg: "Username or Password are misspelled or do not exist."});
     });
+
+    $('#login-dropdown').removeClass('open');
 
     $timeout(function() {
       self.alerts.splice(0, 1);
