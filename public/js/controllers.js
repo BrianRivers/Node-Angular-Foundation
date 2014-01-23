@@ -80,6 +80,7 @@ angular.module('mainApp.controllers', [])
   }
 }])
 .controller('modalInstanceCtrl', function modalController ($scope, $modalInstance, user) {
+    //Every modal needs it's own controller and has it's own scope.
     $scope.user = user;
 
     $scope.ok = function () {
