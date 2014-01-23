@@ -133,11 +133,14 @@ angular.module('mainApp.services', [])
       if(rejection.status === 401) {
         $location.path('/');
         Session.logout();
+        Session.makeAlert('danger', 'You must login first');
       } else if(rejection.status === 403) {
         $location.path('/');
+        Session.makeAlert('danger', 'You do not have access to this page');
         console.log(rejection);
       } else if(rejection.status === 500) {
         $location.path('/');
+        Session.makeAlert('warning', 'There was a server error');
       }
       return $q.reject(rejection);
     }
