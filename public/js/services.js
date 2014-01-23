@@ -117,4 +117,29 @@ angular.module('mainApp.services', [])
   };
 
   return self;
-}]);
+}])
+.factory('HttpErrorInterceptor', function($q) {
+  return {
+
+    'response': function (response) {
+      //Will only be called for HTTP up to 300
+      return response;
+    },
+   'requestError': function(rejection) {
+      // I can't figure out how to do angularjs history
+      // I tried to look that up but the only thing I could find
+      // was the .run doing .$on('rounteChangeSuccess') and I don't know how
+      // to make the interceptor factory and the .run to interact.
+      if(rejection.status === 401) {
+        $location.path('/');
+        Session.logout();
+      } else if(rejection.status === 403) {
+        $location.path('/');
+        console.log(rejection);
+      } else if(rejection.status === 500) {
+        $location.path('/');
+      }
+      return $q.reject(rejection);
+    }
+  };
+});

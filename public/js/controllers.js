@@ -39,7 +39,7 @@ angular.module('mainApp.controllers', [])
     }
   });
 }])
-.controller('userListController', ['$scope', 'SessionService', 'UserService', function($scope, Session, User){
+.controller('userListController', ['$scope', '$modal', 'SessionService', 'UserService', function($scope, $modal, Session, User){
   // check for session
   if (Session.info) {
 
@@ -54,12 +54,41 @@ angular.module('mainApp.controllers', [])
 
     // edit user
     $scope.editUser = function(val) {
-      alert('edit: ' + val);
+      var user;
+      for(user in $scope.users) {
+        if($scope.users[user].id == val) {
+          $scope.open($scope.users[user]);
+        }
+      }
     };
 
     // delete user
     $scope.deleteUser = function(val) {
       alert('delete: ' + val);
     };
+
+    $scope.open = function (user) {
+      var modalInstance = $modal.open({
+        templateUrl: 'partials/editProfile.html',
+        controller: 'modalInstanceCtrl',
+        resolve: {
+          user: function () { return user; },
+          $modalInstance: function() { return modalInstance; }
+        }
+      });
+    };
   }
-}]);
+}])
+.controller('modalInstanceCtrl', function modalController ($scope, $modalInstance, user) {
+    $scope.user = user;
+
+    $scope.ok = function () {
+        $modalInstance().close();
+        console.log('ok');
+    };
+    $scope.cancel = function () {
+        $modalInstance().dismiss('cancel');
+        console.log('cancel');
+    };
+})
+;

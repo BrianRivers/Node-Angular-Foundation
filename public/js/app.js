@@ -11,12 +11,7 @@ var app = angular.module('mainApp', [
   function($routeProvider, $httpProvider) {
     // add interceptor for additional request and response handling
     $httpProvider.interceptors.push('httpRequestInterceptor');
-    $(document).ready(function() {
-      $(".dropdown").click(function(event){
-        alert('test');
-        event.stopPropagation();
-      });
-    });
+    $httpProvider.interceptors.push('HttpErrorInterceptor');
 
     // configure routes with controller and template
     $routeProvider
@@ -27,7 +22,7 @@ var app = angular.module('mainApp', [
     })
     .when('/profile', {
       controller: 'profileController',
-      templateUrl: 'partials/profile.html',
+      templateUrl: 'partials/editProfile.html',
       access: { isFree: false }
     })
     .when('/users/list', {
