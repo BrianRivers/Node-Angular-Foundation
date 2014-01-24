@@ -3,27 +3,33 @@
   It is supposed has presets for modals, but I couldn't find any documentation
   tellimg me how to use the presets. -->
 
-<h3>Edit Profile</h3>
-</br>
-<div class="row">
-  <div class="col-md-2"></div>
-  <div class="col-md-4">
-    <form role="form">
-      <div class="form-group">
-        <label for="username">Username</label>
-        <input type="string" class="form-control" id="username" placeholder="{{user.username}}">
+      <div class="modal-header">
+          <h3>Edit Profile</h3>
       </div>
-      <div class="form-group">
-        <label for="firstName">First Name</label>
-        <input type="string" class="form-control" id="firstName" placeholder="{{user.firstName}}">
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-3"></div>
+          <div class="col-md-6">
+            <form role="form">
+              <div class="form-group">
+                <label for="username">Username</label>
+                <input type="string" class="form-control" id="username" placeholder="{{user.username}}">
+              </div>
+              <div class="form-group">
+                <label for="firstName">First Name</label>
+                <input type="string" class="form-control" id="firstName" placeholder="{{user.firstName}}">
+              </div>
+              <div class="form-group">
+                <label for="lastName">Last Name</label>
+                <input type="string" class="form-control" id="lastName" placeholder="{{user.lastName}}">
+              </div>
+              <div class="form-group">
+                <button type="submit" class="btn btn-primary pull-right">Save Changes</button>
+              </div>
+            </form>
+          </div>
+          <div class="col-md-3"></div>
+        </div>
+      <div>
+      <div class="modal-footer">
       </div>
-      <div class="form-group">
-        <label for="lastName">Last Name</label>
-        <input type="string" class="form-control" id="lastName" placeholder="{{user.lastName}}">
-      </div>
-      <div class="form-group">
-        <button type="submit" class="btn btn-primary pull-right">Save Changes</button>
-      </div>
-    </form>
-  </div>
-</div>
