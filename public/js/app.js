@@ -10,8 +10,7 @@ var app = angular.module('mainApp', [
 .config(['$routeProvider', '$httpProvider',
   function($routeProvider, $httpProvider) {
     // add interceptor for additional request and response handling
-    $httpProvider.interceptors.push('httpRequestInterceptor');
-    $httpProvider.interceptors.push('HttpErrorInterceptor');
+    $httpProvider.interceptors.push('httpInterceptor');
 
     // configure routes with controller and template
     $routeProvider

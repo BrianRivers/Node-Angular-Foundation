@@ -1,7 +1,7 @@
 /* Services */
 var BASE_URL = 'http://localhost:3001/';
 angular.module('mainApp.services', [])
-.factory('SessionService', ['$http', '$timeout', 'localStorageService', function($http, $timeout, localStorageService) {
+.factory('SessionService', ['$timeout', 'localStorageService', function($timeout, localStorageService) {
   // set vars for service
   var self = {};
   self.info = null;
@@ -9,7 +9,7 @@ angular.module('mainApp.services', [])
 
   // verify user credentials to log in
   self.login = function (ctrl) {
-    $http.post(BASE_URL+'authenticate', {
+    $.post(BASE_URL+'authenticate', {
       username: ctrl.usernameInput,
       password: ctrl.passwordInput
     })
@@ -76,8 +76,8 @@ angular.module('mainApp.services', [])
 
   return self;
 }])
-.factory('httpRequestInterceptor', ['localStorageService',
-  function (localStorageService) {
+.factory('httpInterceptor', ['$q', '$location', 'localStorageService', 'SessionService',
+  function ($q, $location, localStorageService, sessionService) {
     return {
       // override requests to add key to header from session info
       request: function (config) {
@@ -87,6 +87,22 @@ angular.module('mainApp.services', [])
         } else {
           return config;
         }
+      },
+      responseError: function(rejection) {
+        alert('responseError');
+        if(rejection.status === 401) {
+          $location.path('/');
+          // sessionService.logout();
+          // sessionService.makeAlert('danger', 'You must login first');
+        } else if(rejection.status === 403) {
+          $location.path('/');
+          console.log(sessionService.info);
+          // sessionService.makeAlert('danger', 'You do not have access to this page');
+        } else if(rejection.status === 500) {
+          $location.path('/');
+          // sessionService.makeAlert('warning', 'There was a server error');
+        }
+        return $q.reject(rejection);
       }
     };
 }])
@@ -117,32 +133,4 @@ angular.module('mainApp.services', [])
   };
 
   return self;
-}])
-.factory('HttpErrorInterceptor', function($q) {
-  return {
-
-    'response': function (response) {
-      //Will only be called for HTTP up to 300
-      return response;
-    },
-   'requestError': function(rejection) {
-      // I can't figure out how to do angularjs history
-      // I tried to look that up but the only thing I could find
-      // was the .run doing .$on('rounteChangeSuccess') and I don't know how
-      // to make the interceptor factory and the .run to interact.
-      if(rejection.status === 401) {
-        $location.path('/');
-        Session.logout();
-        Session.makeAlert('danger', 'You must login first');
-      } else if(rejection.status === 403) {
-        $location.path('/');
-        Session.makeAlert('danger', 'You do not have access to this page');
-        console.log(rejection);
-      } else if(rejection.status === 500) {
-        $location.path('/');
-        Session.makeAlert('warning', 'There was a server error');
-      }
-      return $q.reject(rejection);
-    }
-  };
-});
+}]);
