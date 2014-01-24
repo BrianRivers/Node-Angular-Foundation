@@ -26,31 +26,27 @@ angular.module('mainApp.controllers', [])
   // set session data for page
   $scope.session = Session;
 }])
-.controller('profileController', ['$scope', 'SessionService', 'UserService', function($scope, Session, User) {
+.controller('profileController', ['$scope', 'SessionService', 'userService', function($scope, Session, user) {
   // set session data for page
   $scope.session = Session;
 
   // search for user by id for profile display
-  User.userSearch(Session.info.id)
+  user.userSearch(Session.info.id)
   .then(function(data) {
-    if(data.meta.success) {
+    if(data !== undefined && data.meta.success) {
       $scope.user = data.users;
-    } else {
-      console.log(data);
     }
   });
 }])
-.controller('userListController', ['$scope', '$modal', 'SessionService', 'UserService', function($scope, $modal, Session, User){
+.controller('userListController', ['$scope', '$modal', 'SessionService', 'userService', function($scope, $modal, Session, user){
   // check for session
   if (Session.info) {
 
     // list users in table or log error
-    User.userList()
+    user.userList()
     .then(function(data) {
       if (data !== undefined && data.meta.success) {
         $scope.users = data.users;
-      } else {
-        console.log(data);
       }
     });
 
