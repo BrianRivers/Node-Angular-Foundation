@@ -117,6 +117,7 @@ angular.module('mainApp.services', [])
 
       self.makeAlert = function(type, msg) {
         self.alerts.push({type: type, msg: msg});
+        self.timeOutAlert();
       };
 
       self.timeOutAlert = function() {
