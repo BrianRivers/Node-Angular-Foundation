@@ -51,9 +51,8 @@ var app = angular.module('mainApp', [
     }
     lastDigestRun = now;
   });
-}]);
-
-app.animation('.my-repeat-animation', function() {
+}])
+.animation('.my-repeat-animation', function() {
   return {
     enter : function(element, done) {
       jQuery(element).css({

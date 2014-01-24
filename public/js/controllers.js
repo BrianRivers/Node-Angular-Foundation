@@ -31,7 +31,8 @@ angular.module('mainApp.controllers', [])
   $scope.session = Session;
 
   // search for user by id for profile display
-  User.userSearch(Session.info.id).then(function(data) {
+  User.userSearch(Session.info.id)
+  .then(function(data) {
     if(data.meta.success) {
       $scope.user = data.users;
     } else {
@@ -44,8 +45,9 @@ angular.module('mainApp.controllers', [])
   if (Session.info) {
 
     // list users in table or log error
-    User.userList().then(function(data) {
-      if (data.meta.success) {
+    User.userList()
+    .then(function(data) {
+      if (data !== undefined && data.meta.success) {
         $scope.users = data.users;
       } else {
         console.log(data);
