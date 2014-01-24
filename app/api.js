@@ -54,15 +54,15 @@ module.exports = function(app) {
     // seperate authorization for modifying users
     if (req.params.path == 'users') {
       switch (req.method) {
-        case 'GET':
         case 'POST': {
           // check to insure admin getting or creating users
           if (key.user.RoleId == ADMIN) { return true; }
           else { return false; }
         }
         break;
+        case 'GET':
         case 'PUT': {
-          // check to insure self or admin updating users
+          // check to insure self or admin to view or update user
           if (key.user.id == req.params.id || key.user.RoleId == ADMIN) { return true; }
           else { return false; }
         }

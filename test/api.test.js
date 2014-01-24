@@ -294,6 +294,25 @@ describe('GET /:path', function() {
         done();
       });
     });
+
+    it('list currently authorized user details', function (done) {
+      api.post('/authenticate')
+      .send({ username: 'tester', password: 'tester' })
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end(function(err, res) {
+        api.get('/users/'+res.body.user.id)
+        .set('x-api-key', res.body.user.key.id)
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .end(function(err, res) {
+          if (err) return done(err);
+          res.body.should.have.deep.property('meta.success').and.equal(true);
+          res.body.should.have.property('users').and.be.an.instanceof(Object).and.not.be.empty;
+          done();
+        });
+      });
+    });
     
     it('error 401 unauthorized when using incorrect key', function(done) {
       api.get('/users')
