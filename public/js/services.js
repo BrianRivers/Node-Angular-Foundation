@@ -1,5 +1,4 @@
 /* Services */
-var BASE_URL = 'http://localhost:3001/';
 angular.module('mainApp.services', [])
 .factory('httpInterceptor', ['$q', '$injector', '$location', 'localStorageService', function ($q, $injector, $location, localStorageService) {
     return {
@@ -12,6 +11,7 @@ angular.module('mainApp.services', [])
           return config;
         }
       },
+      // response error handling and redirection
       responseError: function(rejection) {
           var sessionService = $injector.get("SessionService");
           if(rejection.status === 401) {
@@ -30,8 +30,11 @@ angular.module('mainApp.services', [])
     };
 }])
 .factory('requestService', ['$http', function($http) {
+  // location of API service
+  var BASE_URL = 'http://localhost:3001/';
   var self = {};
 
+  // handle GET requests with route and query params
   self.get = function(route) {
     var promise = $http.get(BASE_URL+route)
     .then(function(response) {
@@ -42,6 +45,7 @@ angular.module('mainApp.services', [])
     return promise;
   };
 
+  // handle POST requests with route and data
   self.post = function(route, data) {
     var promise = $http.post(BASE_URL+route, data)
     .then(function(response) {
@@ -57,75 +61,76 @@ angular.module('mainApp.services', [])
 .provider('SessionService', function() {
   return {
     $get: ['$timeout', 'requestService', 'localStorageService', function($timeout, requestService, localStorageService) {
-      return {
-        // set vars for service
-        info: null,
-        alerts: [], // To store alerts that are displayed
-        login: function(ctrl) {
-          var data = {
-            username: ctrl.usernameInput,
-            password: ctrl.passwordInput
-          };
-          requestService.post('authenticate', data).
-          then(function(data) {
-            // store returned user info in session
-            localStorageService.add('session', data.user);
-            this.info = data.user;
-            this.alerts.push({type:'success', msg: "Login Successful!"});
-          }, function(err) {
-            console.log(err);
-            this.makeAlert('danger', "Username or Password are misspelled or do not exist.");
-          });
-          // reset form and hide it
-          ctrl.usernameInput = '';
-          ctrl.passwordInput = '';
-          $('#login-dropdown').removeClass('open');
-          this.timeOutAlert();
-        },
+      // set vars for service
+      var self = {};
+      self.info = null;
+      self.alerts = []; // To store alerts that are displayed
 
-        // remove session info for logout
-        logout: function() {
-          localStorageService.clearAll();
-          this.info = false;
-        },
+      // verify user credentials to log in
+      self.login = function(ctrl) {
+        var data = {
+          username: ctrl.usernameInput,
+          password: ctrl.passwordInput
+        };
+        requestService.post('authenticate', data).
+        then(function(data) {
+          // store returned user info in session
+          localStorageService.add('session', data.user);
+          self.info = data.user;
+          self.alerts.push({type:'success', msg: "Login Successful!"});
+        });
+        // reset form and hide it
+        ctrl.usernameInput = '';
+        ctrl.passwordInput = '';
+        $('#login-dropdown').removeClass('open');
+        self.timeOutAlert();
+      };
 
-        // insure user has active session when peforming actions
-        sessionCheck: function() {
-          if(localStorageService.get('session') !== null) {
-            var now = moment();
-            var session = localStorageService.get('session');
-            var updated_date = session.key.updatedAt;
-            // force sign in after set time
-            if(now.diff(updated_date, 'hours') > 12) {
-              localStorageService.clearAll();
-              this.info = null;
-            } else {
-              this.info = session;
-            }
+      // remove session info for logout
+      self.logout = function() {
+        localStorageService.clearAll();
+        self.info = false;
+      };
+
+      // insure user has active session when peforming actions
+      self.sessionCheck = function() {
+        if(localStorageService.get('session') !== null) {
+          var now = moment();
+          var session = localStorageService.get('session');
+          var updated_date = session.key.updatedAt;
+          // force sign in after set time
+          if(now.diff(updated_date, 'hours') > 12) {
+            localStorageService.clearAll();
+            self.info = null;
           } else {
-            this.info = null;
+            self.info = session;
           }
-        },
-
-        // To remove alerts when the 'x' button is pressed
-        closeAlert: function(index) {
-          this.alerts.splice(index, 1);
-        },
-
-        makeAlert: function(type, msg) {
-          this.alerts.push({type: type, msg: msg});
-        },
-
-        timeOutAlert: function() {
-          $timeout(function() {
-            this.alerts.splice(0, 1);
-          }, 3000);
+        } else {
+          self.info = null;
         }
       };
+
+      // To remove alerts when the 'x' button is pressed
+      self.closeAlert = function(index) {
+        self.alerts.splice(index, 1);
+      };
+
+      self.makeAlert = function(type, msg) {
+        self.alerts.push({type: type, msg: msg});
+      };
+
+      self.timeOutAlert = function() {
+        $timeout(function() {
+          self.alerts.splice(0, 1);
+        }, 3000);
+      };
+
+      // return sessionService
+      return self;
     }]
   };
 })
-.factory('UserService', ['requestService', 'localStorageService', function(requestService, localStorageService) {
+.factory('userService', ['requestService', function(requestService) {
   var self = {};
 
   // searches for single user by id
