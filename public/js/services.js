@@ -56,6 +56,26 @@ angular.module('mainApp.services', [])
     return promise;
   };
 
+  self.put = function(route, data) {
+    var promise = $http.put(BASE_URL+route, data)
+    .then(function(response) {
+      return response.data;
+    }, function(error) {
+      return error.data;
+    });
+    return promise;
+  };
+
+  self.delete = function(route) {
+    var promise = $http.delete(BASE_URL+route)
+    .then(function(response) {
+      return response.data;
+    }, function(error) {
+      return error.data;
+    });
+    return promise;
+  };
+
   return self;
 }])
 .provider('SessionService', function() {
@@ -75,9 +95,11 @@ angular.module('mainApp.services', [])
         requestService.post('authenticate', data).
         then(function(data) {
           // store returned user info in session
-          localStorageService.add('session', data.user);
-          self.info = data.user;
-          self.alerts.push({type:'success', msg: "Login Successful!"});
+          if(data.user) {
+            localStorageService.add('session', data.user);
+            self.info = data.user;
+            self.alerts.push({type:'success', msg: "Login Successful!"});
+          }
         });
         // reset form and hide it
         ctrl.usernameInput = '';
@@ -142,6 +164,18 @@ angular.module('mainApp.services', [])
   // searches for all users against api
   self.userList = function() {
     return requestService.get('users');
+  };
+
+  self.userSaveEdit = function(editedUser) {
+    return requestService.put('users/'+editedUser.id, editedUser);
+  };
+
+  self.deleteUser = function(id) {
+    return requestService.delete('users/'+id);
+  };
+
+  self.createUser = function(newUser) {
+    return requestService.post('users', newUser);
   };
 
   return self;
