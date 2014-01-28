@@ -1,35 +1,50 @@
-<!-- I tried to figure out how to add padding or some kind of formattin
-  but, the only thing I could find where people talking about $dialog.
-  It is supposed has presets for modals, but I couldn't find any documentation
-  tellimg me how to use the presets. -->
-
-      <div class="modal-header">
-          <h3>Edit Profile</h3>
-      </div>
-      <div class="modal-body">
-        <div class="row">
-          <div class="col-md-3"></div>
-          <div class="col-md-6">
-            <form role="form">
-              <div class="form-group">
-                <label for="username">Username</label>
-                <input type="string" class="form-control" id="username" placeholder="{{user.username}}">
-              </div>
-              <div class="form-group">
-                <label for="firstName">First Name</label>
-                <input type="string" class="form-control" id="firstName" placeholder="{{user.firstName}}">
-              </div>
-              <div class="form-group">
-                <label for="lastName">Last Name</label>
-                <input type="string" class="form-control" id="lastName" placeholder="{{user.lastName}}">
-              </div>
-              <div class="form-group">
-                <button type="submit" class="btn btn-primary pull-right">Save Changes</button>
-              </div>
-            </form>
-          </div>
-          <div class="col-md-3"></div>
+<div class="modal-header">
+    <h3>Edit Profile</h3>
+</div>
+<div class="modal-body">
+  <!-- To make sure all alerts in the session are displayed on home page -->
+  <alert ng-repeat="alert in session.alerts" class="my-repeat-animation" type="alert.type" close="session.closeAlert($index)">{{alert.msg}}</alert>
+  <!-- back to normal page -->
+  <div class="row">
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+      <form role="form">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="string" class="form-control" id="username" placeholder="{{user.username}}" data-ng-model="username">
         </div>
-      <div>
-      <div class="modal-footer">
-      </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="string" class="form-control" id="password" data-ng-model="password">
+        </div>
+        <div class="form-group">
+          <label for="firstName">First Name</label>
+          <input type="string" class="form-control" id="firstName" placeholder="{{user.firstName}}" data-ng-model="firstName">
+        </div>
+        <div class="form-group">
+          <label for="lastName">Last Name</label>
+          <input type="string" class="form-control" id="lastName" placeholder="{{user.lastName}}" data-ng-model="lastName">
+        </div>
+        <div class="form-group">
+          <label for="email">E-Mail Address</label>
+          <input type="string" class="form-control" id="email" placeholder="{{user.email}}" data-ng-model="email">
+        </div>
+        <!-- For some reason role(including RoleId and roleId) being used as a data model does not want to work -->
+        <div class="form-group" ng-if="isModal || session.info.role == 1">
+          <label for="role">Role Id</label>
+          <input type="string" class="form-control" id="role" placeholder="{{user.RoleId}}" data-ng-model="role">
+        </div>
+        <!-- Two save changes buttons. One for the modal and one for the profile. -->
+        <div class="form-group" ng-if="isModal" >
+          <button type="submit" class="btn btn-primary pull-right" ng-click="ok()">Save Changes</button>
+        </div>
+        <div class="form-group" ng-if="isProfile">
+          <button type="submit" class="btn btn-primary pull-right" data-ng-click="saveEdit()">Save Changes</button>
+        </div>
+      </form>
+    </div>
+    <div class="col-md-3"></div>
+  </div>
+<div>
+<div class="modal-footer">
+</div>

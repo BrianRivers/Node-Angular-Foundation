@@ -1,3 +1,6 @@
+<!-- To make sure all alerts in the session are displayed on home page -->
+<alert ng-repeat="alert in session.alerts" class="my-repeat-animation" type="alert.type" close="session.closeAlert($index)">{{alert.msg}}</alert>
+<!-- Page Start -->
 <div class="row">
   <div class="col-md-12">
     <table class="table table-striped">
@@ -22,5 +25,6 @@
         </tr>
       </tbody>
     </table>
+    <button type="submit" class="btn btn-primary pull-right" ng-click="createUser()">Create User</button>
   </div>
 </div>
