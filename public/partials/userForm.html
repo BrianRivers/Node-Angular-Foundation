@@ -1,49 +1,53 @@
 <div class="modal-header">
-    <h3>Edit Profile</h3>
+    <h3>{{ header }}</h3>
 </div>
 <div class="modal-body">
   <!-- To make sure all alerts in the session are displayed on home page -->
   <alert ng-repeat="alert in session.alerts" class="my-repeat-animation" type="alert.type" close="session.closeAlert($index)">{{alert.msg}}</alert>
   <!-- back to normal page -->
   <div class="row">
-    <div class="col-md-3"></div>
-    <div class="col-md-6">
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
       <form role="form">
         <div class="form-group">
           <label for="username">Username</label>
-          <input type="string" class="form-control" id="username" placeholder="{{user.username}}" data-ng-model="username">
+          <input type="text" class="form-control" id="username" placeholder="{{user.username}}" data-ng-model="username">
         </div>
         <div class="form-group">
           <label for="password">Password</label>
-          <input type="string" class="form-control" id="password" data-ng-model="password">
+          <input type="password" class="form-control" id="password" data-ng-model="password">
         </div>
         <div class="form-group">
           <label for="firstName">First Name</label>
-          <input type="string" class="form-control" id="firstName" placeholder="{{user.firstName}}" data-ng-model="firstName">
+          <input type="text" class="form-control" id="firstName" placeholder="{{user.firstName}}" data-ng-model="firstName">
         </div>
         <div class="form-group">
           <label for="lastName">Last Name</label>
-          <input type="string" class="form-control" id="lastName" placeholder="{{user.lastName}}" data-ng-model="lastName">
+          <input type="text" class="form-control" id="lastName" placeholder="{{user.lastName}}" data-ng-model="lastName">
         </div>
         <div class="form-group">
           <label for="email">E-Mail Address</label>
-          <input type="string" class="form-control" id="email" placeholder="{{user.email}}" data-ng-model="email">
+          <input type="text" class="form-control" id="email" placeholder="{{user.email}}" data-ng-model="email">
         </div>
         <!-- For some reason role(including RoleId and roleId) being used as a data model does not want to work -->
         <div class="form-group" ng-if="isModal || session.info.role == 1">
+ <!--          <div class="checkbox form-inline">
+            <label>Admin</label>
+          </div> -->
           <label for="role">Role Id</label>
-          <input type="string" class="form-control" id="role" placeholder="{{user.RoleId}}" data-ng-model="role">
+          <input type="text" class="form-control" id="role" placeholder="{{user.RoleId}}" data-ng-model="role">
         </div>
         <!-- Two save changes buttons. One for the modal and one for the profile. -->
         <div class="form-group" ng-if="isModal" >
-          <button type="submit" class="btn btn-primary pull-right" ng-click="ok()">Save Changes</button>
+          <button type="submit" class="btn btn-primary pull-right" style="margin-left:10px" ng-click="ok()">Save Changes</button>
+          <button type="" class="btn btn-default pull-right" ng-click="cancel()">Cancel</button>
         </div>
         <div class="form-group" ng-if="isProfile">
           <button type="submit" class="btn btn-primary pull-right" data-ng-click="saveEdit()">Save Changes</button>
         </div>
       </form>
     </div>
-    <div class="col-md-3"></div>
+    <div class="col-md-4"></div>
   </div>
 <div>
 <div class="modal-footer">

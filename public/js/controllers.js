@@ -30,32 +30,33 @@ angular.module('mainApp.controllers', [])
   // set session data for page
   $scope.session = Session;
   $scope.isProfile = true;
+  $scope.header = "Profile";
 
   // search for user by id for profile display
   user.userSearch(Session.info.id)
   .then(function(data) {
-    if(data !== undefined && data.meta.success) {
+    if (data !== undefined && data.meta.success) {
       $scope.user = data.users;
     }
   });
 
   $scope.saveEdit = function() {
-    if(this.username) {
+    if (this.username) {
       $scope.user.username = this.username;
     }
-    if(this.password) {
+    if (this.password) {
       $scope.user.password = this.password;
     }
-    if(this.firstName) {
+    if (this.firstName) {
       $scope.user.firstName = this.firstName;
     }
-    if(this.lastName) {
+    if (this.lastName) {
       $scope.user.lastName = this.lastName;
     }
-    if(this.email) {
+    if (this.email) {
       $scope.user.email = this.email;
     }
-    if(this.role) {
+    if (this.role) {
       $scope.user.RoleId = this.role;
     }
     
@@ -84,8 +85,8 @@ angular.module('mainApp.controllers', [])
 
     // edit user
     $scope.editUser = function(val) {
-      for(var indexedUser in $scope.users) {
-        if($scope.users[indexedUser].id == val) {
+      for (var indexedUser in $scope.users) {
+        if ($scope.users[indexedUser].id == val) {
           $scope.open($scope.users[indexedUser], user);
         }
       }
@@ -99,16 +100,16 @@ angular.module('mainApp.controllers', [])
     // delete user
     $scope.deleteUser = function(val) {
       var indexedUser;
-      for(indexedUser in $scope.users) {
-        if($scope.users[indexedUser].id == val) {
+      for (indexedUser in $scope.users) {
+        if ($scope.users[indexedUser].id == val) {
           user.deleteUser($scope.users[indexedUser].id);
         }
       }
     };
 
-    $scope.open = function (user, userService) {
+    $scope.open = function(user, userService) {
       var modalInstance = $modal.open({
-        templateUrl: 'partials/editProfile.html',
+        templateUrl: 'partials/userForm.html',
         controller: 'modalInstanceCtrl',
         resolve: {
           user: function () { return user; },
@@ -139,22 +140,27 @@ angular.module('mainApp.controllers', [])
       problem: null
     };
     $scope.isModal = true;
+    if (user.username === null) {
+      $scope.header = "Create User";
+    } else {
+      $scope.header = "Edit User";
+    }
 
     $scope.ok = function () {
-      if(this.username) {
+      if (this.username) {
         $scope.user.username = this.username;
       } else { // To ensure that new users have a username
-        if($scope.user.password === null) {
+        if ($scope.user.password === null) {
           $scope.issue.isIssue = true;
           $scope.issue.problem = "password";
           $modalInstance.close($scope.issue);
         }
       }
 
-      if(this.password) {
+      if (this.password) {
         $scope.user.password = this.password;
       } else { // To ensure that new users have a password
-        if($scope.user.password === null) {
+        if ($scope.user.password === null) {
           $scope.issue.isIssue = true;
           $scope.issue.problem = "password";
           $modalInstance.close($scope.issue);
@@ -163,7 +169,7 @@ angular.module('mainApp.controllers', [])
 
       // RoleId is not wanting to work
       console.log(this.role);
-      if(this.role) {
+      if (this.role) {
         $scope.user.RoleId = this.role;
        } //else { // To ensure that new users have a role
       //   if($scope.user.RoleId === null) {
@@ -173,13 +179,13 @@ angular.module('mainApp.controllers', [])
       //   }
       // }
 
-      if(this.firstName) {
+      if (this.firstName) {
         $scope.user.firstName = this.firstName;
       }
-      if(this.lastName) {
+      if (this.lastName) {
         $scope.user.lastName = this.lastName;
       }
-      if(this.email) {
+      if (this.email) {
         $scope.user.email = this.email;
       }
 
@@ -189,6 +195,5 @@ angular.module('mainApp.controllers', [])
 
     $scope.cancel = function () {
       $modalInstance.dismiss('cancel');
-      console.log('cancel');
     };
 });

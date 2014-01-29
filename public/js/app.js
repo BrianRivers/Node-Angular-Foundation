@@ -21,12 +21,12 @@ var app = angular.module('mainApp', [
     })
     .when('/profile', {
       controller: 'profileController',
-      templateUrl: 'partials/editProfile.html',
+      templateUrl: 'partials/userForm.html',
       access: { isFree: false }
     })
     .when('/users/list', {
       controller: 'userListController',
-      templateUrl: 'partials/userlist.html',
+      templateUrl: 'partials/userList.html',
       access: { isFree: false }
     })
     .otherwise({ redirectTo: '/' });
