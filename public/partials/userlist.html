@@ -3,12 +3,15 @@
 <!-- Page Start -->
 <div class="row">
   <div class="col-md-12">
+    <button type="submit" class="btn btn-primary pull-right" ng-click="createUser()">Create User</button>
     <table class="table table-striped">
       <thead>
         <tr>
           <th>Username</th>
           <th>Email</th>
           <th>Last Updated</th>
+          <th></th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -17,7 +20,7 @@
           <td>{{ user.email }}</td>
           <td>{{ user.updatedAt }}</td>
           <td>
-            <button class="btn btn-primary" ng-click="editUser(user.id)">Edit User</button>
+            <button class="btn btn-default" ng-click="editUser(user.id)">Edit User</button>
           </td>
           <td>
             <button class="btn btn-danger" ng-click="deleteUser(user.id)">Delete User</button>
@@ -25,6 +28,5 @@
         </tr>
       </tbody>
     </table>
-    <button type="submit" class="btn btn-primary pull-right" ng-click="createUser()">Create User</button>
   </div>
 </div>
