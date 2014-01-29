@@ -5,15 +5,11 @@ angular.module('mainApp.controllers', [])
   $scope.session = Session;
   
   // verify user credentials for sign in
-  $scope.submit = function() {
+  $scope.login = function() {
     if (this.usernameInput && this.passwordInput) {
       var self = this;
       Session.login(self);
     }
-  };
-
-  $scope.profile = function() {
-
   };
 
   // remove session data and redirect to home page
