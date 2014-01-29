@@ -30,12 +30,26 @@
           <input type="text" class="form-control" id="email" placeholder="{{user.email}}" data-ng-model="email">
         </div>
         <!-- For some reason role(including RoleId and roleId) being used as a data model does not want to work -->
-        <div class="form-group" ng-if="isModal || session.info.role == 1">
- <!--          <div class="checkbox form-inline">
-            <label>Admin</label>
-          </div> -->
-          <label for="role">Role Id</label>
-          <input type="text" class="form-control" id="role" placeholder="{{user.RoleId}}" data-ng-model="role">
+        <div class="form-group" ng-show="isModal || session.info.role == 1">
+          <label>User Role</label>
+          <div class="radio">
+              <label>
+                <input type="radio" name="roleRadios" id="role1" value="1">
+                <p>Admin</p>
+              </label>
+          </div>
+          <div class="radio">
+              <label>
+                <input type="radio" name="roleRadios" id="role1" value="1">
+                <p>Edit</p>
+              </label>
+          </div>
+          <div class="radio">
+              <label>
+                <input type="radio" name="roleRadios" id="role1" value="1">
+                <p>Read Only</p>
+              </label>
+          </div>
         </div>
         <!-- Two save changes buttons. One for the modal and one for the profile. -->
         <div class="form-group" ng-if="isModal" >
@@ -49,6 +63,5 @@
     </div>
     <div class="col-md-4"></div>
   </div>
-<div>
-<div class="modal-footer">
 </div>
+<div class="modal-footer"></div>
