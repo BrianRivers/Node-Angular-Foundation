@@ -72,14 +72,6 @@ angular.module('mainApp.controllers', [])
   // check for session
   if (Session.info) {
     $scope.session = Session;
-    $scope.emptyUser = {
-      username: null,
-      password: null,
-      firstName: null,
-      lastName: null,
-      email: null,
-      RoleId: null
-    };
 
     // list users in table or log error
     User.userList()
@@ -96,7 +88,7 @@ angular.module('mainApp.controllers', [])
 
     // create a new user
     $scope.createUser = function() {
-      $scope.open($scope.emptyUser);
+      $scope.open(null);
     };
 
     // delete user
@@ -135,16 +127,28 @@ angular.module('mainApp.controllers', [])
 }])
 .controller('modalInstanceCtrl', function modalController ($scope, $modalInstance, user) {
     //Every modal needs it's own controller and has it's own scope.
-    $scope.user = user;
+    if(user !== null) {
+      $scope.user = user;
+    } else {
+      $scope.user = {
+        username: null,
+        password: null,
+        firstName: null,
+        lastName: null,
+        email: null,
+        RoleId: null
+      };
+    }
+    console.log($scope.user);
     $scope.isModal = true;
     $scope.issue = {
       isIssue: false,
       problem: null
     };
-    if (user.username === null) {
-      $scope.header = "Create User";
-    } else {
+    if (user !== null) {
       $scope.header = "Edit User";
+    } else {
+      $scope.header = "Create User";
     }
 
     $scope.saveEdit = function () {
@@ -196,6 +200,8 @@ angular.module('mainApp.controllers', [])
       if (this.email) {
         $scope.user.email = this.email;
       }
+
+      console.log($scope.user);
       $modalInstance.close($scope.user);
     };
 
