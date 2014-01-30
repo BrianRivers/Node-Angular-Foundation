@@ -1,5 +1,5 @@
 <!-- To make sure all alerts in the session are displayed on home page -->
-<alert ng-repeat="alert in session.alerts" class="my-repeat-animation" type="alert.type" close="session.closeAlert($index)">{{alert.msg}}</alert>
+<alert ng-repeat="alert in session.alerts" class="my-repeat-animation" type="alert.type" >{{alert.msg}}</alert>
 <!-- Page Start -->
 <div class="row">
   <div class="col-md-12">
@@ -20,10 +20,10 @@
           <td>{{ user.email }}</td>
           <td>{{ user.updatedAt }}</td>
           <td>
-            <button class="btn btn-default" ng-click="editUser(user.id)">Edit User</button>
+            <button class="btn btn-default" ng-click="editUser(user)">Edit User</button>
           </td>
           <td>
-            <button class="btn btn-danger" ng-click="deleteUser(user.id)">Delete User</button>
+            <button class="btn btn-danger" ng-click="deleteUser(user)">Delete User</button>
           </td>
         </tr>
       </tbody>
