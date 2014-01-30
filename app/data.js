@@ -242,7 +242,9 @@ exports.updateData = function updateData(path, id, data, callback) {
   if (model) {
     if (model === 'Users') {
       // hash updated password
-      data.password = bcrypt.hashSync(data.password, 10);
+      if (data.hasOwnProperty('password') && data.password !== null) {
+        data.password = bcrypt.hashSync(data.password, 10);
+      }
     }
     // find exsiting data matching id
     db[model].find({ where: { id: id } })

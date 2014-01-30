@@ -41,7 +41,11 @@ angular.module('mainApp.controllers', [])
       $scope.user.username = this.username;
     }
     if (this.password) {
-      $scope.user.password = this.password;
+      if (confirm('Are you sure you want a new password?')) {
+        $scope.user.password = this.password;
+      }
+    } else { // Set to null so that the old password isn't altered
+      $scope.user.password = null;
     }
     if (this.firstName) {
       $scope.user.firstName = this.firstName;
@@ -52,16 +56,22 @@ angular.module('mainApp.controllers', [])
     if (this.email) {
       $scope.user.email = this.email;
     }
-    if (this.role) {
-      $scope.user.RoleId = this.role;
+    if (this.RoleId) {
+      $scope.user.RoleId = this.RoleId;
     }
     
-    user.userSaveEdit($scope.user);
+    console.log($scope.user);
+    // logging the returned values to check if the save was a success
+    // Even though a success is returned the values in the objects
+    // are not changed
+    user.userSaveEdit($scope.user)
+    .then(function(result) {console.log(result);});
   };
 }])
-.controller('userListController', ['$scope', '$modal', '$location', 'SessionService', 'userService', function($scope, $modal, $location, Session, user){
+.controller('userListController', ['$scope', '$modal', '$route', 'SessionService', 'userService', function($scope, $modal, $route, Session, User){
   // check for session
   if (Session.info) {
+    $scope.session = Session;
     $scope.emptyUser = {
       username: null,
       password: null,
@@ -72,7 +82,7 @@ angular.module('mainApp.controllers', [])
     };
 
     // list users in table or log error
-    user.userList()
+    User.userList()
     .then(function(data) {
       if (data !== undefined && data.meta.success) {
         $scope.users = data.users;
@@ -80,12 +90,8 @@ angular.module('mainApp.controllers', [])
     });
 
     // edit user
-    $scope.editUser = function(val) {
-      for (var indexedUser in $scope.users) {
-        if ($scope.users[indexedUser].id == val) {
-          $scope.open($scope.users[indexedUser], user);
-        }
-      }
+    $scope.editUser = function(user) {
+      $scope.open(user, User);
     };
 
     // create a new user
@@ -94,16 +100,17 @@ angular.module('mainApp.controllers', [])
     };
 
     // delete user
-    $scope.deleteUser = function(val) {
-      var indexedUser;
-      for (indexedUser in $scope.users) {
-        if ($scope.users[indexedUser].id == val) {
-          user.deleteUser($scope.users[indexedUser].id);
+    $scope.deleteUser = function(user) {
+      User.deleteUser(user.id)
+      .then(function(data) {
+        if (data !== undefined && data.meta.success) {
+          $route.reload();
+          Session.makeAlert("success","User was successfully deleted");
         }
-      }
+      });
     };
 
-    $scope.open = function(user, userService) {
+    $scope.open = function(user) {
       var modalInstance = $modal.open({
         templateUrl: 'partials/userForm.html',
         controller: 'modalInstanceCtrl',
@@ -112,16 +119,14 @@ angular.module('mainApp.controllers', [])
         }
       });
       modalInstance.result.then(function (result) {
-        console.log(result);
-        // Whenever issue is passed back there is an error about ".value" not existing
-        // Whenever user is passed back it does not register the problem
         if(result.isIssue) {
-          Session.makeAlert('danger',"You must enter a {{result.problem}} to create a new account");
+          Session.makeAlert('danger',"You must enter a "+result.problem+" to create a new account");
         } else {
           if(result.id) {
-            console.log("has id");
+            // logging the returned values to check if the save was a success
+            User.userSaveEdit(result).then(function(res) {console.log(res);});
           } else {
-            console.log("no id");
+            User.createUser(result).then(function(res) {console.log(res);});
           }
         }
       });
@@ -131,49 +136,56 @@ angular.module('mainApp.controllers', [])
 .controller('modalInstanceCtrl', function modalController ($scope, $modalInstance, user) {
     //Every modal needs it's own controller and has it's own scope.
     $scope.user = user;
+    $scope.isModal = true;
     $scope.issue = {
       isIssue: false,
       problem: null
     };
-    $scope.isModal = true;
     if (user.username === null) {
       $scope.header = "Create User";
     } else {
       $scope.header = "Edit User";
     }
 
-    $scope.ok = function () {
+    $scope.saveEdit = function () {
       if (this.username) {
         $scope.user.username = this.username;
       } else { // To ensure that new users have a username
-        if ($scope.user.password === null) {
+        if ($scope.user.username === null) {
           $scope.issue.isIssue = true;
-          $scope.issue.problem = "password";
+          $scope.issue.problem = "username";
           $modalInstance.close($scope.issue);
         }
       }
 
       if (this.password) {
-        $scope.user.password = this.password;
+        if($scope.user.password === null) {
+          if (confirm('Are you sure you want a new password?')) {
+            $scope.user.password = this.password;
+          } else {
+            $scope.user.password = null;
+            alert("Password was not changed");
+          }
+        } else {$scope.user.password = this.password;}
       } else { // To ensure that new users have a password
         if ($scope.user.password === null) {
           $scope.issue.isIssue = true;
           $scope.issue.problem = "password";
           $modalInstance.close($scope.issue);
+        } else {
+          $scope.user.password = null;
         }
       }
 
-      // RoleId is not wanting to work
-      console.log(this.role);
-      if (this.role) {
-        $scope.user.RoleId = this.role;
-       } //else { // To ensure that new users have a role
-      //   if($scope.user.RoleId === null) {
-      //     $scope.issue.isIssue = true;
-      //     $scope.issue.problem = "Role Id";
-      //     $modalInstance.close($scope.issue);
-      //   }
-      // }
+      if (this.RoleId) {
+        $scope.user.RoleId = this.RoleId;
+      } else { //To ensure new users have a role
+        if($scope.user.RoleId === null) {
+          $scope.issue.isIssue = true;
+          $scope.issue.problem = "Role Id";
+          $modalInstance.close($scope.issue);
+        }
+      }
 
       if (this.firstName) {
         $scope.user.firstName = this.firstName;
@@ -184,9 +196,7 @@ angular.module('mainApp.controllers', [])
       if (this.email) {
         $scope.user.email = this.email;
       }
-
       $modalInstance.close($scope.user);
-      console.log('ok');
     };
 
     $scope.cancel = function () {
