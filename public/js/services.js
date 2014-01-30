@@ -47,20 +47,44 @@ angular.module('mainApp.services', [])
 
   // handle POST requests with route and data
   self.post = function(route, data) {
+    console.log("The Route:");
+    console.log(route);
+    console.log("______________");
+    console.log("The Data:");
+    console.log(data);
+    console.log("______________");
     var promise = $http.post(BASE_URL+route, data)
     .then(function(response) {
+      console.log("The Response:");
+      console.log(response);
+      console.log("______________");
       return response.data;
     }, function(error) {
+      console.log("The Error:");
+      console.log(error);
+      console.log("______________");
       return error.data;
     });
     return promise;
   };
 
   self.put = function(route, data) {
+    console.log("The Route:");
+    console.log(route);
+    console.log("______________");
+    console.log("The Data:");
+    console.log(data);
+    console.log("______________");
     var promise = $http.put(BASE_URL+route, data)
     .then(function(response) {
+      console.log("The Response:");
+      console.log(response);
+      console.log("______________");
       return response.data;
     }, function(error) {
+      console.log("The Error:");
+      console.log(error);
+      console.log("______________");
       return error.data;
     });
     return promise;

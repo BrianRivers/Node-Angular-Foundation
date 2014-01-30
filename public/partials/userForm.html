@@ -31,7 +31,7 @@
         </div>
         <div class="form-group" ng-show="isModal || session.info.role == 1">
           <label>User Role</label>
-          <div class="radio">
+          <div class="radio" id="RoleId">
               <input type="radio" ng-model="RoleId" value="Admin">1<br/>
               <input type="radio" ng-model="RoleId" value="Write">2<br/>
               <input type="radio" ng-model="RoleId" value="Read">3<br/>
@@ -46,6 +46,4 @@
     <div class="col-md-4"></div>
   </div>
 </div>
-<div class="modal-footer">
-  {{user}}
-</div>
+<div class="modal-footer"></div>
