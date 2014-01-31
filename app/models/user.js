@@ -21,10 +21,7 @@ module.exports = function(sequelize, Sequelize) {
     email: {
       type: Sequelize.STRING(75),
       allowNull: false,
-      unique: true,
-      validate: {
-        isEmail: true
-      }
+      unique: true
     }
   }, {
     associate: function (models) {

@@ -212,9 +212,9 @@ exports.createData = function createData(path, data, callback) {
           // associate user with key
           result.setKey(key)
           .success(function (){
-            // return newly created user and key
+            // return newly created user
             callback(null, {
-              "user": db.Sequelize.Utils._.merge(result.values,key.values)
+              "users": result.values
             });
           })
           .error(function (err) {
