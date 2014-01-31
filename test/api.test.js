@@ -116,6 +116,22 @@ describe('POST /:path', function() {
       });
     });
 
+    it('error 500 when attribute values are invalid', function (done) {
+      user.username = null;
+      user.password = 'test';
+      user.email = null;
+      api.post('/users')
+      .set('x-api-key', admin_user.key)
+      .send(user)
+      .expect(500)
+      .expect('Content-Type', /json/)
+      .end(function (err, res) {
+        if (err) return done(err);
+        res.body.should.have.deep.property('meta.success').and.equal(false);
+        done();
+      });
+    });
+
     it('error 401 unauthorized when using incorrect key', function(done) {
       user.username = 'tester';
       user.password = 'test';
@@ -227,19 +243,19 @@ describe('PUT /:path/:id', function() {
       });
     });
 
-    // it('error 500 when attribute values are invalid', function (done) {
-    //   user.email = null;
-    //   api.put('/users/' + user.id)
-    //   .set('x-api-key', admin_user.key)
-    //   .send(user)
-    //   // .expect(500)
-    //   .expect('Content-Type', /json/)
-    //   .end(function (err, res) {
-    //     if (err) return done(err);
-    //     res.body.should.have.deep.property('meta.success').and.equal(false);
-    //     done();
-    //   });
-    // });
+    it('error 500 when attribute values are invalid', function (done) {
+      user.email = null;
+      api.put('/users/' + user.id)
+      .set('x-api-key', admin_user.key)
+      .send(user)
+      // .expect(500)
+      .expect('Content-Type', /json/)
+      .end(function (err, res) {
+        if (err) return done(err);
+        res.body.should.have.deep.property('meta.success').and.equal(false);
+        done();
+      });
+    });
 
     it('error 401 unauthorized when using incorrect key', function(done) {
       api.put('/users/' + admin_user.id)

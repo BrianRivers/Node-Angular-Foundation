@@ -115,6 +115,8 @@ config.vm.provision :shell, :inline =>
 "mysql -u root -p#{$server_root_password} -e \"create database if not exists dev_db\""
 config.vm.provision :shell, :inline => 
 "mysql -u root -p#{$server_root_password} -e \"GRANT ALL ON dev_db.* TO 'dev_db'@'%' IDENTIFIED BY 'giscenter'; FLUSH PRIVILEGES;\""
+config.vm.provision :shell, :inline =>
+"mysql -u root -p#{$server_root_password} -e \"SET GLOBAL sql_mode = STRICT_ALL_TABLES\""
 
 # Install nodemon to run node server
 config.vm.provision :shell, :inline => "sudo npm install -g nodemon"
