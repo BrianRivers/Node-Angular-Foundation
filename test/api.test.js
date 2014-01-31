@@ -42,13 +42,13 @@ describe('POST /authenticate', function() {
     });
   });
 
-  it('error when username and password do not match', function (done) {
+  it('error 401 when username and password do not match', function (done) {
     api.post('/authenticate')
     .send({ username: admin_user.username, password: 'badpassword' })
     .expect(401, done);
   });
 
-  it('error when username and password do not exist', function (done) {
+  it('error 401 when username and password do not exist', function (done) {
     api.post('/authenticate')
     .send({ username: 'nouser', password: 'nouser' })
     .expect(401, done);
@@ -83,7 +83,23 @@ describe('POST /:path', function() {
       });
     });
 
-    it('error when username or email already exists', function (done) {
+    it('error 500 when username or email already exists', function (done) {
+      api.post('/users')
+      .set('x-api-key', admin_user.key)
+      .send(user)
+      .expect(500)
+      .expect('Content-Type', /json/)
+      .end(function (err, res) {
+        if (err) return done(err);
+        res.body.should.have.deep.property('meta.success').and.equal(false);
+        done();
+      });
+    });
+
+    it('error 500 when password is not provided', function (done) {
+      user.username = 'tester';
+      user.password = null;
+      user.email = 'tester@no-reply.com';
       api.post('/users')
       .set('x-api-key', admin_user.key)
       .send(user)
@@ -98,6 +114,7 @@ describe('POST /:path', function() {
 
     it('error 401 unauthorized when using incorrect key', function(done) {
       user.username = 'tester';
+      user.password = 'test';
       user.email = 'tester@no-reply.com';
       api.post('/users')
       .set('x-api-key', 'badkey')
@@ -148,6 +165,30 @@ describe('PUT /:path/:id', function() {
       email: 'tester@no-reply.com'
     };
 
+    it('updates currently authorized user', function (done) {
+      admin_user.id = 1;
+      admin_user.firstName = "Test First Name";
+      admin_user.lastName = "Test Last Name";
+      admin_user.password = null;
+      admin_user.RoleId = 1;
+
+      api.put('/users/1')
+      .set('x-api-key', admin_user.key)
+      .send(admin_user)
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .end(function (err, res) {
+        if (err) return done(err);
+        res.body.should.have.deep.property('meta.success').and.equal(true);
+        res.body.should.have.deep.property('users').and.not.be.empty;
+        res.body.should.have.deep.property('users.id').and.not.be.empty;
+        res.body.should.have.deep.property('users.firstName').and.equal('Test First Name');
+        res.body.should.have.deep.property('users.lastName').and.equal('Test Last Name');
+        res.body.should.have.deep.property('users.RoleId').and.equal(1);
+        done();
+      });
+    });
+
     it('updates another user when role allows updating other users', function (done) {
       api.get('/users?username=test')
       .set('x-api-key', admin_user.key)
@@ -169,27 +210,7 @@ describe('PUT /:path/:id', function() {
       });
     });
 
-    it('updates currently authorized user', function(done) {
-      api.post('/authenticate')
-      .send({ username: 'tester', password: 'tester' })
-      .expect('Content-Type', /json/)
-      .expect(200)
-      .end(function(err, res) {
-        user.email = 'testing@testing.com';
-        api.put('/users/' + res.body.user.id)
-        .set('x-api-key', res.body.user.key.id)
-        .send(user)
-        .expect(200)
-        .expect('Content-Type', /json/)
-        .end(function(err, res) {
-          if (err) return done(err);
-          res.body.should.have.deep.property('meta.success').and.equal(true);
-          done();
-        });
-      });
-    });
-
-    it('error when user does not exist to update', function (done) {
+    it('error 500 when user does not exist to update', function (done) {
       api.put('/users/0')
       .set('x-api-key', admin_user.key)
       .send(user)
@@ -202,7 +223,7 @@ describe('PUT /:path/:id', function() {
       });
     });
 
-    it('error when attribute values are invalid', function (done) {
+    it('error 500 when attribute values are invalid', function (done) {
       user.email = 'TEST';
       api.put('/users/' + user.id)
       .set('x-api-key', admin_user.key)
@@ -385,7 +406,7 @@ describe('DELETE /:path/:id', function() {
       });
     });
 
-    it('error when user does not exist to delete', function (done) {
+    it('error 500 when user does not exist to delete', function (done) {
       user.id = 0;
       api.del('/users/'+user.id)
       .set('x-api-key', admin_user.key)
