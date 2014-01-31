@@ -193,7 +193,11 @@ exports.createData = function createData(path, data, callback) {
   if (model) {
     if (model === 'Users') {
       // hash new password
-      data.password = bcrypt.hashSync(data.password, 10);
+      if (data.hasOwnProperty('password') && data.password !== null) {
+        data.password = bcrypt.hashSync(data.password, 10);
+      } else if (data.hasOwnProperty('password') && data.password === null) {
+        callback("No password provided for user", false);
+      }
     }
     // create data
     db[model]
@@ -244,14 +248,19 @@ exports.updateData = function updateData(path, id, data, callback) {
       // hash updated password
       if (data.hasOwnProperty('password') && data.password !== null) {
         data.password = bcrypt.hashSync(data.password, 10);
+      } else if (data.hasOwnProperty('password') && data.password === null) {
+        delete data.password;
       }
     }
     // find exsiting data matching id
     db[model].find({ where: { id: id } })
     .success(function (result) {
       if (result) {
+        // remove id
+        if (data.hasOwnProperty('id')) {
+          delete data.id;
+        }
         // update data and respond with result or error
-        delete data.id;
         result.updateAttributes(data)
         .success(function () {
           // respond with updated record
