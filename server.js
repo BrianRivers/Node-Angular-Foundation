@@ -16,7 +16,7 @@ app.configure(function () {
   .use(passport.initialize())
   .use(cors({
     origin: '*',
-    methods: ['GET', 'PUT', 'POST', 'DELETE']
+    methods: ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS']
   }))
   .use(app.router)
   // serve static website in public folder

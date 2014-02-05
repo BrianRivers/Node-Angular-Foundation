@@ -3,6 +3,7 @@ angular.module('mainApp.controllers')
     //Every modal needs it's own controller and has it's own scope.
     if(user !== null) {
       $scope.user = user;
+      $scope.header = "Edit User";
     } else {
       $scope.user = {
         username: null,
@@ -12,21 +13,16 @@ angular.module('mainApp.controllers')
         email: null,
         RoleId: null
       };
+      $scope.header = "Create User";
     }
     $scope.isModal = true;
     $scope.issue = {
       isIssue: false,
       problem: null
     };
-    if (user !== null) {
-      $scope.header = "Edit User";
-    } else {
-      $scope.header = "Create User";
-    }
-
 
     // Username is a required field
-    $scope.saveEdit = function () {
+    $scope.save = function () {
       if (this.username) {
         $scope.user.username = this.username;
       } else { // To ensure that new users have a username
@@ -87,6 +83,7 @@ angular.module('mainApp.controllers')
         }
       }
 
+      console.log($scope.user);
       $modalInstance.close($scope.user);
     };
 

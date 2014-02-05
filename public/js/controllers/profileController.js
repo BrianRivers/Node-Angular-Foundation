@@ -6,14 +6,14 @@ angular.module('mainApp.controllers')
   $scope.header = "Profile";
 
   // search for user by id for profile display
-  user.userSearch(Session.info.id)
+  user.search(Session.info.id)
   .then(function(data) {
     if (data !== undefined && data.meta.success) {
       $scope.user = data.users;
     }
   });
 
-  $scope.saveEdit = function() {
+  $scope.save = function() {
     if (this.username) {
       $scope.user.username = this.username;
     }
@@ -43,7 +43,7 @@ angular.module('mainApp.controllers')
     // logging the returned values to check if the save was a success
     // Even though a success is returned the values in the objects
     // are not changed
-    user.userSaveEdit($scope.user)
+    user.edit($scope.user)
     .then(function(result) {
       console.log("This is what is returned:");
       console.log(result);

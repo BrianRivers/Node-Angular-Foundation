@@ -4,7 +4,10 @@ angular.module('mainApp.services')
       // override requests to add key to header from session info
       request: function (config) {
         if(localStorageService.get('session') !== null) {
-          config.headers = {'x-api-key': localStorageService.get('session').key.id};
+          config.headers = {
+            'Content-Type': 'application/json;charset=UTF-8',
+            'x-api-key': localStorageService.get('session').key.id
+          };
           return config;
         } else {
           return config;

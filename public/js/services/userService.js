@@ -3,25 +3,25 @@ angular.module('mainApp.services')
   var self = {};
 
   // searches for single user by id
-  self.userSearch = function(id) {
+  self.search = function(id) {
     return requestService.get('users/'+id);
   };
 
   // searches for all users against api
-  self.userList = function() {
+  self.list = function() {
     return requestService.get('users');
   };
 
-  self.userSaveEdit = function(editedUser) {
-    return requestService.put('users/'+editedUser.id, editedUser);
+  self.create = function(user) {
+    return requestService.post('users', user);
   };
 
-  self.deleteUser = function(id) {
+  self.edit = function(user) {
+    return requestService.put('users/'+user.id, user);
+  };
+
+  self.delete = function(id) {
     return requestService.delete('users/'+id);
-  };
-
-  self.createUser = function(newUser) {
-    return requestService.post('users', newUser);
   };
 
   return self;

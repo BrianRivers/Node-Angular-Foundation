@@ -32,13 +32,13 @@
         <div class="form-group" ng-show="isModal || session.info.role == 1">
           <label>User Role</label>
           <div class="radio" id="RoleId">
-              <input type="radio" ng-model="RoleId" value="Admin">1<br/>
-              <input type="radio" ng-model="RoleId" value="Write">2<br/>
-              <input type="radio" ng-model="RoleId" value="Read">3<br/>
+              <input type="radio" ng-model="RoleId" value="1">Admin<br/>
+              <input type="radio" ng-model="RoleId" value="2">Write<br/>
+              <input type="radio" ng-model="RoleId" value="3">Read<br/>
           </div>
         </div>
         <div class="form-group">
-          <button type="submit" class="btn btn-primary pull-right" style="margin-left:10px" ng-click="saveEdit()">Save Changes</button>
+          <button type="submit" class="btn btn-primary pull-right" style="margin-left:10px" ng-click="save()">Save Changes</button>
           <button type="" class="btn btn-default pull-right" ng-click="cancel()">Cancel</button>
         </div>
       </form>

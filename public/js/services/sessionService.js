@@ -13,10 +13,10 @@ angular.module('mainApp.services')
           username: ctrl.usernameInput,
           password: ctrl.passwordInput
         };
-        requestService.post('authenticate', data).
-        then(function(data) {
+        requestService.post('authenticate', data)
+        .then(function(data) {
           // store returned user info in session
-          if(data.user) {
+          if (data.user) {
             localStorageService.add('session', data.user);
             self.info = data.user;
             self.alerts.push({type:'success', msg: "Login Successful!"});
