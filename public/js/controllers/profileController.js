@@ -10,6 +10,7 @@ angular.module('mainApp.controllers')
   .then(function(data) {
     if (data !== undefined && data.meta.success) {
       $scope.user = data.users;
+      $scope.RoleId = $scope.user.RoleId;
     }
   });
 

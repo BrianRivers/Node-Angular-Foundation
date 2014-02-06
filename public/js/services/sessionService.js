@@ -59,6 +59,7 @@ angular.module('mainApp.services')
       };
 
       self.makeAlert = function(type, msg) {
+        self.alerts.splice(0, 1);
         self.alerts.push({type: type, msg: msg});
         self.timeOutAlert();
       };
@@ -73,4 +74,4 @@ angular.module('mainApp.services')
       return self;
     }]
   };
-})
+});

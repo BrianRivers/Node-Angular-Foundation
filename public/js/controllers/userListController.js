@@ -1,5 +1,5 @@
 angular.module('mainApp.controllers')
-.controller('userListController', ['$scope', '$modal', '$route', 'SessionService', 'userService', function($scope, $modal, $route, Session, User){
+.controller('userListController', ['$scope', '$modal', '$route', '$timeout', 'SessionService', 'userService', function($scope, $modal, $route, $timeout, Session, User){
   // check for session
   if (Session.info) {
     $scope.session = Session;
@@ -47,37 +47,18 @@ angular.module('mainApp.controllers')
         controller: 'modalInstanceCtrl',
         resolve: {
           user: function () { return user; },
+          session: function () {return Session; },
+          User: function () {return User; },
+          $timeout: function () {return $timeout; }
         }
       });
 
-      modalInstance.result.then(function(result) {
-        if(result.isIssue) {
-          Session.makeAlert('danger',"You must enter a "+result.problem+" to create a new account");
-        } else {
-          if(result.id) {
-            // logging the returned values to check if the save was a success
-            User.edit(result)
-            .then(function(res) {
-              console.log("Edited user from Modal returned info:");
-              console.log(res);
-            }, function(err) {
-              console.log("Edit error");
-              console.log(err);
-            });
+      modalInstance.result.then(function() {
+          $timeout(function() {
             $route.reload(); //To make sure the list is up to date.
-          } else {
-            User.create(result)
-            .then(function(res) {
-              console.log("Created user from Modal returned info:");
-              console.log(res);
-            }, function(err) {
-              console.log("Create error");
-              console.log(err)
-            });
-            $route.reload(); //To make sure the list is up to date.
-          }
+          }, 500);
         }
-      });
+      );
     };
   }
 }]);

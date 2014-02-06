@@ -8,26 +8,26 @@
   <div class="row">
     <div class="col-md-4"></div>
     <div class="col-md-4">
-      <form role="form">
+      <form role="form" novalidate class="css-form">
         <div class="form-group">
-          <label for="username">Username</label>
-          <input type="text" class="form-control" id="username" placeholder="{{user.username}}" data-ng-model="username">
+          <label for="username">Username: {{user.username}}</label>
+          <input type="text" class="form-control" id="username" placeholder="Username" data-ng-model="username" basic-format>
         </div>
         <div class="form-group">
           <label for="password">Password</label>
-          <input type="password" class="form-control" id="password" data-ng-model="password">
+          <input type="password" class="form-control" id="password" data-ng-model="password" basic-format>
         </div>
         <div class="form-group">
-          <label for="firstName">First Name</label>
-          <input type="text" class="form-control" id="firstName" placeholder="{{user.firstName}}" data-ng-model="firstName">
+          <label for="firstName">First Name: {{user.firstName}}</label>
+          <input type="text" class="form-control" id="firstName" placeholder="First Name" data-ng-model="firstName" name-format>
         </div>
         <div class="form-group">
-          <label for="lastName">Last Name</label>
-          <input type="text" class="form-control" id="lastName" placeholder="{{user.lastName}}" data-ng-model="lastName">
+          <label for="lastName">Last Name: {{user.lastName}}</label>
+          <input type="text" class="form-control" id="lastName" placeholder="Last Name" data-ng-model="lastName" name-format>
         </div>
         <div class="form-group">
-          <label for="email">E-Mail Address</label>
-          <input type="text" class="form-control" id="email" placeholder="{{user.email}}" data-ng-model="email">
+          <label for="email">E-Mail Address: {{user.email}}</label>
+          <input type="text" class="form-control" id="email" placeholder="E-Mail" ng-model="email" email-format>
         </div>
         <div class="form-group" ng-show="isModal || session.info.role == 1">
           <label>User Role</label>
