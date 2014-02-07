@@ -145,6 +145,9 @@ exports.searchData = function searchData(path, id, query, callback) {
       .success(function (result) {
         var values = {};
         values[model.toLowerCase()] = result;
+        if (model === 'Users') {
+          values[model.toLowerCase()].dataValues.password = null;
+        }
         if (result)
           callback(null, values);
         else
@@ -159,6 +162,15 @@ exports.searchData = function searchData(path, id, query, callback) {
       .success(function (result) {
         var values = {};
         values[model.toLowerCase()] = result;
+        if (model === 'Users') {
+          if (result instanceof Array) {
+            for (var i = 0; i < values[model.toLowerCase()].length; i++) {
+              values[model.toLowerCase()][i].dataValues.password = null;
+            }
+          } else {
+            values[model.toLowerCase()].dataValues.password = null;
+          }
+        }
         if (result)
           callback(null, values);
         else
@@ -173,6 +185,11 @@ exports.searchData = function searchData(path, id, query, callback) {
       .success(function (result) {
         var values = {};
         values[model.toLowerCase()] = result;
+        if (model === 'Users') {
+          for (var i = 0; i < values[model.toLowerCase()].length; i++) {
+            values[model.toLowerCase()][i].dataValues.password = null;
+          }
+        }
         if (result)
           callback(null, values);
         else
