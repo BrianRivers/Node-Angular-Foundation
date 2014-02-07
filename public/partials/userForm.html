@@ -8,37 +8,37 @@
   <div class="row">
     <div class="col-md-4"></div>
     <div class="col-md-4">
-      <form role="form" novalidate class="css-form">
+      <form role="form" name="userForm" novalidate class="css-form">
         <div class="form-group">
-          <label for="username">Username: {{user.username}}</label>
-          <input type="text" class="form-control" id="username" placeholder="Username" data-ng-model="username" basic-format>
+          <label for="username">Username</label>
+          <input type="text" class="form-control" id="username" data-ng-model="user.username" username-format>
         </div>
         <div class="form-group">
           <label for="password">Password</label>
-          <input type="password" class="form-control" id="password" data-ng-model="password" basic-format>
+          <input type="password" class="form-control" id="password" data-ng-model="user.password" password-format>
         </div>
         <div class="form-group">
-          <label for="firstName">First Name: {{user.firstName}}</label>
-          <input type="text" class="form-control" id="firstName" placeholder="First Name" data-ng-model="firstName" name-format>
+          <label for="firstName">First Name</label>
+          <input type="text" class="form-control" id="firstName" data-ng-model="user.firstName" name-format>
         </div>
         <div class="form-group">
-          <label for="lastName">Last Name: {{user.lastName}}</label>
-          <input type="text" class="form-control" id="lastName" placeholder="Last Name" data-ng-model="lastName" name-format>
+          <label for="lastName">Last Name</label>
+          <input type="text" class="form-control" id="lastName" data-ng-model="user.lastName" name-format>
         </div>
         <div class="form-group">
-          <label for="email">E-Mail Address: {{user.email}}</label>
-          <input type="text" class="form-control" id="email" placeholder="E-Mail" ng-model="email" email-format>
+          <label for="email">E-Mail Address</label>
+          <input type="text" class="form-control" id="email" ng-model="user.email" email-format>
         </div>
         <div class="form-group" ng-show="isModal || session.info.role == 1">
           <label>User Role</label>
           <div class="radio" id="RoleId">
-              <input type="radio" ng-model="RoleId" value="1">Admin<br/>
-              <input type="radio" ng-model="RoleId" value="2">Write<br/>
-              <input type="radio" ng-model="RoleId" value="3">Read<br/>
+              <input type="radio" ng-model="user.RoleId" value="1">Admin<br/>
+              <input type="radio" ng-model="user.RoleId" value="2">Write<br/>
+              <input type="radio" ng-model="user.RoleId" value="3">Read<br/>
           </div>
         </div>
         <div class="form-group">
-          <button type="submit" class="btn btn-primary pull-right" style="margin-left:10px" ng-click="save()">Save Changes</button>
+          <button type="submit" class="btn btn-primary pull-right" style="margin-left:10px" ng-click="save(userForm)">Save Changes</button>
           <button type="" class="btn btn-default pull-right" ng-click="cancel()">Cancel</button>
         </div>
       </form>

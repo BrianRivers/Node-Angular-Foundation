@@ -1,14 +1,14 @@
 angular.module('mainApp.directives', []);
 
-var USER_PASS_REGEXP = /^[a-z0-9_-]{3,16}$/;
-app.directive('basicFormat', function() {
+var USERNAME_REGEXP = /^[A-Za-z0-9_-]{3,50}$/;
+app.directive('usernameFormat', function() {
   // Username and Password has to be from 3-16 characters long 
   // and can only be a-z,0-9,_,-
   return {
     require: 'ngModel',
     link: function(scope, elm, attrs, ctrl) {
       ctrl.$parsers.unshift(function(viewValue) {
-        if (USER_PASS_REGEXP.test(viewValue)) {
+        if (USERNAME_REGEXP.test(viewValue)) {
           ctrl.$setValidity('username', true);
           return viewValue;
         } else {
@@ -20,7 +20,27 @@ app.directive('basicFormat', function() {
   };
 });
 
-var NAME_REGEXP = /^[a-z-]{2,16}$/;
+var PASSWORD_REGEXP = /^[A-Za-z0-9_-]{8,50}$/;
+app.directive('passwordFormat', function() {
+  // Username and Password has to be from 3-16 characters long 
+  // and can only be a-z,0-9,_,-
+  return {
+    require: 'ngModel',
+    link: function(scope, elm, attrs, ctrl) {
+      ctrl.$parsers.unshift(function(viewValue) {
+        if (PASSWORD_REGEXP.test(viewValue)) {
+          ctrl.$setValidity('password', true);
+          return viewValue;
+        } else {
+          ctrl.$setValidity('password', false);
+          return undefined;
+        }
+      });
+    }
+  };
+});
+
+var NAME_REGEXP = /^[A-Za-z-]{2,50}$/;
 app.directive('nameFormat', function() {
   // Name has to be from 2-16 characters long and can only be letters
   return {
@@ -28,10 +48,10 @@ app.directive('nameFormat', function() {
     link: function(scope, elm, attrs, ctrl) {
       ctrl.$parsers.unshift(function(viewValue) {
         if (NAME_REGEXP.test(viewValue)) {
-          ctrl.$setValidity('username', true);
+          ctrl.$setValidity('name', true);
           return viewValue;
         } else {
-          ctrl.$setValidity('username', false);
+          ctrl.$setValidity('name', false);
           return undefined;
         }
       });
@@ -39,7 +59,7 @@ app.directive('nameFormat', function() {
   };
 });
 
-var EMAIL_REGEXP = /^([a-z0-9_\.\+-]+)@([\da-z\.-]+)\.([a-z\.]{2,8})$/;
+var EMAIL_REGEXP = /^([A-Za-z0-9_\.\+-]+)@([\dA-Za-z\.-]+)\.([A-Za-z\.]{2,8})$/;
 app.directive('emailFormat', function() {
   // Email has to be formated with @ and .domain
     return {
@@ -47,10 +67,10 @@ app.directive('emailFormat', function() {
     link: function(scope, elm, attrs, ctrl) {
       ctrl.$parsers.unshift(function(viewValue) {
         if (EMAIL_REGEXP.test(viewValue)) {
-          ctrl.$setValidity('username', true);
+          ctrl.$setValidity('email', true);
           return viewValue;
         } else {
-          ctrl.$setValidity('username', false);
+          ctrl.$setValidity('email', false);
           return undefined;
         }
       });
