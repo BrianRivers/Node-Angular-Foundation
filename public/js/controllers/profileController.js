@@ -15,7 +15,7 @@ angular.module('mainApp.controllers')
 
   $scope.save = function(form) {
     console.log($scope.user);
-    if (form.$valid && $scope.user.username && $scope.user.password && $scope.user.email && $scope.user.RoleId) {
+    if (form.$valid && $scope.user.username && $scope.user.email && $scope.user.RoleId) {
       console.log("The value being sent:");
       console.log($scope.user);
       // send off user data to

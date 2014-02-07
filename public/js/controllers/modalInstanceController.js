@@ -21,7 +21,7 @@ angular.module('mainApp.controllers')
     // Username is a required field
     $scope.save = function (form) {
       console.log($scope.user);
-      if (form.$valid && $scope.user.username && $scope.user.password && $scope.user.email && $scope.user.RoleId) {
+      if (form.$valid && $scope.user.username && $scope.user.email && $scope.user.RoleId) {
         $scope.ok($scope.user);
       }
     };
