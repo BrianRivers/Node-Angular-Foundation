@@ -1,9 +1,9 @@
 angular.module('mainApp.directives', []);
 
-var USERNAME_REGEXP = /^[A-Za-z0-9_-]{3,50}$/;
+var USERNAME_REGEXP = /^[A-Za-z0-9]{4,50}$/;
 app.directive('usernameFormat', function() {
   // Username and Password has to be from 3-16 characters long 
-  // and can only be a-z,0-9,_,-
+  // and can only be A-Z,a-z,0-9
   return {
     require: 'ngModel',
     link: function(scope, elm, attrs, ctrl) {
@@ -20,10 +20,10 @@ app.directive('usernameFormat', function() {
   };
 });
 
-var PASSWORD_REGEXP = /^[A-Za-z0-9_-]{8,50}$/;
+var PASSWORD_REGEXP = /^[A-Za-z0-9_-]{8,20}$/;
 app.directive('passwordFormat', function() {
-  // Username and Password has to be from 3-16 characters long 
-  // and can only be a-z,0-9,_,-
+  // Username and Password has to be from 8-20 characters long 
+  // and can only be A-Z,a-z,0-9
   return {
     require: 'ngModel',
     link: function(scope, elm, attrs, ctrl) {

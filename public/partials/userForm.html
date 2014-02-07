@@ -11,23 +11,28 @@
       <form role="form" name="userForm" novalidate class="css-form">
         <div class="form-group">
           <label for="username">Username</label>
-          <input type="text" class="form-control" id="username" data-ng-model="user.username" username-format>
+          <input type="text" class="form-control" id="username" name="username" data-ng-model="user.username" username-format>
+          <p class="form-error" ng-show="userForm.username.$error.username">Must enter username with 4 letters or numbers. No special characters allowed.</p>
         </div>
         <div class="form-group">
           <label for="password">Password</label>
-          <input type="password" class="form-control" id="password" data-ng-model="user.password" password-format>
+          <input type="password" class="form-control" id="password" name="password" data-ng-model="user.password" password-format>
+          <p class="form-error" ng-show="userForm.password.$error.password">Must enter a password with 8 - 20 letters or numbers. No special characters allowed.</p>
         </div>
         <div class="form-group">
           <label for="firstName">First Name</label>
-          <input type="text" class="form-control" id="firstName" data-ng-model="user.firstName" name-format>
+          <input type="text" class="form-control" id="firstName" name="name" data-ng-model="user.firstName" name-format>
+          <p class="form-error" ng-show="userForm.name.$error.name">Must enter a valid first name.</p>
         </div>
         <div class="form-group">
           <label for="lastName">Last Name</label>
-          <input type="text" class="form-control" id="lastName" data-ng-model="user.lastName" name-format>
+          <input type="text" class="form-control" id="lastName" name="name" data-ng-model="user.lastName" name-format>
+          <p class="form-error" ng-show="userForm.name.$error.name">Must enter a valid last name.</p>
         </div>
         <div class="form-group">
           <label for="email">E-Mail Address</label>
-          <input type="text" class="form-control" id="email" ng-model="user.email" email-format>
+          <input type="text" class="form-control" id="email" name="email" ng-model="user.email" email-format>
+          <p class="form-error" ng-show="userForm.email.$error.email">Must enter a valid email address.<br>ex: username@domain.tld</p>
         </div>
         <div class="form-group" ng-show="isModal || session.info.role == 1">
           <label>User Role</label>
