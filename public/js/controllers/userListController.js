@@ -8,6 +8,9 @@ angular.module('mainApp.controllers')
     User.list()
     .then(function(data) {
       if (data !== undefined && data.meta.success) {
+        angular.forEach(data.users, function(value, key) {
+          value.updatedAt  = moment(value.updatedAt).format("YYYY-MM-DD hh:mm A");
+        });
         $scope.users = data.users;
       }
     });
