@@ -1,5 +1,5 @@
 angular.module('mainApp.controllers')
-.controller('profileController', ['$scope', '$route', 'SessionService', 'userService', function($scope, $route, Session, User) {
+.controller('profileController', ['$scope', '$route', '$location', 'SessionService', 'userService', function($scope, $route, $location, Session, User) {
   // set session data for page
   $scope.session = Session;
   $scope.isProfile = true;
@@ -26,5 +26,9 @@ angular.module('mainApp.controllers')
       })
       .then(function() { $route.reload(); });
     }
+  };
+
+  $scope.cancel = function() {
+    $location.path('#/');
   };
 }]);
