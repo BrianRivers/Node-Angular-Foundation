@@ -1,6 +1,7 @@
 /* Declare app level module with dependencies */
 angular.module('mainApp.services', []);
 angular.module('mainApp.controllers', []);
+angular.module('mainApp.directives', []);
 var app = angular.module('mainApp', [
   'ngRoute',
   'mainApp.services',
