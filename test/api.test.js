@@ -23,9 +23,28 @@ describe('GET /dbtest', function() {
 
 // User authentication tests
 describe('POST /authenticate', function() {
-  it('user and password match and exist', function (done) {
+  it('username and password match and exist', function (done) {
     api.post('/authenticate')
     .send({ username: admin_user.username, password: admin_user.password })
+    .expect('Content-Type', /json/)
+    .expect(200)
+    .end(function (err, res) {
+      if (err) return done(err);
+      admin_user.key = (res.body.user.key.id) ? res.body.user.key.id : null;
+      res.body.should.have.deep.property('meta.success').and.equal(true);
+      res.body.should.have.deep.property('user').and.be.an.instanceof(Object).and.not.be.empty;
+      res.body.should.have.deep.property('user.id');
+      res.body.should.have.deep.property('user.role').and.equal(1);
+      res.body.should.have.deep.property('user.key.id');
+      res.body.should.have.deep.property('user.key.createdAt');
+      res.body.should.have.deep.property('user.key.updatedAt');
+      done();
+    });
+  });
+
+  it('email and password match and exist', function (done) {
+    api.post('/authenticate')
+    .send({ username: admin_user.email, password: admin_user.password })
     .expect('Content-Type', /json/)
     .expect(200)
     .end(function (err, res) {

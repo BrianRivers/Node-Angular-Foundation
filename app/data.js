@@ -61,18 +61,14 @@ exports.tableList = function tableList(callback) {
 
 // verifies a users credentials
 exports.authenticateUser = function authenticateUser(user, callback) {
-  // search for user
-  db.Users.find({
-    where: { username: user.username },
-    include: [db.Keys]
-  })
+  db.sequelize.query('SELECT * FROM `Users` WHERE username = ? OR email = ?', null, { plain: true, raw: true }, [user.username, user.username])
   .success(function (result) {
     // if user is found
     if (result) {
       // check password hash against provided password
       if (bcrypt.compareSync(user.password, result.password)) {
         // generate new key for user on valid authentication
-        db.Keys.find(result.key.id)
+        db.Keys.find({ where: { UserId: result.id }})
         .success(function(currentKey) {
           currentKey.key =  uuid.v1();
           currentKey.save()
