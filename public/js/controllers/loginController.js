@@ -14,6 +14,6 @@ angular.module('mainApp.controllers')
   // remove session data and redirect to home page
   $scope.logout = function() {
     Session.logout();
-    $location.path('#/');
+    $location.path('/');
   };
 }]);
