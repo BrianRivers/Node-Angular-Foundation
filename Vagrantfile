@@ -46,6 +46,9 @@ config.vm.network :forwarded_port, guest: 3306, host: 3306
 # argument is a set of non-required options.
 config.vm.synced_folder Dir.pwd, "/srv/site"
 
+# Setup ssh login to cd to synced_folder
+config.vm.provision :shell, :inline => 'su - vagrant -c "echo cd /srv/site >> ~/.bashrc"'
+
 # Provider-specific configuration so you can fine-tune various
 # backing providers for Vagrant. These expose provider-specific options.
 # Example for VirtualBox:
@@ -87,6 +90,7 @@ config.vm.provision "docker"
 #   puppet.manifest_file  = "site.pp"
 # end
 
+# Install utilities
 config.vm.provision :shell, :inline => "sudo apt-get install -y build-essential"
 config.vm.provision :shell, :inline => "sudo apt-get install -y git"
 
