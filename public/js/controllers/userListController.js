@@ -1,5 +1,5 @@
 angular.module('mainApp.controllers')
-.controller('userListController', ['$scope', '$modal', '$route', '$timeout', 'SessionService', 'userService', function($scope, $modal, $route, $timeout, Session, User){
+.controller('userListController', ['$scope', '$modal', '$route', '$timeout', 'SessionService', 'userService', 'formatFilter', '$filter', function($scope, $modal, $route, $timeout, Session, User, format, $filter){
   // check for session
   if (Session.info) {
     $scope.session = Session;
@@ -13,16 +13,16 @@ angular.module('mainApp.controllers')
 
         // Create table rows
         $scope.rowCollection = $scope.users;
-
         // Create table columns and headings
         $scope.columnCollection = [
           {label: 'Username', map: 'username'},
           {label: 'Email', map: 'email'},
           {label: 'First Name', map: 'firstName'},
           {label: 'Last Name', map: 'lastName'},
-          {label: 'Last Updated', map: 'updatedAt', formatFunction: function(value) {
-            return moment(value).format("YYYY-MM-DD hh:mm A");
-          }},
+          {label: 'Last Updated', map: 'updatedAt', formatFunction: 'customFormat', formatParameter: 'd'},
+          // {label: 'Last Updated', map: 'updatedAt', formatFunction: function(value) {
+          //   return moment(value).format("YYYY-MM-DD hh:mm A");
+          // }},
           {label: 'Edit User', cellTemplateUrl: 'partials/directives/editUserButton.html', isSortable: false},
           {label: 'Delete User', cellTemplateUrl: 'partials/directives/deleteUserButton.html', isSortable: false}
         ];

@@ -2,11 +2,13 @@
 angular.module('mainApp.services', []);
 angular.module('mainApp.controllers', []);
 angular.module('mainApp.directives', []);
+angular.module('mainApp.filters', []);
 var app = angular.module('mainApp', [
   'ngRoute',
   'mainApp.services',
   'mainApp.controllers',
   'mainApp.directives',
+  'mainApp.filters',
   'LocalStorageModule',
   'ngAnimate',
   'ui.bootstrap',
