@@ -8,13 +8,11 @@ angular.module('mainApp.controllers')
     User.list()
     .then(function(data) {
       if (data !== undefined && data.meta.success) {
-        angular.forEach(data.users, function(value, key) {
-          value.updatedAt  = moment(value.updatedAt).format("YYYY-MM-DD hh:mm A");
-        });
+        // Set users to scope property
         $scope.users = data.users;
 
         // Create table rows
-        $scope.rowCollection = data.users;
+        $scope.rowCollection = $scope.users;
 
         // Create table columns and headings
         $scope.columnCollection = [
@@ -22,7 +20,9 @@ angular.module('mainApp.controllers')
           {label: 'Email', map: 'email'},
           {label: 'First Name', map: 'firstName'},
           {label: 'Last Name', map: 'lastName'},
-          {label: 'Last Updated', map: 'updatedAt'},
+          {label: 'Last Updated', map: 'updatedAt', formatFunction: function(value) {
+            return moment(value).format("YYYY-MM-DD hh:mm A");
+          }},
           {label: 'Edit User', cellTemplateUrl: 'partials/directives/editUserButton.html', isSortable: false},
           {label: 'Delete User', cellTemplateUrl: 'partials/directives/deleteUserButton.html', isSortable: false}
         ];
