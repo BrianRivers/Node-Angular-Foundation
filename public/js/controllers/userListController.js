@@ -31,7 +31,7 @@ angular.module('mainApp.controllers')
         $scope.globalConfig = {
           isPaginationEnabled: true,
           isGlobalSearchActivated: true,
-          itemsByPage: 1
+          itemsByPage: 20
         };
 
         // Styling for table
