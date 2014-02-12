@@ -1,4 +1,4 @@
-angular.module('mainApp.directives', [])
+angular.module('mainApp.directives')
 .directive('usernameFormat', function() {
   // Username and Password has to be from 3-16 characters long 
   // and can only be A-Z,a-z,0-9

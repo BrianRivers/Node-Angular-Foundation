@@ -9,7 +9,8 @@ var app = angular.module('mainApp', [
   'mainApp.directives',
   'LocalStorageModule',
   'ngAnimate',
-  'ui.bootstrap'
+  'ui.bootstrap',
+  'smartTable.table'
 ])
 .config(['$routeProvider', '$httpProvider',
   function($routeProvider, $httpProvider) {

@@ -12,6 +12,33 @@ angular.module('mainApp.controllers')
           value.updatedAt  = moment(value.updatedAt).format("YYYY-MM-DD hh:mm A");
         });
         $scope.users = data.users;
+
+        // Create table rows
+        $scope.rowCollection = data.users;
+
+        // Create table columns and headings
+        $scope.columnCollection = [
+          {label: 'Username', map: 'username'},
+          {label: 'Email', map: 'email'},
+          {label: 'First Name', map: 'firstName'},
+          {label: 'Last Name', map: 'lastName'},
+          {label: 'Last Updated', map: 'updatedAt'},
+          {label: 'Edit User', cellTemplateUrl: 'partials/directives/editUserButton.html', isSortable: false},
+          {label: 'Delete User', cellTemplateUrl: 'partials/directives/deleteUserButton.html', isSortable: false}
+        ];
+
+        // Global table config
+        $scope.globalConfig = {
+          isPaginationEnabled: true,
+          isGlobalSearchActivated: true,
+          itemsByPage: 1
+        };
+
+        // Styling for table
+        $('.pagination ul').addClass('pagination');
+        $('.smart-table-global-search label').addClass('h5');
+        $('.smart-table-global-search input').addClass('form-control');
+        $('.smart-table-global-search').append('<br>');
       }
     });
 

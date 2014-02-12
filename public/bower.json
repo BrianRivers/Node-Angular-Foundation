@@ -24,7 +24,9 @@
     "angular-sanitize": "1.2.7",
     "bootstrap": "3.0.2",
     "jquery": "2.0.3",
-    "moment": "~2.5.0"
+    "moment": "~2.5.0",
+    "smart-table": "0.1.5",
+    "angular-smart-table": "*"
   },
   "devDependencies": {},
   "resolutions": {
