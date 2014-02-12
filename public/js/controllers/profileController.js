@@ -29,6 +29,6 @@ angular.module('mainApp.controllers')
   };
 
   $scope.cancel = function() {
-    $location.path('#/');
+    $location.path('/');
   };
 }]);
