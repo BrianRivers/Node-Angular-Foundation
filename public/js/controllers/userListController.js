@@ -83,12 +83,11 @@ angular.module('mainApp.controllers')
         }
       });
 
-      modalInstance.result.then(function() {
-          $timeout(function() {
-            $route.reload(); //To make sure the list is up to date.
-          }, 500);
-        }
-      );
+      modalInstance.result.then(function(user) {
+        $scope.rowCollection.push(user);
+      }, function() {
+        console.log('dismiss');
+      });
     };
   }
 }]);

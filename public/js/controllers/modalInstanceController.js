@@ -33,7 +33,7 @@ angular.module('mainApp.controllers')
         .then(function(res) {
           console.log("Edited user from Modal returned info:");
           console.log(res);
-          $modalInstance.close();
+          $modalInstance.close($scope.user);
         }, function(err) {
           console.log("Edit error");
           console.log(err);
@@ -44,7 +44,7 @@ angular.module('mainApp.controllers')
         .then(function(res) {
           console.log("Created user from Modal returned info:");
           console.log(res);
-          $modalInstance.close();
+          $modalInstance.close($scope.user);
         }, function(err) {
           console.log("Create error");
           console.log(err);
