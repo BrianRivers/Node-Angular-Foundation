@@ -1,5 +1,5 @@
 <!-- To make sure all alerts in the session are displayed on home page -->
-<alert ng-repeat="alert in session.alerts" class="my-repeat-animation" type="alert.type" >{{alert.msg}}</alert>
+<alert ng-repeat="alert in $alert.alerts" class="my-repeat-animation" type="alert.type" close="$alert.closeAlert($index)">{{alert.msg}}</alert>
 <!-- Page Start -->
 <div class="row">
   <div class="col-md-12">

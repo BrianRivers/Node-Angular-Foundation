@@ -3,7 +3,7 @@
 </div>
 <div class="modal-body">
   <!-- To make sure all alerts in the session are displayed on home page -->
-  <alert ng-repeat="alert in session.alerts" class="my-repeat-animation" type="alert.type" close="session.closeAlert($index)">{{alert.msg}}</alert>
+  <alert ng-repeat="alert in $alert.alerts" class="my-repeat-animation" type="alert.type" close="$alert.closeAlert($index)">{{alert.msg}}</alert>
   <!-- back to normal page -->
   <div class="row">
     <div class="col-md-4"></div>

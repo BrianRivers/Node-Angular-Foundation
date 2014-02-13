@@ -1,7 +1,8 @@
 angular.module('mainApp.controllers')
-.controller('userListController', ['$scope', '$modal', '$route', '$timeout', '$dialogs', 'SessionService', 'userService', 'formatFilter', '$filter', function($scope, $modal, $route, $timeout, $dialogs, Session, User, format, $filter){
+.controller('userListController', ['$scope', '$modal', '$route', '$timeout', '$dialogs', 'SessionService', 'userService', 'formatFilter', '$filter', '$alert', function($scope, $modal, $route, $timeout, $dialogs, Session, User, format, $filter, $alert){
   // check for session
   if (Session.info) {
+    $scope.$alert = $alert;
     $scope.session = Session;
 
     // list users in table or log error
@@ -65,11 +66,11 @@ angular.module('mainApp.controllers')
               if (index > -1) {
                 $scope.rowCollection.splice(index, 1);
               }
-              Session.makeAlert("success","User was successfully deleted");
+              $alert.makeAlert("success","User was successfully deleted");
             }
           });
         }, function(btn) {
-          Session.makeAlert("warning", "Deletion was cancelled");
+          $alert.makeAlert("warning", "Deletion was cancelled");
         });
       } else {
         $dialogs.error("Delete User", "You cannot delete yourself!");
@@ -83,8 +84,7 @@ angular.module('mainApp.controllers')
         resolve: {
           user: function () { return user; },
           session: function () {return Session; },
-          User: function () {return User; },
-          $timeout: function () {return $timeout; }
+          User: function () {return User; }
         }
       });
 
@@ -93,7 +93,7 @@ angular.module('mainApp.controllers')
           $scope.rowCollection.push(user);
         }
       }, function() {
-        console.log('dismiss');
+        //console.log('dismiss');
       });
     };
   }

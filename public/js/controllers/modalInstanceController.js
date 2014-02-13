@@ -1,5 +1,5 @@
 angular.module('mainApp.controllers')
-.controller('modalInstanceCtrl', function modalController ($scope, $modalInstance, user, session, User, $timeout) {
+.controller('modalInstanceCtrl', function modalController ($scope, $modalInstance, user, session, User) {
     //Every modal needs it's own controller and has it's own scope.
     $scope.session = session;
     if(user !== null) {

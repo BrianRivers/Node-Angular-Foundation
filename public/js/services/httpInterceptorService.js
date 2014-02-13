@@ -1,5 +1,5 @@
 angular.module('mainApp.services')
-.factory('httpInterceptor', ['$q', '$injector', '$location', 'localStorageService', function ($q, $injector, $location, localStorageService) {
+.factory('httpInterceptor', ['$q', '$injector', '$location', '$alert', 'localStorageService', function ($q, $injector, $location, $alert, localStorageService) {
   return {
     // override requests to add key to header from session info
     request: function (config) {
@@ -21,18 +21,18 @@ angular.module('mainApp.services')
       if(rejection.status === 401) {
         $location.path('/');
         sessionService.logout();
-        sessionService.makeAlert('danger', 'You must login first');
+        $alert.makeAlert('danger', 'You must login first');
       } else if(rejection.status === 403) {
         $location.path('/');
-        sessionService.makeAlert('danger', 'You do not have access to this page');
+        $alert.makeAlert('danger', 'You do not have access to this page');
       } else if(rejection.status === 500) {
         if(rejection.data.meta.message.code == "ER_DUP_ENTRY") {
-          sessionService.makeAlert('warning', 'This username or email is already in use.');
+          $alert.makeAlert('warning', 'This username or email is already in use.');
         } else if (rejection.data.meta.message == "Data not found or unable to delete") {
-          sessionService.makeAlert('danger', 'Data not found');
+          $alert.makeAlert('danger', 'Data not found');
         } else {
           $location.path('/');
-          sessionService.makeAlert('warning', 'There was a server error');
+          $alert.makeAlert('warning', 'There was a server error');
         }
       }
       return $q.reject(rejection);
