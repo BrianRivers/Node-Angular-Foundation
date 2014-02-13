@@ -12,7 +12,8 @@ var app = angular.module('mainApp', [
   'LocalStorageModule',
   'ngAnimate',
   'ui.bootstrap',
-  'smartTable.table'
+  'smartTable.table',
+  'dialogs'
 ])
 .config(['$routeProvider', '$httpProvider',
   function($routeProvider, $httpProvider) {

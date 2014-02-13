@@ -15,6 +15,7 @@ angular.module('mainApp.services')
     },
     // response error handling and redirection
     responseError: function(rejection) {
+      console.log(rejection);
       console.log(rejection.data.meta.message.code);
       var sessionService = $injector.get("SessionService");
       if(rejection.status === 401) {
@@ -27,6 +28,8 @@ angular.module('mainApp.services')
       } else if(rejection.status === 500) {
         if(rejection.data.meta.message.code == "ER_DUP_ENTRY") {
           sessionService.makeAlert('warning', 'This username or email is already in use.');
+        } else if (rejection.data.meta.message == "Data not found or unable to delete") {
+          sessionService.makeAlert('danger', 'Data not found');
         } else {
           $location.path('/');
           sessionService.makeAlert('warning', 'There was a server error');

@@ -1,5 +1,5 @@
 angular.module('mainApp.controllers')
-.controller('userListController', ['$scope', '$modal', '$route', '$timeout', 'SessionService', 'userService', 'formatFilter', '$filter', function($scope, $modal, $route, $timeout, Session, User, format, $filter){
+.controller('userListController', ['$scope', '$modal', '$route', '$timeout', '$dialogs', 'SessionService', 'userService', 'formatFilter', '$filter', function($scope, $modal, $route, $timeout, $dialogs, Session, User, format, $filter){
   // check for session
   if (Session.info) {
     $scope.session = Session;
@@ -56,18 +56,23 @@ angular.module('mainApp.controllers')
     // delete user
     $scope.deleteUser = function(user) {
       if(user.id != $scope.session.info.id) {
-        if(confirm("Deleting "+user.username+" cannot be undone. Are you sure?"))
-        {
+        var confirmDialog = $dialogs.confirm("Delete User", "Deleting "+user.username+" cannot be undone. Are you sure?");
+        confirmDialog.result.then(function(btn) {
           User.delete(user.id)
           .then(function(data) {
             if (data !== undefined && data.meta.success) {
-              $route.reload();
+              var index = $scope.rowCollection.indexOf(user);
+              if (index > -1) {
+                $scope.rowCollection.splice(index, 1);
+              }
               Session.makeAlert("success","User was successfully deleted");
             }
           });
-        }
+        }, function(btn) {
+          Session.makeAlert("warning", "Deletion was cancelled");
+        });
       } else {
-        alert("You cannot delete yourself!");
+        $dialogs.error("Delete User", "You cannot delete yourself!");
       }
     };
 
