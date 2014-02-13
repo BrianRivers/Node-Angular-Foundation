@@ -5,6 +5,7 @@ angular.module('mainApp.controllers')
     if(user !== null) {
       $scope.user = user;
       $scope.header = "Edit User";
+      $scope.originalUser = angular.copy(user);
     } else {
       $scope.user = {
         username: null,
@@ -54,6 +55,7 @@ angular.module('mainApp.controllers')
     };
 
     $scope.cancel = function () {
+      angular.copy($scope.originalUser, $scope.user);
       $modalInstance.dismiss('cancel');
     };
 });
