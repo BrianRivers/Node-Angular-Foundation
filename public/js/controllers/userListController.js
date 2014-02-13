@@ -84,7 +84,9 @@ angular.module('mainApp.controllers')
       });
 
       modalInstance.result.then(function(user) {
-        $scope.rowCollection.push(user);
+        if (user) {
+          $scope.rowCollection.push(user);
+        }
       }, function() {
         console.log('dismiss');
       });

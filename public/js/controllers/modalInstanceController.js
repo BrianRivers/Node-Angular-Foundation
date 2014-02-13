@@ -33,7 +33,7 @@ angular.module('mainApp.controllers')
         .then(function(res) {
           console.log("Edited user from Modal returned info:");
           console.log(res);
-          $modalInstance.close($scope.user);
+          $modalInstance.close();
         }, function(err) {
           console.log("Edit error");
           console.log(err);
