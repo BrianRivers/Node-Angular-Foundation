@@ -34,12 +34,18 @@ app.configure(function () {
   });
 });
 
-// determine if inital setup should run based on -initalize flag
+// process command line flags
 process.argv.forEach(function(val, index, array) {
+  var data = require('./app/data');
   if (val === '-init') {
     // run initial db setup
-    var data = require('./app/data');
-    data.intialSetup(function (err, results) {
+    data.intialSetup(function(err, results) {
+      if (err) throw err;
+      console.log('Initial setup complete');
+    });
+  } else if (val === '-admin') {
+    // create (or recreate) default admin user
+    data.adminReset(function(err, results) {
       if (err) throw err;
       console.log('Default admin user created');
     });

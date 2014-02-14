@@ -47,6 +47,23 @@ exports.intialSetup = function intialSetup(callback) {
   });
 };
 
+exports.adminReset = function adminReset(callback) {
+  var admin_user = JSON.parse(fs.readFileSync(process.cwd() + '/config.json')).default_admin;
+  db['Users'].find({ where: { username: admin_user.username } })
+  .success(function(result) {
+    if (result) {
+      exports.deleteData('Users', result.values.id, function() {
+        exports.createData('Users', admin_user, callback);
+      });
+    } else {
+      exports.createData('Users', admin_user, callback);
+    }
+  })
+  .error(function(err) {
+    callback(err, false);
+  });
+};
+
 // lists all tables in db
 exports.tableList = function tableList(callback) {
   // sql query using sequelize
@@ -55,7 +72,7 @@ exports.tableList = function tableList(callback) {
     callback(null, { "tables": rows });
   })
   .error(function (err) {
-    response(res, 500, false, err, null);
+    callback(err, false);
   });
 };
 

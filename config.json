@@ -4,7 +4,7 @@
     "password": "admin",
     "firstName": null,
     "lastName": null,
-    "email": "admin@localhost.com",
+    "email": "admin@localhost",
     "RoleId": 1
   },
   "roles": [
