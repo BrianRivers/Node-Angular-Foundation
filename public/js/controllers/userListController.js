@@ -91,6 +91,7 @@ angular.module('mainApp.controllers')
       modalInstance.result.then(function(user) {
         if (user) {
           $scope.rowCollection.push(user);
+          $alert.makeAlert("success","User was successfully created");
         }
       }, function() {
         //console.log('dismiss');
