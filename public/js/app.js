@@ -44,7 +44,6 @@ var app = angular.module('mainApp', [
   Session.sessionCheck();
   $root.$on('$routeChangeSuccess', function(scope, curRoute, prevRoute) {
     Session.sessionCheck();
-    console.log(curRoute);
     // redirect to home page if protected page and no session
     if (!curRoute.access.isFree && !Session.info) {
       $location.path('/');
