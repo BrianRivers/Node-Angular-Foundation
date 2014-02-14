@@ -112,12 +112,13 @@ module.exports = function(app) {
 
   // list db tables
   // returns metadata with list of tables
-  app.get('/dbtest', function (req, res) {
-    data.tableList(function (err, results) {
-      if (!err) { response(res, 200, true, 'Tables', results); }
-      else { response(res, 500, false, err, null); }
-    });
-  });
+  // FOR INITIAL SETUP/TESTING ONLY FOR NOW
+  // app.get('/dbtest', function (req, res) {
+  //   data.tableList(function (err, results) {
+  //     if (!err) { response(res, 200, true, 'Tables', results); }
+  //     else { response(res, 500, false, err, null); }
+  //   });
+  // });
 
   // verify username and password
   // returns status and object with user info and key
