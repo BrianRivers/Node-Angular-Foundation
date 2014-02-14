@@ -8,7 +8,8 @@
   <div class="row">
     <div class="col-md-4"></div>
     <div class="col-md-4">
-      <form role="form" name="userForm" novalidate class="css-form">
+      <img class="loading" src="img/load.gif" ng-show="!user"></img>
+      <form role="form" name="userForm" novalidate class="css-form" ng-show="user">
         <div class="form-group">
           <label for="username">Username</label>
           <input type="text" class="form-control" id="username" name="username" data-ng-model="user.username" username-format>

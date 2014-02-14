@@ -1,7 +1,8 @@
 angular.module('mainApp.controllers')
-.controller('profileController', ['$scope', '$route', '$location', 'SessionService', 'userService', function($scope, $route, $location, Session, User) {
-  // set session data for page
+.controller('profileController', ['$scope', '$route', '$location', '$alert', 'SessionService', 'userService', function($scope, $route, $location, $alert, Session, User) {
+  // set session data and title for page
   $scope.session = Session;
+  $scope.$alert = $alert;
   $scope.isProfile = true;
   $scope.header = "Profile";
 
@@ -14,21 +15,19 @@ angular.module('mainApp.controllers')
   });
 
   $scope.save = function(form) {
-    console.log($scope.user);
+    // validate form and required fields then process
     if (form.$valid && $scope.user.username && $scope.user.email && $scope.user.RoleId) {
-      console.log("The value being sent:");
-      console.log($scope.user);
-      // send off user data to
       User.edit($scope.user)
       .then(function(result) {
         console.log("This is what is returned:");
         console.log(result);
-      })
-      .then(function() { $route.reload(); });
+        $alert.makeAlert("success", "Profile successfully updated");
+      });
     }
   };
 
   $scope.cancel = function() {
+    // redirect to home
     $location.path('/');
   };
 }]);

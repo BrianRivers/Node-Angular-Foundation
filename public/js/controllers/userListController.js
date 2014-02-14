@@ -1,20 +1,22 @@
 angular.module('mainApp.controllers')
-.controller('userListController', ['$scope', '$modal', '$route', '$timeout', '$dialogs', 'SessionService', 'userService', 'formatFilter', '$filter', '$alert', function($scope, $modal, $route, $timeout, $dialogs, Session, User, format, $filter, $alert){
+.controller('userListController', ['$scope', '$modal', '$route', '$timeout', '$dialogs', '$filter', '$alert', 'SessionService', 'userService', 'formatFilter', function($scope, $modal, $route, $timeout, $dialogs, $filter, $alert, Session, User, format){
   // check for session
   if (Session.info) {
-    $scope.$alert = $alert;
+    // set session and alert
     $scope.session = Session;
+    $scope.$alert = $alert;
 
-    // list users in table or log error
+    // list users in table
     User.list()
     .then(function(data) {
       if (data !== undefined && data.meta.success) {
         // Set users to scope property
         $scope.users = data.users;
 
-        // Create table rows
+        // create table rows
         $scope.rowCollection = $scope.users;
-        // Create table columns and headings
+
+        // create table columns and headings
         $scope.columnCollection = [
           {label: 'Username', map: 'username'},
           {label: 'Email', map: 'email'},
@@ -23,19 +25,19 @@ angular.module('mainApp.controllers')
           {label: 'Last Updated', map: 'updatedAt', formatFunction: 'customFormat', formatParameter: 'd'},
           // {label: 'Last Updated', map: 'updatedAt', formatFunction: function(value) {
           //   return moment(value).format("YYYY-MM-DD hh:mm A");
-          // }},
+          // }}, Currently uses custom filter after modifying Smart Table lib
           {label: 'Edit User', cellTemplateUrl: 'partials/directives/editUserButton.html', isSortable: false},
           {label: 'Delete User', cellTemplateUrl: 'partials/directives/deleteUserButton.html', isSortable: false}
         ];
 
-        // Global table config
+        // global table config
         $scope.globalConfig = {
           isPaginationEnabled: true,
           isGlobalSearchActivated: true,
           itemsByPage: 20
         };
 
-        // Styling for table
+        // styling for table
         $('.pagination ul').addClass('pagination');
         $('.smart-table-global-search label').addClass('h5');
         $('.smart-table-global-search input').addClass('form-control');
@@ -43,19 +45,18 @@ angular.module('mainApp.controllers')
       }
     });
 
-    // create a new user
     $scope.createUser = function() {
-      // Sends null so that the modal will know to make a blank user to fill.
+      // sends null so that the modal will know to make a blank user to fill.
       $scope.open(null);
     };
 
-    // edit user
     $scope.editUser = function(user) {
+      // open modal with user to edit
       $scope.open(user);
     };
 
-    // delete user
     $scope.deleteUser = function(user) {
+      // make sure user is not trying to delete themselves
       if(user.id != $scope.session.info.id) {
         var confirmDialog = $dialogs.confirm("Delete User", "Deleting "+user.username+" cannot be undone. Are you sure?");
         confirmDialog.result.then(function(btn) {
@@ -70,7 +71,7 @@ angular.module('mainApp.controllers')
             }
           });
         }, function(btn) {
-          $alert.makeAlert("warning", "Deletion was cancelled");
+          // $alert.makeAlert("warning", "Deletion was cancelled");
         });
       } else {
         $dialogs.error("Delete User", "You cannot delete yourself!");
@@ -78,6 +79,7 @@ angular.module('mainApp.controllers')
     };
 
     $scope.open = function(user) {
+      // open modal with data
       var modalInstance = $modal.open({
         templateUrl: 'partials/userForm.html',
         controller: 'modalInstanceCtrl',
@@ -89,12 +91,13 @@ angular.module('mainApp.controllers')
       });
 
       modalInstance.result.then(function(user) {
+        // if new user, add to table and display message
         if (user) {
           $scope.rowCollection.push(user);
           $alert.makeAlert("success","User was successfully created");
         }
       }, function() {
-        //console.log('dismiss');
+        console.log('dismiss');
       });
     };
   }
