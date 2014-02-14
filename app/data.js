@@ -243,6 +243,7 @@ exports.createData = function createData(path, data, callback) {
           result.setKey(key)
           .success(function (){
             // return newly created user
+            result.values.password = null;
             callback(null, {
               "users": result.values
             });
@@ -297,6 +298,9 @@ exports.updateData = function updateData(path, id, data, callback) {
           db[model].find(id)
           .success(function (result) {
             var values = {};
+            if (model === 'Users') {
+              result.values.password = null;
+            }
             values[model.toLowerCase()] = result.values;
             callback(null, values);
           })

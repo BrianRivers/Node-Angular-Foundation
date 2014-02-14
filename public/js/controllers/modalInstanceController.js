@@ -45,7 +45,7 @@ angular.module('mainApp.controllers')
         .then(function(res) {
           console.log("Created user from Modal returned info:");
           console.log(res);
-          $modalInstance.close($scope.user);
+          $modalInstance.close(res.users);
         }, function(err) {
           console.log("Create error");
           console.log(err);
