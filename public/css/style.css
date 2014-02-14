@@ -1,16 +1,26 @@
+/* Global */
 body{
   padding-top: 70px;
 }
+.ng-cloak{
+  display: none;
+}
+
+/* Navbar */
 .dropdown-menu input{
   margin-bottom: 10px;
 }
-.ng-cloak{
-  display: none;
+
+/* Modal */
+.modal { 
+  display: block;
 }
 .modal-dialog {
   width: inherit;
   max-width: 1170px;
 }
+
+/* Form validation */
 .form-error{
   color: gray;
   font-style: italic;
@@ -26,6 +36,8 @@ body{
   -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075),0 0 8px rgba(76, 174, 76, 0.6);
   box-shadow: inset 0 1px 1px rgba(0,0,0,0.075),0 0 8px rgba(76, 174, 76, 0.6);
 }
+
+/* Smart Table */
 .pagination {
   text-align: center;
 }
@@ -35,18 +47,36 @@ body{
 .sort-descent:before {
   content: "\25BE";
 }
-
-.modal { 
+.loading {
   display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 100px;
 }
 
 /* Custom dialog/modal headers */
-.dialog-header-error { background-color: #d2322d; }
-.dialog-header-wait { background-color: #428bca; }
-.dialog-header-notify { background-color: #eeeeee; }
-.dialog-header-confirm { background-color: #333333; }
-  .dialog-header-error span, .dialog-header-error h4,
-  .dialog-header-wait span, .dialog-header-wait h4,
-  .dialog-header-confirm span, .dialog-header-confirm h4 { color: #ffffff; }
+.dialog-header-error {
+  background-color: #d2322d;
+}
+.dialog-header-wait {
+  background-color: #428bca;
+}
+.dialog-header-notify {
+  background-color: #eeeeee;
+}
+.dialog-header-confirm {
+  background-color: #333333;
+}
+.dialog-header-error span,
+.dialog-header-error h4,
+.dialog-header-wait span,
+.dialog-header-wait h4,
+.dialog-header-confirm span,
+.dialog-header-confirm h4 {
+  color: #ffffff;
+}
+
 /* Ease Display */
-.pad { padding: 25px; }
+.pad {
+  padding: 25px;
+}
