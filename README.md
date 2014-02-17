@@ -1,4 +1,4 @@
-#Veterans Services
+#Node Angular Foundation
 
 This project uses Node.js and Angular.js  
 
@@ -73,7 +73,6 @@ bower install
 ````
 cd ../
 vagrant ssh
-cd /srv/site
 ````
 
 ####Install via npm
