@@ -15,13 +15,19 @@ angular.module('mainApp.services')
 
       // To remove alerts when the 'x' button is pressed
       self.closeAlert = function(index) {
-        self.alerts.splice(index, 1);
+        self.clearAlerts(index);
       };
 
       self.timeOutAlert = function() {
         $timeout(function() {
-          self.alerts.splice(0, 1);
+          self.clearAlerts();
         }, 3000);
+      };
+
+      self.clearAlerts = function(index) {
+        if(self.alerts) {
+          self.alerts.splice((index) ? index : 0,1);
+        }
       };
 
       self.test = "test";

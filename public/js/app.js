@@ -39,12 +39,12 @@ var app = angular.module('mainApp', [
     })
     .otherwise({ redirectTo: '/' });
 }])
-.run(['$rootScope', '$location', 'SessionService', function($root, $location, Session) {
+.run(['$rootScope', '$location', 'SessionService', '$alert', function($root, $location, Session, $alerts) {
   // check for session logged in and access level on each route
   Session.sessionCheck();
   $root.$on('$routeChangeSuccess', function(scope, curRoute, prevRoute) {
     Session.sessionCheck();
-    console.log(curRoute);
+    $alerts.clearAlerts();
     // redirect to home page if protected page and no session
     if ((!curRoute.access || !curRoute.access.isFree) && !Session.info) {
       $location.path('/');
