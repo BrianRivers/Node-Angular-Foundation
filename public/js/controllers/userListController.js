@@ -96,9 +96,7 @@ angular.module('mainApp.controllers')
           $scope.rowCollection.push(user);
           $alert.makeAlert("success","User was successfully created");
         }
-      }, function() {
-        console.log('dismiss');
-      });
+      }, function() {/*dismiss*/});
     };
   }
 }]);

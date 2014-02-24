@@ -19,8 +19,6 @@ angular.module('mainApp.controllers')
     if (form.$valid && $scope.user.username && $scope.user.email && $scope.user.RoleId) {
       User.edit($scope.user)
       .then(function(result) {
-        console.log("This is what is returned:");
-        console.log(result);
         $alert.makeAlert("success", "Profile successfully updated");
       });
     }

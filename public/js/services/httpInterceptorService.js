@@ -15,8 +15,6 @@ angular.module('mainApp.services')
     },
     // response error handling and redirection
     responseError: function(rejection) {
-      console.log(rejection);
-      console.log(rejection.data.meta.message.code);
       var sessionService = $injector.get("SessionService");
       if(rejection.status === 401) {
         $location.path('/');

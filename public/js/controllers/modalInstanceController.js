@@ -20,7 +20,6 @@ angular.module('mainApp.controllers')
     $scope.isModal = true;
 
     $scope.save = function (form) {
-      console.log($scope.user);
       // validate form and required fields then process
       if (form.$valid && $scope.user.username && $scope.user.email && $scope.user.RoleId) {
         $scope.ok($scope.user);
