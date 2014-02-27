@@ -24,8 +24,8 @@ config.vm.box_url = "http://files.vagrantup.com/precise64.box"
 config.vm.network :forwarded_port, guest: 80, host: 3000
 # Node.js server
 config.vm.network :forwarded_port, guest: 8000, host: 3001
-# MySQL server
-config.vm.network :forwarded_port, guest: 3306, host: 3306
+# PostgreSQL server
+config.vm.network :forwarded_port, guest: 5432, host: 5432
 
 # Create a private network, which allows host-only access to the machine
 # using a specific IP.
@@ -64,9 +64,6 @@ config.vm.provision :shell, :inline => 'su - vagrant -c "echo cd /srv/site >> ~/
 # View the documentation for the provider you're using for more
 # information on available options.
 
-# Enable provisioning with Docker.
-config.vm.provision "docker"
-
 # Enable provisioning with Puppet stand alone.  Puppet manifests
 # are contained in a directory path relative to this Vagrantfile.
 # You will need to create the manifests directory and a manifest in
@@ -91,8 +88,10 @@ config.vm.provision "docker"
 # end
 
 # Install utilities
+config.vm.provision :shell, :inline => "sudo apt-get update"
 config.vm.provision :shell, :inline => "sudo apt-get install -y build-essential"
 config.vm.provision :shell, :inline => "sudo apt-get install -y git"
+config.vm.provision :shell, :inline => "sudo apt-get install -y libpq-dev"
 
 # Enable provisioning with chef solo, specifying a cookbooks path, roles
 # path, and data_bags path (all relative to this Vagrantfile), and adding
@@ -113,14 +112,12 @@ config.vm.provision :chef_solo do |chef|
 	chef.json = VAGRANT_JSON
 end
 
-# Setup MySQL db and user
-$server_root_password = VAGRANT_JSON['mysql']['server_root_password']
-config.vm.provision :shell, :inline => 
-"mysql -u root -p#{$server_root_password} -e \"create database if not exists dev_db\""
-config.vm.provision :shell, :inline => 
-"mysql -u root -p#{$server_root_password} -e \"GRANT ALL ON dev_db.* TO 'dev_db'@'%' IDENTIFIED BY 'giscenter'; FLUSH PRIVILEGES;\""
-config.vm.provision :shell, :inline =>
-"mysql -u root -p#{$server_root_password} -e \"SET GLOBAL sql_mode = STRICT_ALL_TABLES\""
+# Setup PostgreSQL user and db
+config.vm.provision :shell, :inline => "sudo -u postgres psql --command \"DROP DATABASE IF EXISTS dev_db\""
+config.vm.provision :shell, :inline => "sudo -u postgres psql --command \"DROP ROLE IF EXISTS dev_db\""
+config.vm.provision :shell, :inline => "sudo -u postgres psql --command \"CREATE ROLE dev_db WITH LOGIN ENCRYPTED PASSWORD 'dev_db' CREATEDB;\""
+config.vm.provision :shell, :inline => "sudo -u postgres psql --command \"CREATE DATABASE dev_db WITH OWNER dev_db;\""
+config.vm.provision :shell, :inline => "sudo -u postgres psql --command \"GRANT ALL PRIVILEGES ON DATABASE dev_db TO dev_db;\""
 
 # Install nodemon to run node server
 config.vm.provision :shell, :inline => "sudo npm install -g nodemon"

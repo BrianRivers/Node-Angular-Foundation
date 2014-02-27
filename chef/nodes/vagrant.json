@@ -5,19 +5,21 @@
 		"default_modules": ["proxy", "proxy_http"],
 		"listen_ports" : [80, 8000]
 	},
-	"mysql": {
-		"server_root_password": "giscenter",
-		"server_repl_password": "giscenter",
-		"server_debian_password": "giscenter",
-		"bind_address": "10.0.2.15"
+	"postgresql": {
+		"config": {
+			"listen_addresses": "localhost"
+		},
+		"password": {
+			"postgres": "postgres"
+		},
+		"version": "9.1"
 	},
 	"run_list": [
 		"recipe[apt]",
 		"recipe[build-essential]",
 		"recipe[apache2]",
-		"recipe[mysql::server]",
-		"recipe[nodejs]",
-		"recipe[database::mysql]",
-		"recipe[database::import]"
+		"recipe[database]",
+		"recipe[postgresql::server]",
+		"recipe[nodejs]"
 	]
 }
