@@ -45,6 +45,7 @@ module.exports = function(app) {
 
   // constants for authorization levels
   var ADMIN_ONLY = ['users'];
+  var ALLOWED = [];
   var ADMIN = 1;
   var WRITE = 2;
   var READ = 3;
@@ -79,9 +80,9 @@ module.exports = function(app) {
       if (_.contains(ADMIN_ONLY, req.params.path) && key.user.RoleId == ADMIN) {
         return true;
       // check for valid permissions to access
-      } else if (!_.contains(ADMIN_ONLY, req.params.path) && key.user.RoleId <= role) {
+      } else if (!_.contains(ADMIN_ONLY, req.params.path) && _.contains(ALLOWED, req.params.path) && key.user.RoleId <= role) {
         return true;
-      // not allowed access
+      // otherwise not allowed access
       } else {
         return false;
       }
@@ -113,12 +114,12 @@ module.exports = function(app) {
   // list db tables
   // returns metadata with list of tables
   // FOR INITIAL SETUP/TESTING ONLY FOR NOW
-  // app.get('/dbtest', function (req, res) {
-  //   data.tableList(function (err, results) {
-  //     if (!err) { response(res, 200, true, 'Tables', results); }
-  //     else { response(res, 500, false, err, null); }
-  //   });
-  // });
+  app.get('/dbtest', function (req, res) {
+    data.tableList(function (err, results) {
+      if (!err) { response(res, 200, true, 'Tables', results); }
+      else { response(res, 500, false, err, null); }
+    });
+  });
 
   // verify username and password
   // returns status and object with user info and key
@@ -144,7 +145,7 @@ module.exports = function(app) {
         // search for all data or data limited by where conditions in query string
         data.searchData(req.params.path, null, query, function (err, results) {
           if (err) { response(res, 500, false, err, null); }
-          else if (!results) { response(res, 403, false, err, null); }
+          else if (!results) { response(res, 404, false, err, null); }
           else if (results) { response(res, 200, true, 'Data found', results); }
         });
       } else { response(res, 403, false, 'Not Authorized', null); }
@@ -161,7 +162,7 @@ module.exports = function(app) {
         // search for data matching given id
         data.searchData(req.params.path, req.params.id, null, function (err, results) {
           if (err) { response(res, 500, false, err, null); }
-          else if (!results) { response(res, 403, false, err, null); }
+          else if (!results) { response(res, 404, false, err, null); }
           else if (results) { response(res, 200, true, 'Data found', results); }
         });
       } else { response(res, 403, false, 'Not Authorized', null); }
@@ -178,7 +179,7 @@ module.exports = function(app) {
         // create data and respond with data or error
         data.createData(req.params.path, req.body, function (err, results) {
           if (err) { response(res, 500, false, err, null); }
-          else if (!results) { response(res, 403, false, err, null); }
+          else if (!results) { response(res, 404, false, err, null); }
           else if (results) { response(res, 200, true, 'Data created', results); }
         });
       } else { response(res, 403, false, 'Not Authorized', null); }
@@ -195,7 +196,7 @@ module.exports = function(app) {
         // search for data to update matching given id
         data.updateData(req.params.path, req.params.id, req.body, function (err, results) {
           if (err) { response(res, 500, false, err, null); }
-          else if (!results) { response(res, 403, false, err, null); }
+          else if (!results) { response(res, 404, false, err, null); }
           else if (results) { response(res, 200, true, 'Data updated', results); }
         });
       } else { response(res, 403, false, 'Not Authorized', null); }
@@ -212,7 +213,7 @@ module.exports = function(app) {
         // search for data to delete matching given id
         data.deleteData(req.params.path, req.params.id, function (err, results) {
           if (err) { response(res, 500, false, err, null); }
-          else if (!results) { response(res, 403, false, err, null); }
+          else if (!results) { response(res, 404, false, err, null); }
           else if (results) { response(res, 200, true, 'Data deleted', results); }
         });
       } else { response(res, 403, false, 'Not Authorized', null); }

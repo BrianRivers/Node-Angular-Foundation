@@ -373,7 +373,7 @@ describe('GET /:path', function() {
         });
       });
     });
-    
+
     it('error 401 unauthorized when using incorrect key', function(done) {
       api.get('/users')
       .set('x-api-key', 'badkey')

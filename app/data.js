@@ -9,12 +9,10 @@ var db = require('./db'),
 
 // verifies model exists in db and is allowed to be accessed
 function verifyPath(path) {
-  var ALLOWED = ['Users'];
   // get path aka table or model to search for
   path = db.Sequelize.Utils._.capitalize(path);
 
-  if (db.Sequelize.Utils._.contains(db.tableNames, path) &&
-    db.Sequelize.Utils._.contains(ALLOWED, path)) {
+  if (db.Sequelize.Utils._.contains(db.tableNames, path)) {
     return path;
   } else { return null; }
 }
