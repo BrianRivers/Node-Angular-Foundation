@@ -81,14 +81,14 @@ npm install
 ````
 
 ####Run the application
-If this is the first time running, make sure to initialize the application by passing the -initialize flag
+If this is the first time running, make sure to initialize the application by running the init script
 ````
-node server.js -init
+npm run-script init
 ````
 
 You can then quit the server at any time using Ctrl-C. Run the application by being in the application folder and typing
 ````
-node server.js
+npm run-script start
 ````
 
 You can also run the server that will auto restart after file changes by using nodemon
@@ -99,7 +99,7 @@ nodemon -L server.js
 ####Testing the server
 You can use the Postman REST client app for Chrome to make a GET request to http://localhost:3001/dbtest or simply navigate to this address in a browser.  
 You should see a response with JSON data.
-  
+
 If you get a 503 service unavaiable you will need to restart Apache and then restart the server in the VM  
 ````
 sudo service apache2 restart

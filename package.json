@@ -21,5 +21,9 @@
 		"supertest": "*",
 		"chai": "*",
 		"grunt": "*"
+	},
+	"scripts": {
+		"init": "sudo service apache2 restart && node server.js -init",
+		"start": "sudo service apache2 restart && node server.js"
 	}
 }
