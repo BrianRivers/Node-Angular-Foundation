@@ -27,7 +27,7 @@ module.exports = function(sequelize, Sequelize) {
     associate: function (models) {
       User.belongsTo(models.Roles);
       User.hasOne(models.Keys, {
-        onDelete: 'cascade'
+        onDelete: "cascade"
       });
     }
   });

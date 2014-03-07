@@ -4,9 +4,10 @@ var fs = require('fs'),
 	path = require('path'),
 	_ = require('lodash'),
 	Sequelize = require('sequelize'),
-	sequelize = new Sequelize('dev_db', 'dev_db', 'giscenter', {
-		host: '10.0.2.15',
-		dialect: 'mysql',
+	sequelize = new Sequelize('dev_db', 'dev_db', 'dev_db', {
+		host: '127.0.0.1',
+		dialect: 'postgres',
+		port: 5432,
 		logging: false
 	}),
 	db = {};

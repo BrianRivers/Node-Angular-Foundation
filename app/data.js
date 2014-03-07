@@ -19,29 +19,25 @@ function verifyPath(path) {
 
 // runs inital db setup and creates default admin user
 exports.intialSetup = function intialSetup(callback) {
-  db.sequelize.query("SET FOREIGN_KEY_CHECKS = 0")
-  .success(function() {
-    db.sequelize
-    .sync({
-      force: true,
-      language: 'en',
-      logging: true
-    })
-    .complete(function (err) {
-      if (err) throw err;
-      else {
-        db.sequelize.query("SET FOREIGN_KEY_CHECKS = 1");
-        var admin_user = JSON.parse(fs.readFileSync(process.cwd() + '/config.json')).default_admin;
-        var roles = JSON.parse(fs.readFileSync(process.cwd() + '/config.json')).roles;
-        db.Roles.bulkCreate(roles)
-        .success(function() {
-           exports.createData('Users', admin_user, callback);
-        })
-        .error(function(err) {
-          callback(err, false);
-        });
-      }
-    });
+  db.sequelize
+  .sync({
+    force: true,
+    language: 'en',
+    logging: true
+  })
+  .complete(function (err) {
+    if (err) throw err;
+    else {
+      var admin_user = JSON.parse(fs.readFileSync(process.cwd() + '/config.json')).default_admin;
+      var roles = JSON.parse(fs.readFileSync(process.cwd() + '/config.json')).roles;
+      db.Roles.bulkCreate(roles)
+      .success(function() {
+         exports.createData('Users', admin_user, callback);
+      })
+      .error(function(err) {
+        callback(err, false);
+      });
+    }
   });
 };
 
@@ -65,7 +61,7 @@ exports.adminReset = function adminReset(callback) {
 // lists all tables in db
 exports.tableList = function tableList(callback) {
   // sql query using sequelize
-  db.sequelize.query('SHOW TABLES FROM dev_db')
+  db.sequelize.query('SELECT table_schema,table_name FROM information_schema.tables ORDER BY table_schema,table_name;')
   .success(function (rows) {
     callback(null, { "tables": rows });
   })
@@ -76,14 +72,14 @@ exports.tableList = function tableList(callback) {
 
 // verifies a users credentials
 exports.authenticateUser = function authenticateUser(user, callback) {
-  db.sequelize.query('SELECT * FROM `Users` WHERE username = ? OR email = ?', null, { plain: true, raw: true }, [user.username, user.username])
+  db.sequelize.query('SELECT * FROM "Users" WHERE username = ? OR email = ?;', null, { plain: true, raw: true }, [user.username, user.username])
   .success(function (result) {
     // if user is found
     if (result) {
       // check password hash against provided password
       if (bcrypt.compareSync(user.password, result.password)) {
         // generate new key for user on valid authentication
-        db.Keys.find({ where: { UserId: result.id }})
+        db.Keys.find({ where: { UsersId: result.id }})
         .success(function(currentKey) {
           currentKey.key =  uuid.v1();
           currentKey.save()
@@ -123,8 +119,8 @@ exports.authenticateUser = function authenticateUser(user, callback) {
 exports.authenticateKey = function authenticateKey(apikey, callback) {
   // search for key
   db.Keys.find({
-    where: { key: apikey },
-    include: [db.Users]
+    where: { key: apikey }
+    // include: [db.Users]
   })
   .success(function (result) {
     // if key is found
@@ -133,7 +129,17 @@ exports.authenticateKey = function authenticateKey(apikey, callback) {
       var now = moment();
       var keyTime = moment(result.updatedAt);
       if (now.diff(keyTime, 'hours') < 12) {
-        callback(null, result.values);
+        db.Users.find({
+          where: { id: result.values.UsersId }
+        })
+        .success(function (user) {
+          var values = result.values;
+          values.user = user.values;
+          callback(null, values);
+        })
+        .error(function (err) {
+          callback(err, false);
+        });
       } else {
         callback(null, false);
       }
